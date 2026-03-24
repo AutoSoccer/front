@@ -140,7 +140,7 @@ export default function RegisterPage() {
 
         <p className={styles.footerText}>
           Já possui uma conta?{" "}
-          <Link href="/login" className={styles.link}>
+          <Link href="/auth/login" className={styles.link}>
             Entrar
           </Link>
         </p>

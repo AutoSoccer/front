@@ -89,7 +89,7 @@ export default function LoginPage() {
 
         <p className={styles.footerText}>
           Não possui uma conta?{" "}
-          <Link href="/register" className={styles.link}>
+          <Link href="/auth/register" className={styles.link}>
             Cadastre-se
           </Link>
         </p>
