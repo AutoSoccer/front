@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import Link from 'next/link';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
-import { registerSchema, type RegisterFormInputs } from '@/lib/schemas/auth';
-import styles from './register.module.css';
+import { registerSchema, type RegisterFormInputs } from "@/lib/schemas/auth";
+import styles from "./register.module.css";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +24,7 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormInputs) => {
     // Simulando o delay de uma requisição
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('Cadastro efetuado com sucesso:', data);
+    console.log("Cadastro efetuado com sucesso:", data);
   };
 
   return (
@@ -34,7 +34,9 @@ export default function RegisterPage() {
 
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="name">Nome completo</label>
+            <label className={styles.label} htmlFor="name">
+              Nome completo
+            </label>
             <div className={styles.inputContainer}>
               <User className={styles.icon} size={20} />
               <input
@@ -42,7 +44,7 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="Seu nome"
                 className={styles.input}
-                {...register('name')}
+                {...register("name")}
               />
             </div>
             {errors.name && (
@@ -51,7 +53,9 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="email">E-mail</label>
+            <label className={styles.label} htmlFor="email">
+              E-mail
+            </label>
             <div className={styles.inputContainer}>
               <Mail className={styles.icon} size={20} />
               <input
@@ -59,7 +63,7 @@ export default function RegisterPage() {
                 type="email"
                 placeholder="seu@email.com"
                 className={styles.input}
-                {...register('email')}
+                {...register("email")}
               />
             </div>
             {errors.email && (
@@ -68,21 +72,23 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="password">Senha</label>
+            <label className={styles.label} htmlFor="password">
+              Senha
+            </label>
             <div className={styles.inputContainer}>
               <Lock className={styles.icon} size={20} />
               <input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Crie uma senha"
                 className={styles.input}
-                {...register('password')}
+                {...register("password")}
               />
               <button
                 type="button"
                 className={styles.iconRight}
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -93,37 +99,47 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="confirmPassword">Confirme a senha</label>
+            <label className={styles.label} htmlFor="confirmPassword">
+              Confirme a senha
+            </label>
             <div className={styles.inputContainer}>
               <Lock className={styles.icon} size={20} />
               <input
                 id="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Repita sua senha"
                 className={styles.input}
-                {...register('confirmPassword')}
+                {...register("confirmPassword")}
               />
               <button
                 type="button"
                 className={styles.iconRight}
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label={showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                aria-label={
+                  showConfirmPassword ? "Ocultar senha" : "Mostrar senha"
+                }
               >
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className={styles.errorText}>{errors.confirmPassword.message}</p>
+              <p className={styles.errorText}>
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
-          <button type="submit" className={styles.button} disabled={isSubmitting}>
-            {isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
+          <button
+            type="submit"
+            className={styles.button}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Cadastrando..." : "Cadastrar"}
           </button>
         </form>
 
         <p className={styles.footerText}>
-          Já possui uma conta?{' '}
+          Já possui uma conta?{" "}
           <Link href="/login" className={styles.link}>
             Entrar
           </Link>
