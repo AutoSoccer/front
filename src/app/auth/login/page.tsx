@@ -1,12 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { loginSchema, type LoginFormInputs } from "@/lib/schemas/auth";
+import { authService } from "@/services/authService";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
@@ -21,9 +22,22 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormInputs) => {
-    // Simulando o delay de uma requisição
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Login efetuado com sucesso:", data);
+    try {
+      const response = await authService.login(data);
+      console.log("Login efetuado com sucesso:", response);
+      alert("Login efetuado com sucesso!");
+      // TODO: Redirecionar pra Home
+      if (response?.token) {
+        localStorage.setItem("token", response.token);
+        // Opcional: já deixei preparado para salvar os dados do usuário se você quiser
+        if (response?.user) {
+          localStorage.setItem("user", JSON.stringify(response.user));
+        }
+      }
+    } catch (error) {
+      console.error("Erro no login:", error);
+      alert("Falha ao realizar login. Verifique suas credenciais na API.");
+    }
   };
 
   return (
@@ -33,21 +47,21 @@ export default function LoginPage() {
 
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="email">
-              E-mail
+            <label className={styles.label} htmlFor="identifier">
+              E-mail ou Apelido
             </label>
             <div className={styles.inputContainer}>
-              <Mail className={styles.icon} size={20} />
+              <User className={styles.icon} size={20} />
               <input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
+                id="identifier"
+                type="text"
+                placeholder="seu@email.com ou seunick"
                 className={styles.input}
-                {...register("email")}
+                {...register("identifier")}
               />
             </div>
-            {errors.email && (
-              <p className={styles.errorText}>{errors.email.message}</p>
+            {errors.identifier && (
+              <p className={styles.errorText}>{errors.identifier.message}</p>
             )}
           </div>
 
