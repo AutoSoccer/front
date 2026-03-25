@@ -1,12 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Phone, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { registerSchema, type RegisterFormInputs } from "@/lib/schemas/auth";
+import { authService } from "@/services/authService";
 import styles from "./register.module.css";
 
 export default function RegisterPage() {
@@ -22,9 +23,15 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: RegisterFormInputs) => {
-    // Simulando o delay de uma requisição
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Cadastro efetuado com sucesso:", data);
+    try {
+      const response = await authService.register(data);
+      console.log("Cadastro efetuado com sucesso:", response);
+      alert("Cadastro efetuado com sucesso! Redirecionando para login...");
+      // TODO: Redirecionar para o /auth/login
+    } catch (error) {
+      console.error("Erro no cadastro:", error);
+      alert("Falha ao realizar cadastro na API.");
+    }
   };
 
   return (
@@ -53,6 +60,25 @@ export default function RegisterPage() {
           </div>
 
           <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="nickname">
+              Apelido
+            </label>
+            <div className={styles.inputContainer}>
+              <User className={styles.icon} size={20} />
+              <input
+                id="nickname"
+                type="text"
+                placeholder="Seu apelido"
+                className={styles.input}
+                {...register("nickname")}
+              />
+            </div>
+            {errors.nickname && (
+              <p className={styles.errorText}>{errors.nickname.message}</p>
+            )}
+          </div>
+
+          <div className={styles.inputGroup}>
             <label className={styles.label} htmlFor="email">
               E-mail
             </label>
@@ -68,6 +94,25 @@ export default function RegisterPage() {
             </div>
             {errors.email && (
               <p className={styles.errorText}>{errors.email.message}</p>
+            )}
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="phone_number">
+              Telefone
+            </label>
+            <div className={styles.inputContainer}>
+              <Phone className={styles.icon} size={20} />
+              <input
+                id="phone_number"
+                type="tel"
+                placeholder="(00) 00000-0000"
+                className={styles.input}
+                {...register("phone_number")}
+              />
+            </div>
+            {errors.phone_number && (
+              <p className={styles.errorText}>{errors.phone_number.message}</p>
             )}
           </div>
 
