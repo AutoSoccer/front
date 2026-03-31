@@ -10,14 +10,13 @@ export const api = axios.create({
 });
 
 // Interceptor de Requisição (Request)
-// Útil para injetar o token de acesso (Bearer token) do usuário autenticado logado
+// Injeta o Bearer token do usuário autenticado
 api.interceptors.request.use(
   (config) => {
-    // Exemplo de captura de token no lado do client:
-    // const token = localStorage.getItem('access_token'); // Cuidado com uso no SSR (Server Components)
-    // if (token && config.headers) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -32,10 +31,10 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Tratamento global de erros
-    if (error.response?.status === 401) {
-      // Regra de logout automático ou redirecionamento
-      // console.warn('Não autorizado, redirecionando para login...');
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/auth/login';
     }
     return Promise.reject(error);
   }
