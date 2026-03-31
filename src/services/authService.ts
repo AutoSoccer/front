@@ -8,6 +8,11 @@ export const authService = {
     return response.data;
   },
 
+  getMe: async () => {
+    const response = await api.get("/auth/me");
+    return response.data;
+  },
+
   register: async (data: RegisterFormInputs) => {
     // O backend provavelmente não precisa do confirmPassword, então enviamos apenas o necessário
     const payload = {

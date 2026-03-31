@@ -6,12 +6,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { useAuth } from "@/hooks/useAuth";
 import { loginSchema, type LoginFormInputs } from "@/lib/schemas/auth";
-import { authService } from "@/services/authService";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -23,20 +25,10 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
-      const response = await authService.login(data);
-      console.log("Login efetuado com sucesso:", response);
-      alert("Login efetuado com sucesso!");
-      // TODO: Redirecionar pra Home
-      if (response?.token) {
-        localStorage.setItem("token", response.token);
-        // Opcional: já deixei preparado para salvar os dados do usuário se você quiser
-        if (response?.user) {
-          localStorage.setItem("user", JSON.stringify(response.user));
-        }
-      }
-    } catch (error) {
-      console.error("Erro no login:", error);
-      alert("Falha ao realizar login. Verifique suas credenciais na API.");
+      setError(null);
+      await login(data);
+    } catch {
+      setError("Falha ao realizar login. Verifique suas credenciais.");
     }
   };
 
@@ -91,6 +83,8 @@ export default function LoginPage() {
               <p className={styles.errorText}>{errors.password.message}</p>
             )}
           </div>
+
+          {error && <p className={styles.errorText}>{error}</p>}
 
           <button
             type="submit"

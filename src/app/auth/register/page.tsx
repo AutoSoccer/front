@@ -6,13 +6,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { useAuth } from "@/hooks/useAuth";
 import { registerSchema, type RegisterFormInputs } from "@/lib/schemas/auth";
-import { authService } from "@/services/authService";
 import styles from "./register.module.css";
 
 export default function RegisterPage() {
+  const { register: registerUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -24,13 +26,10 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterFormInputs) => {
     try {
-      const response = await authService.register(data);
-      console.log("Cadastro efetuado com sucesso:", response);
-      alert("Cadastro efetuado com sucesso! Redirecionando para login...");
-      // TODO: Redirecionar para o /auth/login
-    } catch (error) {
-      console.error("Erro no cadastro:", error);
-      alert("Falha ao realizar cadastro na API.");
+      setError(null);
+      await registerUser(data);
+    } catch {
+      setError("Falha ao realizar cadastro. Tente novamente.");
     }
   };
 
@@ -173,6 +172,8 @@ export default function RegisterPage() {
               </p>
             )}
           </div>
+
+          {error && <p className={styles.errorText}>{error}</p>}
 
           <button
             type="submit"
