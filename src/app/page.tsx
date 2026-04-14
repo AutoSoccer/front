@@ -1,6 +1,6 @@
 "use client";
 
-import { LogIn, Trophy, UserPlus } from "lucide-react";
+import { LogIn, Store, Trophy, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -28,6 +28,10 @@ export default function HomePage() {
           <p className={styles.subtitle}>Pronto pra mais uma partida?</p>
 
           <div className={styles.actions}>
+            <Link href="/game" className={styles.buttonPrimary}>
+              <Store size={18} />
+              Ir para Loja
+            </Link>
             <Link href="/profile" className={styles.buttonPrimary}>
               Meu Perfil
             </Link>
