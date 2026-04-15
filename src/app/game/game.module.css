@@ -1,4 +1,5 @@
 .main {
+<<<<<<< Updated upstream
   --bg-top: #fff2db;
   --bg-bottom: #f6f1e7;
   --ink: #2b2116;
@@ -40,20 +41,78 @@
   justify-content: space-between;
   gap: 1rem;
   align-items: flex-start;
+=======
+  --bg: #3ca7ff;
+  --panel: #f9f9fb;
+  --ink: #10253d;
+  --ink-soft: #5d7184;
+  --line: #b9cde0;
+  --slot-line: #d6deea;
+
+  min-height: 100vh;
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  background:
+    radial-gradient(circle at 11% 8%, rgba(255, 255, 255, 0.35), transparent 30%),
+    radial-gradient(circle at 88% 92%, rgba(255, 255, 255, 0.25), transparent 28%),
+    linear-gradient(160deg, #56b4ff, var(--bg));
+  color: var(--ink);
+}
+
+.topBar {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.9rem;
+  align-items: center;
+>>>>>>> Stashed changes
 }
 
 .kicker {
   margin: 0;
+<<<<<<< Updated upstream
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--ink-soft);
+=======
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #f2f8ff;
+>>>>>>> Stashed changes
 }
 
 .title {
   margin: 0.2rem 0 0;
+<<<<<<< Updated upstream
   font-size: clamp(1.25rem, 2vw, 1.7rem);
   line-height: 1.1;
+=======
+  color: #ffffff;
+  font-size: clamp(1.25rem, 2.2vw, 2rem);
+}
+
+.topBarActions {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.coinBox {
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #fff;
+  font-weight: 800;
+  background: rgba(9, 35, 61, 0.2);
+>>>>>>> Stashed changes
 }
 
 .rotateButton {
@@ -64,6 +123,7 @@
   gap: 0.45rem;
   align-items: center;
   font-weight: 700;
+<<<<<<< Updated upstream
   color: #fff;
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   cursor: pointer;
@@ -125,10 +185,35 @@
 
 .itemName {
   font-weight: 700;
+=======
+  color: #0f2740;
+  background: #ffe48f;
+  cursor: pointer;
+}
+
+.gameLayout {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 1rem;
+  align-items: start;
+}
+
+.boardSection {
+  border-radius: 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 1rem;
+  box-shadow:
+    0 14px 36px rgba(16, 37, 61, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+>>>>>>> Stashed changes
 }
 
 .boardTitle {
   margin: 0;
+<<<<<<< Updated upstream
   font-size: 1.25rem;
 }
 
@@ -156,10 +241,112 @@
   border-color: var(--drop);
   background: var(--drop-soft);
   transform: translateY(-2px);
+=======
+  font-size: 1.15rem;
+}
+
+.boardHint {
+  margin: 0.35rem 0 0.8rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.boardStage {
+  position: relative;
+  min-height: 420px;
+  border-radius: 18px;
+  border: 2px solid #a9d7b8;
+  background: linear-gradient(180deg, #4ec668, #31a24f);
+  overflow: hidden;
+}
+
+.pitchStripeHorizontal,
+.pitchStripeVertical,
+.pitchCircle {
+  position: absolute;
+  pointer-events: none;
+}
+
+.pitchStripeHorizontal {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.7);
+  transform: translateY(-50%);
+}
+
+.pitchStripeVertical {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.7);
+  transform: translateX(-50%);
+}
+
+.pitchCircle {
+  width: 140px;
+  height: 140px;
+  border: 3px solid rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dropLane {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.75rem;
+  align-items: stretch;
+}
+
+.boardBox {
+  border-radius: 12px;
+  border: 2px dashed var(--slot-line);
+  background: rgba(255, 255, 255, 0.85);
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  text-align: center;
+  min-height: 100px;
+  transition: transform 0.18s ease;
+}
+
+.lane1 {
+  border-color: #8dd5ff;
+}
+
+.lane2 {
+  border-color: #b89dff;
+}
+
+.lane3 {
+  border-color: #ffb682;
+}
+
+.lane4 {
+  border-color: #ff97a8;
+}
+
+.lane5 {
+  border-color: #8ee3b8;
+}
+
+.boardBoxActive {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 37, 61, 0.16);
+>>>>>>> Stashed changes
 }
 
 .boardItem {
   display: grid;
+<<<<<<< Updated upstream
   gap: 0.25rem;
   text-align: center;
 }
@@ -195,10 +382,113 @@
 
 @media (max-width: 900px) {
   .boardGrid {
+=======
+  gap: 0.2rem;
+  justify-items: center;
+}
+
+.dropText {
+  color: #4f5d6f;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.itemIcon {
+  font-size: 1.2rem;
+}
+
+.itemName {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.marketSection {
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  padding: 0.8rem;
+  box-shadow: 0 10px 24px rgba(16, 37, 61, 0.14);
+}
+
+.marketHeader {
+  display: grid;
+  gap: 0.2rem;
+  margin-bottom: 0.6rem;
+}
+
+.marketTitle {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.marketHint {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+}
+
+.marketGrid {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.marketSlot,
+.marketSlotEmpty {
+  min-height: 82px;
+  border-radius: 12px;
+}
+
+.marketSlot {
+  border: 1px solid #dce4ef;
+  background: linear-gradient(180deg, #fefefe, #eef3fa);
+  cursor: grab;
+  display: grid;
+  place-content: center;
+  gap: 0.3rem;
+  text-align: center;
+}
+
+.marketSlot:active {
+  cursor: grabbing;
+}
+
+.marketSlotEmpty {
+  border: 2px dashed #cfdae8;
+  background: #f6f9ff;
+  display: grid;
+  place-items: center;
+  color: #8b98ab;
+  font-size: 0.8rem;
+}
+
+.rotateButton:focus-visible,
+.marketSlot:focus-visible {
+  outline: 3px solid #fff3b9;
+  outline-offset: 2px;
+}
+
+.liveMessage {
+  margin: 0.7rem 0 0;
+  color: #e9f4ff;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 940px) {
+  .gameLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .marketSection {
+    order: -1;
+  }
+
+  .marketGrid {
+>>>>>>> Stashed changes
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
+<<<<<<< Updated upstream
 @media (max-width: 640px) {
   .main {
     padding: 0.9rem;
@@ -211,13 +501,40 @@
 
   .rotateButton {
     align-self: flex-start;
+=======
+@media (max-width: 700px) {
+  .main {
+    padding: 0.85rem;
+  }
+
+  .topBar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topBarActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .boardStage {
+    min-height: 360px;
+  }
+
+  .dropLane {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+>>>>>>> Stashed changes
   }
 
   .marketGrid {
     grid-template-columns: 1fr;
   }
+<<<<<<< Updated upstream
 
   .boardGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+=======
+>>>>>>> Stashed changes
 }
