@@ -1,396 +1,157 @@
 .main {
-<<<<<<< Updated upstream
-  --bg-top: #fff2db;
-  --bg-bottom: #f6f1e7;
-  --ink: #2b2116;
-  --ink-soft: #665743;
-  --card: #fffaf0;
-  --accent: #d95d39;
-  --accent-strong: #ba4421;
-  --stroke: #d7c2a6;
-  --drop: #1f7a4f;
-  --drop-soft: #e6f7ec;
-
   min-height: 100vh;
-  padding: 1.5rem;
-  display: grid;
-  gap: 1.25rem;
-  align-content: start;
+  padding: 1.4rem;
   background:
-    radial-gradient(circle at 10% 12%, rgba(217, 93, 57, 0.18), transparent 32%),
-    radial-gradient(circle at 85% 88%, rgba(31, 122, 79, 0.18), transparent 26%),
-    linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
-  color: var(--ink);
+    radial-gradient(circle at 20% 20%, rgba(45, 120, 40, 0.25), transparent 35%),
+    radial-gradient(circle at 80% 80%, rgba(21, 80, 26, 0.24), transparent 35%),
+    repeating-linear-gradient(
+      90deg,
+      #1d6f23 0,
+      #1d6f23 22px,
+      #267f2c 22px,
+      #267f2c 44px
+    );
 }
 
-.marketSection,
-.boardSection {
-  width: min(980px, 100%);
-  margin: 0 auto;
-  background: var(--card);
-  border: 1px solid var(--stroke);
-  border-radius: 20px;
-  padding: 1rem;
-  box-shadow:
-    0 8px 30px rgba(43, 33, 22, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
-}
-
-.marketHeader {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-start;
-=======
-  --bg: #3ca7ff;
-  --panel: #f9f9fb;
-  --ink: #10253d;
-  --ink-soft: #5d7184;
-  --line: #b9cde0;
-  --slot-line: #d6deea;
-
-  min-height: 100vh;
-  padding: 1.25rem;
-  display: grid;
-  gap: 1rem;
-  align-content: start;
-  background:
-    radial-gradient(circle at 11% 8%, rgba(255, 255, 255, 0.35), transparent 30%),
-    radial-gradient(circle at 88% 92%, rgba(255, 255, 255, 0.25), transparent 28%),
-    linear-gradient(160deg, #56b4ff, var(--bg));
-  color: var(--ink);
-}
-
-.topBar {
-  width: min(1120px, 100%);
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  gap: 0.9rem;
-  align-items: center;
->>>>>>> Stashed changes
-}
-
-.kicker {
-  margin: 0;
-<<<<<<< Updated upstream
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
-=======
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #f2f8ff;
->>>>>>> Stashed changes
-}
-
-.title {
-  margin: 0.2rem 0 0;
-<<<<<<< Updated upstream
-  font-size: clamp(1.25rem, 2vw, 1.7rem);
-  line-height: 1.1;
-=======
-  color: #ffffff;
-  font-size: clamp(1.25rem, 2.2vw, 2rem);
-}
-
-.topBarActions {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-}
-
-.coinBox {
-  border: 2px solid rgba(255, 255, 255, 0.65);
-  border-radius: 999px;
-  padding: 0.45rem 0.8rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: #fff;
-  font-weight: 800;
-  background: rgba(9, 35, 61, 0.2);
->>>>>>> Stashed changes
-}
-
-.rotateButton {
-  border: 0;
-  border-radius: 999px;
-  padding: 0.55rem 0.95rem;
-  display: inline-flex;
-  gap: 0.45rem;
-  align-items: center;
-  font-weight: 700;
-<<<<<<< Updated upstream
-  color: #fff;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  cursor: pointer;
-}
-
-.rotateButton:focus-visible,
-.marketSlot:focus-visible {
-  outline: 3px solid #ffd291;
-  outline-offset: 2px;
-}
-
-.marketHint,
-.boardHint {
-  margin: 0.75rem 0;
-  color: var(--ink-soft);
-  font-size: 0.95rem;
-}
-
-.marketGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.8rem;
-}
-
-.marketSlot,
-.marketSlotEmpty {
-  min-height: 120px;
-  border-radius: 14px;
-}
-
-.marketSlot {
-  border: 1px solid #d2b79a;
-  background: linear-gradient(165deg, #fff, #f9eddc);
-  cursor: grab;
-  display: grid;
-  place-content: center;
-  gap: 0.4rem;
-  text-align: center;
-  transition: transform 0.18s ease;
-}
-
-.marketSlot:active {
-  cursor: grabbing;
-  transform: scale(0.98);
-}
-
-.marketSlotEmpty {
-  border: 2px dashed #d5c0a8;
-  background: #fff5e8;
-  display: grid;
-  place-items: center;
-  color: #a0886a;
-  font-size: 0.9rem;
-}
-
-.itemIcon {
-  font-size: 1.3rem;
-}
-
-.itemName {
-  font-weight: 700;
-=======
-  color: #0f2740;
-  background: #ffe48f;
-  cursor: pointer;
-}
-
-.gameLayout {
-  width: min(1120px, 100%);
+.gameShell {
+  width: min(1240px, 100%);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 1rem;
   align-items: start;
 }
 
 .boardSection {
-  border-radius: 20px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  padding: 1rem;
-  box-shadow:
-    0 14px 36px rgba(16, 37, 61, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
->>>>>>> Stashed changes
+  background: rgba(0, 74, 0, 0.28);
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  padding: 0.8rem;
 }
 
 .boardTitle {
   margin: 0;
-<<<<<<< Updated upstream
-  font-size: 1.25rem;
-}
-
-.boardGrid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.7rem;
-}
-
-.boardBox {
-  min-height: 110px;
-  border-radius: 14px;
-  border: 2px dashed #90b89d;
-  background: #f5fff8;
-  display: grid;
-  place-items: center;
-  padding: 0.5rem;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.boardBoxActive {
-  border-color: var(--drop);
-  background: var(--drop-soft);
-  transform: translateY(-2px);
-=======
-  font-size: 1.15rem;
+  color: #f2fff2;
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
 .boardHint {
-  margin: 0.35rem 0 0.8rem;
-  color: var(--ink-soft);
-  font-size: 0.92rem;
+  margin: 0.3rem 0 0.6rem;
+  color: #daf7dc;
+  font-size: 0.9rem;
 }
 
 .boardStage {
   position: relative;
-  min-height: 420px;
-  border-radius: 18px;
-  border: 2px solid #a9d7b8;
-  background: linear-gradient(180deg, #4ec668, #31a24f);
+  min-height: 560px;
+  border-radius: 6px;
+  border: 4px solid #f2f6ee;
+  background:
+    linear-gradient(
+      90deg,
+      #0a7f0b 0,
+      #0a7f0b 16.66%,
+      #077208 16.66%,
+      #077208 33.32%,
+      #0a7f0b 33.32%,
+      #0a7f0b 50%,
+      #077208 50%,
+      #077208 66.66%,
+      #0a7f0b 66.66%,
+      #0a7f0b 83.32%,
+      #077208 83.32%,
+      #077208 100%
+    );
   overflow: hidden;
 }
 
-.pitchStripeHorizontal,
-.pitchStripeVertical,
+.goalNet {
+  position: absolute;
+  top: 28%;
+  left: 1.1rem;
+  width: 38px;
+  height: 45%;
+  border: 2px solid #eaf4e2;
+  background-image:
+    linear-gradient(0deg, rgba(234, 244, 226, 0.75) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 244, 226, 0.75) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
 .pitchCircle {
   position: absolute;
-  pointer-events: none;
-}
-
-.pitchStripeHorizontal {
+  right: -84px;
   top: 50%;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.7);
   transform: translateY(-50%);
-}
-
-.pitchStripeVertical {
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: rgba(255, 255, 255, 0.7);
-  transform: translateX(-50%);
-}
-
-.pitchCircle {
-  width: 140px;
-  height: 140px;
-  border: 3px solid rgba(255, 255, 255, 0.75);
+  width: 300px;
+  height: 300px;
+  border: 6px solid rgba(248, 250, 248, 0.86);
   border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+}
+
+.pitchQuarterArc {
+  position: absolute;
+  left: 1.05rem;
+  top: 24%;
+  width: 115px;
+  height: 52%;
+  border: 5px solid rgba(248, 250, 248, 0.86);
+  border-left: 0;
 }
 
 .dropLane {
-  position: relative;
-  z-index: 1;
-  height: 100%;
+  position: absolute;
+  z-index: 2;
+  inset: 0;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.55rem;
-  padding: 0.75rem;
-  align-items: stretch;
+  gap: 0.4rem;
+  padding: 0.35rem;
 }
 
 .boardBox {
-  border-radius: 12px;
-  border: 2px dashed var(--slot-line);
-  background: rgba(255, 255, 255, 0.85);
+  min-height: 140px;
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background: rgba(0, 0, 0, 0.1);
   display: grid;
   place-items: center;
-  padding: 0.5rem;
+  padding: 0.35rem;
   text-align: center;
-  min-height: 100px;
-  transition: transform 0.18s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .lane1 {
-  border-color: #8dd5ff;
+  border-color: #2e7eff;
 }
 
 .lane2 {
-  border-color: #b89dff;
+  border-color: #a63cff;
 }
 
 .lane3 {
-  border-color: #ffb682;
+  border-color: #ff0030;
 }
 
 .lane4 {
-  border-color: #ff97a8;
+  border-color: #2e7eff;
 }
 
 .lane5 {
-  border-color: #8ee3b8;
+  border-color: #a63cff;
 }
 
 .boardBoxActive {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(16, 37, 61, 0.16);
->>>>>>> Stashed changes
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75);
 }
 
 .boardItem {
   display: grid;
-<<<<<<< Updated upstream
-  gap: 0.25rem;
-  text-align: center;
-}
-
-.dropText {
-  color: #5d8b6d;
-  font-weight: 600;
-}
-
-.legend {
-  margin-top: 0.75rem;
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.legendItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 999px;
-  background: #f4e8d8;
-  color: #5d4a35;
-  font-size: 0.85rem;
-}
-
-.liveMessage {
-  margin-top: 0.75rem;
-  color: #6b553f;
-  font-size: 0.92rem;
-}
-
-@media (max-width: 900px) {
-  .boardGrid {
-=======
   gap: 0.2rem;
   justify-items: center;
-}
-
-.dropText {
-  color: #4f5d6f;
-  font-size: 0.85rem;
-  font-weight: 700;
+  color: #f4fff4;
 }
 
 .itemIcon {
@@ -398,54 +159,46 @@
 }
 
 .itemName {
+  font-weight: 700;
+  font-size: 0.84rem;
+}
+
+.dropText {
+  color: rgba(235, 255, 236, 0.95);
   font-size: 0.9rem;
   font-weight: 700;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
 }
 
 .marketSection {
-  border-radius: 16px;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  padding: 0.8rem;
-  box-shadow: 0 10px 24px rgba(16, 37, 61, 0.14);
-}
-
-.marketHeader {
+  background: transparent;
   display: grid;
-  gap: 0.2rem;
-  margin-bottom: 0.6rem;
-}
-
-.marketTitle {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.marketHint {
-  margin: 0;
-  color: var(--ink-soft);
-  font-size: 0.86rem;
+  gap: 0.8rem;
 }
 
 .marketGrid {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.75rem;
 }
 
 .marketSlot,
 .marketSlotEmpty {
-  min-height: 82px;
-  border-radius: 12px;
+  min-height: 108px;
+  border-radius: 18px;
 }
 
 .marketSlot {
-  border: 1px solid #dce4ef;
-  background: linear-gradient(180deg, #fefefe, #eef3fa);
+  border: 0;
+  padding: 0.48rem;
+  background: linear-gradient(150deg, #027943, #006c40);
+  color: #e6ffee;
   cursor: grab;
   display: grid;
-  place-content: center;
-  gap: 0.3rem;
-  text-align: center;
+  grid-template-columns: 64px 1fr;
+  gap: 0.42rem;
+  align-items: center;
+  text-align: left;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.26);
 }
 
 .marketSlot:active {
@@ -453,88 +206,157 @@
 }
 
 .marketSlotEmpty {
-  border: 2px dashed #cfdae8;
-  background: #f6f9ff;
+  border: 2px dashed rgba(211, 239, 207, 0.7);
+  color: #ecffe8;
+  background: rgba(0, 104, 59, 0.55);
   display: grid;
   place-items: center;
-  color: #8b98ab;
-  font-size: 0.8rem;
+  font-size: 0.86rem;
+}
+
+.cardAvatar {
+  width: 64px;
+  height: 84px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #9fd8ff, #4a9dde);
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  box-shadow: inset 0 -8px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cardStats {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.statsLine {
+  font-size: 0.58rem;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.marketFooter {
+  border-radius: 16px;
+  padding: 0.8rem;
+  background: #0f8c3a;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.title {
+  margin: 0;
+  color: #edffe7;
+  font-size: 1.18rem;
+}
+
+.marketHint {
+  margin: 0;
+  color: #d7ffd1;
+  font-size: 0.85rem;
+}
+
+.rotateButton {
+  border: 0;
+  border-radius: 14px;
+  padding: 0.7rem 0.7rem;
+  background: transparent;
+  color: #ffb300;
+  font-size: 2rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.rotateButton svg {
+  flex-shrink: 0;
+}
+
+.coinBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  color: #f3ffe8;
+  font-size: 2.2rem;
+  font-weight: 500;
+}
+
+.kicker {
+  display: none;
+}
+
+.marketHeader {
+  display: none;
+}
+
+.liveMessage {
+  margin: 0.65rem 0 0;
+  color: #edffe8;
+  font-size: 0.9rem;
 }
 
 .rotateButton:focus-visible,
 .marketSlot:focus-visible {
-  outline: 3px solid #fff3b9;
-  outline-offset: 2px;
+  outline: 3px solid #ffd96a;
+  outline-offset: 3px;
 }
 
-.liveMessage {
-  margin: 0.7rem 0 0;
-  color: #e9f4ff;
-  font-size: 0.92rem;
-}
-
-@media (max-width: 940px) {
-  .gameLayout {
+@media (max-width: 980px) {
+  .gameShell {
     grid-template-columns: 1fr;
   }
 
   .marketSection {
-    order: -1;
+    order: 2;
   }
 
   .marketGrid {
->>>>>>> Stashed changes
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-}
 
-<<<<<<< Updated upstream
-@media (max-width: 640px) {
-  .main {
-    padding: 0.9rem;
+  .marketSlot {
+    min-height: 140px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
   }
 
-  .marketHeader {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .rotateButton {
-    align-self: flex-start;
-=======
-@media (max-width: 700px) {
-  .main {
-    padding: 0.85rem;
-  }
-
-  .topBar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .topBarActions {
-    width: 100%;
-    justify-content: space-between;
+  .cardStats {
+    justify-items: center;
   }
 
   .boardStage {
-    min-height: 360px;
+    min-height: 470px;
+  }
+}
+
+@media (max-width: 700px) {
+  .main {
+    padding: 0.8rem;
+  }
+
+  .boardStage {
+    min-height: 390px;
   }
 
   .dropLane {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-content: start;
->>>>>>> Stashed changes
   }
 
   .marketGrid {
     grid-template-columns: 1fr;
   }
-<<<<<<< Updated upstream
 
-  .boardGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .rotateButton {
+    font-size: 1.4rem;
   }
-=======
->>>>>>> Stashed changes
+
+  .coinBox {
+    font-size: 1.75rem;
+  }
 }
