@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw, Shield, Swords } from "lucide-react";
+import { Coins, RefreshCw } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import styles from "./game.module.css";
@@ -45,6 +45,7 @@ export default function GamePage() {
   const [boardSlots, setBoardSlots] = useState<BoardSlot[]>(createBoardSlots);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [message, setMessage] = useState("Arraste um item do mercado para uma caixa no campo.");
+  const [coins] = useState(4);
 
   const availableCount = useMemo(
     () => marketItems.filter((item) => item !== null).length,
@@ -110,101 +111,104 @@ export default function GamePage() {
 
   return (
     <main className={styles.main}>
-      <section className={styles.marketSection} aria-labelledby="market-title">
-        <div className={styles.marketHeader}>
-          <div>
-            <p className={styles.kicker}>Mercado</p>
-            <h1 id="market-title" className={styles.title}>
-              Escolha seus elementos
-            </h1>
+      <div className={styles.gameShell}>
+        <section className={styles.boardSection} aria-labelledby="board-title">
+          <h2 id="board-title" className={styles.boardTitle}>
+            Campo Central
+          </h2>
+          <p className={styles.boardHint}>Arraste um item para uma das 5 caixas do campo.</p>
+
+          <div className={styles.boardStage}>
+            <div className={styles.goalNet} aria-hidden="true" />
+            <div className={styles.pitchCircle} aria-hidden="true" />
+            <div className={styles.pitchQuarterArc} aria-hidden="true" />
+
+            <div className={styles.dropLane}>
+              {boardSlots.map((slot, index) => (
+                <div
+                  key={slot.id}
+                  className={`${styles.boardBox} ${styles[`lane${index + 1}`]} ${dragOverId === slot.id ? styles.boardBoxActive : ""}`}
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    setDragOverId(slot.id);
+                  }}
+                  onDragLeave={() => setDragOverId(null)}
+                  onDrop={(event) => handleDrop(event, slot.id)}
+                  aria-label={`Caixa ${index + 1} do campo`}
+                >
+                  {slot.item ? (
+                    <div className={styles.boardItem}>
+                      <span className={styles.itemIcon}>{slot.item.icon}</span>
+                      <span className={styles.itemName}>{slot.item.name}</span>
+                    </div>
+                  ) : (
+                    <span className={styles.dropText}>Caixa {index + 1}</span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <button
-            type="button"
-            className={styles.rotateButton}
-            onClick={handleRotateMarket}
-            aria-label="Rotacionar mercado"
-          >
-            <RefreshCw size={16} />
-            Rotacionar
-          </button>
-        </div>
+          <p className={styles.liveMessage} role="status" aria-live="polite">
+            {message}
+          </p>
+        </section>
 
-        <p className={styles.marketHint}>Itens disponiveis: {availableCount} / 3</p>
+        <aside className={styles.marketSection} aria-labelledby="market-title">
+          <div className={styles.marketGrid}>
+            {marketItems.map((item, index) => {
+              if (!item) {
+                return (
+                  <div key={`empty-${index + 1}`} className={styles.marketSlotEmpty}>
+                    <span>Placeholder vazio</span>
+                  </div>
+                );
+              }
 
-        <div className={styles.marketGrid}>
-          {marketItems.map((item, index) => {
-            if (!item) {
               return (
-                <div key={`empty-${index + 1}`} className={styles.marketSlotEmpty}>
-                  <span>Espaco vazio</span>
-                </div>
+                <button
+                  key={item.id}
+                  type="button"
+                  draggable
+                  onDragStart={(event) => handleDragStart(event, item.id)}
+                  className={styles.marketSlot}
+                  aria-label={`Arrastar ${item.name} para o campo`}
+                >
+                  <div className={styles.cardAvatar}>{item.icon}</div>
+                  <div className={styles.cardStats}>
+                    <span className={styles.statsLine}>ATK - 26&nbsp;&nbsp; DRI - 26</span>
+                    <span className={styles.statsLine}>VEL - 26&nbsp;&nbsp; MAR - 26</span>
+                    <span className={styles.statsLine}>DEF - 26&nbsp;&nbsp; FIS - 26</span>
+                    <span className={styles.statsLine}>HAB - Chute Potente</span>
+                  </div>
+                </button>
               );
-            }
+            })}
+          </div>
 
-            return (
-              <button
-                key={item.id}
-                type="button"
-                draggable
-                onDragStart={(event) => handleDragStart(event, item.id)}
-                className={styles.marketSlot}
-                aria-label={`Arrastar ${item.name} para o campo`}
-              >
-                <span className={styles.itemIcon}>{item.icon}</span>
-                <span className={styles.itemName}>{item.name}</span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+          <div className={styles.marketFooter}>
+            <h1 id="market-title" className={styles.title}>
+              Mercado
+            </h1>
+            <p className={styles.marketHint}>Itens disponíveis: {availableCount} / 3</p>
 
-      <section className={styles.boardSection} aria-labelledby="board-title">
-        <h2 id="board-title" className={styles.boardTitle}>
-          Campo Central
-        </h2>
-        <p className={styles.boardHint}>Segure e arraste um item do mercado para uma das 5 caixas.</p>
-
-        <div className={styles.boardGrid}>
-          {boardSlots.map((slot, index) => (
-            <div
-              key={slot.id}
-              className={`${styles.boardBox} ${dragOverId === slot.id ? styles.boardBoxActive : ""}`}
-              onDragOver={(event) => {
-                event.preventDefault();
-                setDragOverId(slot.id);
-              }}
-              onDragLeave={() => setDragOverId(null)}
-              onDrop={(event) => handleDrop(event, slot.id)}
-              aria-label={`Caixa ${index + 1} do campo`}
+            <button
+              type="button"
+              className={styles.rotateButton}
+              onClick={handleRotateMarket}
+              aria-label="Atualizar mercado"
             >
-              {slot.item ? (
-                <div className={styles.boardItem}>
-                  <span className={styles.itemIcon}>{slot.item.icon}</span>
-                  <span className={styles.itemName}>{slot.item.name}</span>
-                </div>
-              ) : (
-                <span className={styles.dropText}>Solte aqui</span>
-              )}
+              <RefreshCw size={24} />
+              Atualizar Mercado
+            </button>
+
+            <div className={styles.coinBox} aria-label={`Saldo atual: ${coins} moedas`}>
+              <span>{coins}</span>
+              <Coins size={30} />
             </div>
-          ))}
-        </div>
-
-        <div className={styles.legend}>
-          <span className={styles.legendItem}>
-            <Swords size={14} />
-            Ataque
-          </span>
-          <span className={styles.legendItem}>
-            <Shield size={14} />
-            Defesa
-          </span>
-        </div>
-
-        <p className={styles.liveMessage} role="status" aria-live="polite">
-          {message}
-        </p>
-      </section>
+          </div>
+        </aside>
+      </div>
     </main>
   );
 }
