@@ -55,3 +55,26 @@ export const registerSchema = z
   });
 
 export type RegisterFormInputs = z.infer<typeof registerSchema>;
+
+export const profileSchema = z.object({
+  name: z
+    .string()
+    .min(2, "O nome é muito curto.")
+    .regex(NAME_REGEX, "O nome deve conter apenas letras."),
+  nickname: z
+    .string()
+    .regex(
+      NICKNAME_REGEX,
+      "O apelido deve ter de 2 a 20 caracteres (letras, números e _).",
+    ),
+  email: z
+    .string()
+    .min(1, "O e-mail é obrigatório.")
+    .regex(EMAIL_REGEX, "E-mail inválido."),
+  phone_number: z
+    .string()
+    .regex(PHONE_REGEX, "Telefone inválido. Use o formato (00) 00000-0000.")
+    .or(z.literal("")),
+});
+
+export type ProfileFormInputs = z.infer<typeof profileSchema>;
