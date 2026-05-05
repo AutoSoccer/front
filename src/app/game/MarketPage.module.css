@@ -1,128 +1,137 @@
 .main {
   min-height: 100vh;
-  padding: 1.4rem;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(45, 120, 40, 0.25), transparent 35%),
-    radial-gradient(circle at 80% 80%, rgba(21, 80, 26, 0.24), transparent 35%),
-    repeating-linear-gradient(
-      90deg,
-      #1d6f23 0,
-      #1d6f23 22px,
-      #267f2c 22px,
-      #267f2c 44px
-    );
+  position: relative;
+  background-image: url("/scenery.svg");
+  background-size: cover;
+  background-position: center;
+  padding: 5rem 1.5rem 1.5rem;
+}
+
+.brandFloating {
+  position: absolute;
+  top: 1.4rem;
+  left: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  color: #ffe066;
+  font-weight: 900;
+  font-size: 1.7rem;
+  text-shadow:
+    -3px -3px 0 #1f2937,
+    3px -3px 0 #1f2937,
+    -3px 3px 0 #1f2937,
+    3px 3px 0 #1f2937,
+    0 6px 0 #1f2937;
+  line-height: 1;
+}
+
+.brandSub {
+  display: block;
+  font-size: 1.2rem;
+  margin-top: 0.2rem;
 }
 
 .gameShell {
-  width: min(1240px, 100%);
+  width: min(1280px, 100%);
   margin: 0 auto;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 1rem;
+  gap: 1.2rem;
   align-items: start;
 }
 
 .boardSection {
-  background: rgba(0, 74, 0, 0.28);
-  border: 2px solid rgba(255, 255, 255, 0.22);
-  border-radius: 8px;
-  padding: 0.8rem;
+  background: #ffffff;
+  border: 4px solid var(--border-arcade);
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .boardHeader {
-  display: grid;
-  gap: 0.65rem;
-  margin-bottom: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
 }
 
 .boardTitle {
   margin: 0;
-  color: #f2fff2;
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-.boardHint {
-  margin: 0.3rem 0 0;
-  color: #daf7dc;
-  font-size: 0.9rem;
+  color: var(--text-strong);
+  font-size: 1.25rem;
+  font-weight: 800;
 }
 
 .matchHud {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.5rem;
+  gap: 0.6rem;
+  width: 100%;
 }
 
 .hudItem {
+  border: 3px solid var(--border-arcade);
+  background: #ffffff;
   border-radius: 12px;
-  border: 1px solid rgba(227, 255, 232, 0.25);
-  background:
-    radial-gradient(circle at 20% 18%, rgba(142, 255, 183, 0.2), transparent 36%),
-    linear-gradient(160deg, rgba(20, 106, 46, 0.88), rgba(8, 70, 36, 0.95));
-  padding: 0.45rem 0.55rem;
-  display: grid;
-  gap: 0.18rem;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+  padding: 0.5rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
 }
 
 .hudLabel {
-  font-size: 0.63rem;
-  line-height: 1;
+  font-size: 0.65rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: rgba(218, 253, 225, 0.86);
-  font-weight: 700;
+  color: var(--text-muted);
+  font-weight: 800;
 }
 
 .hudValue {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  font-size: 1rem;
+  gap: 0.3rem;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--text-strong);
   line-height: 1;
-  font-weight: 800;
-  color: #f7fff7;
 }
 
-.hudValue svg {
-  color: #ffd66d;
+.hudValue :global(.anticon) {
+  color: var(--brand-primary);
+  font-size: 1rem;
 }
 
 .boardStage {
   position: relative;
-  min-height: 560px;
-  border-radius: 6px;
-  border: 4px solid #f2f6ee;
+  min-height: 460px;
+  border-radius: 10px;
+  border: 4px solid var(--border-arcade);
   background:
-    linear-gradient(
+    repeating-linear-gradient(
       90deg,
-      #0a7f0b 0,
-      #0a7f0b 16.66%,
-      #077208 16.66%,
-      #077208 33.32%,
-      #0a7f0b 33.32%,
-      #0a7f0b 50%,
-      #077208 50%,
-      #077208 66.66%,
-      #0a7f0b 66.66%,
-      #0a7f0b 83.32%,
-      #077208 83.32%,
-      #077208 100%
+      #2e7d32 0,
+      #2e7d32 36px,
+      #338538 36px,
+      #338538 72px
     );
   overflow: hidden;
+  box-shadow: inset 0 4px 0 rgba(0, 0, 0, 0.18);
 }
 
 .goalNet {
   position: absolute;
   top: 28%;
-  left: 1.1rem;
+  left: 1rem;
   width: 38px;
   height: 45%;
-  border: 2px solid #eaf4e2;
+  border: 2px solid #f4f6ee;
   background-image:
-    linear-gradient(0deg, rgba(234, 244, 226, 0.75) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(234, 244, 226, 0.75) 1px, transparent 1px);
+    linear-gradient(0deg, rgba(244, 246, 238, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 246, 238, 0.6) 1px, transparent 1px);
   background-size: 8px 8px;
 }
 
@@ -133,17 +142,17 @@
   transform: translateY(-50%);
   width: 300px;
   height: 300px;
-  border: 6px solid rgba(248, 250, 248, 0.86);
+  border: 5px solid rgba(255, 255, 255, 0.8);
   border-radius: 50%;
 }
 
 .pitchQuarterArc {
   position: absolute;
-  left: 1.05rem;
+  left: 0.95rem;
   top: 24%;
-  width: 115px;
+  width: 110px;
   height: 52%;
-  border: 5px solid rgba(248, 250, 248, 0.86);
+  border: 4px solid rgba(255, 255, 255, 0.8);
   border-left: 0;
 }
 
@@ -153,7 +162,7 @@
   inset: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  gap: 0.6rem;
   padding: 1rem;
 }
 
@@ -161,398 +170,186 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  align-items: stretch;
-  flex: 1;
 }
 
 .areaLabel {
   margin: 0;
-  color: #f2fff2;
-  font-size: 0.95rem;
-  font-weight: 700;
-  text-align: center;
+  align-self: center;
+  background: #ffffff;
+  border: 3px solid var(--border-arcade);
+  border-radius: 999px;
+  padding: 0.25rem 0.85rem;
+  color: var(--text-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
 }
 
 .slotsGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.4rem;
-  width: 100%;
+  gap: 0.5rem;
   flex: 1;
 }
 
 .fieldSlot {
-  aspect-ratio: auto;
   min-height: 100px;
-  border-radius: 8px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  border: 3px dashed rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.16);
   display: grid;
   place-items: center;
   padding: 0.4rem;
-  text-align: center;
-  transition: all 0.2s ease;
-  cursor: grab;
-  overflow: hidden;
-  flex: 1;
+  transition: all 0.15s ease;
+  cursor: pointer;
 }
 
 .fieldSlot:hover {
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: #ffe066;
+  background: rgba(255, 224, 102, 0.18);
 }
 
 .fieldSlotActive {
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
-  transform: scale(1.05);
+  border-color: #ffe066;
+  border-style: solid;
+  background: rgba(255, 224, 102, 0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
 }
 
 .emptySlot {
-  color: rgba(235, 255, 236, 0.6);
-  font-size: 1.5rem;
-  font-weight: 300;
-}
-
-.areaCount {
-  display: none;
-}
-
-.dropLane {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.4rem;
-  padding: 0.35rem;
-  padding-left: 135px;
-}
-
-.boardBox {
-  min-height: 140px;
-  border-radius: 8px;
-  border: 3px solid transparent;
-  background: rgba(0, 0, 0, 0.1);
-  display: grid;
-  place-items: center;
-  padding: 0.35rem;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.lane1 {
-  border-color: #2e7eff;
-}
-
-.lane2 {
-  border-color: #a63cff;
-}
-
-.lane3 {
-  border-color: #ff0030;
-}
-
-.boardBoxActive {
-  transform: translateY(-2px);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.6rem;
+  font-weight: 900;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
 }
 
 .boardItem {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border: 3px solid var(--border-arcade);
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.2rem;
-  color: #f4fff4;
-  width: 100%;
-  height: 100%;
-  cursor: grab;
-  padding: 0.3rem;
-  border-radius: 6px;
+  padding: 0.4rem;
   position: relative;
-  transition: all 0.2s ease;
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.22);
 }
 
 .boardItem:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 214, 106, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.25);
 }
 
 .boardItem:active {
   cursor: grabbing;
+  transform: translateY(0);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
 }
 
-.boardItem:focus-visible {
-  outline: 2px solid #ffd66a;
-  outline-offset: 2px;
+.itemIcon {
+  font-size: 1.4rem;
+}
+
+.itemIcon img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  display: block;
+}
+
+.itemName {
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: var(--text-strong);
+  line-height: 1.1;
 }
 
 .sellPrice {
   position: absolute;
-  bottom: 2px;
+  bottom: 4px;
   right: 4px;
-  font-size: 0.55rem;
-  font-weight: 700;
-  background: rgba(255, 214, 106, 0.28);
-  color: #ffd66a;
-  padding: 0.12rem 0.28rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: var(--brand-primary);
+  color: #fff;
+  padding: 0.12rem 0.35rem;
   border-radius: 999px;
+  border: 2px solid var(--border-arcade);
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.15s ease;
 }
 
 .boardItem:hover .sellPrice {
   opacity: 1;
 }
 
-.itemIcon {
-  font-size: 1.2rem;
-  max-width: 90px;
-  max-height: 90px;
-  overflow: hidden;
-}
-
-.itemIcon img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  display: block;
-}
-
-.itemName {
-  font-weight: 700;
-  font-size: 0.7rem;
-  margin-top: 0.08rem;
-  line-height: 1;
-}
-
-.dropText {
-  color: rgba(235, 255, 236, 0.95);
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
-}
-
 .marketSection {
-  background: transparent;
-  display: grid;
-  gap: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: #ffffff;
+  border: 4px solid var(--border-arcade);
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
 }
 
-.marketGrid {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.marketSlot,
-.marketSlotEmpty {
-  min-height: 108px;
-  border-radius: 18px;
-}
-
-.marketSlot {
-  border: 0;
-  padding: 0.48rem;
-  background: linear-gradient(150deg, #027943, #006c40);
-  color: #e6ffee;
-  cursor: grab;
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 0.42rem;
-  align-items: center;
-  text-align: left;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.26);
-}
-
-.marketSlot:active {
-  cursor: grabbing;
-}
-
-.marketSlotEmpty {
-  border: 2px dashed rgba(211, 239, 207, 0.7);
-  color: #ecffe8;
-  background: rgba(0, 104, 59, 0.55);
-  display: grid;
-  place-items: center;
-  font-size: 0.86rem;
-}
-
-.cardAvatar {
-  width: 64px;
-  height: 84px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #9fd8ff, #4a9dde);
-  display: grid;
-  place-items: center;
-  font-size: 2rem;
-  box-shadow: inset 0 -8px 10px rgba(0, 0, 0, 0.2);
-}
-
-.cardAvatarImage {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  display: block;
-}
-
-.cardStats {
-  display: grid;
-  gap: 0.18rem;
-}
-
-.statsLine {
-  font-size: 0.58rem;
-  line-height: 1.2;
-  letter-spacing: 0.01em;
-}
-
-.marketFooter {
-  border-radius: 16px;
-  padding: 0.8rem;
-  background: #0f8c3a;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
-  display: grid;
-  gap: 0.5rem;
+.marketHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .title {
   margin: 0;
-  color: #edffe7;
-  font-size: 1.18rem;
+  color: var(--text-strong);
+  font-size: 1.2rem;
+  font-weight: 800;
 }
 
 .marketHint {
   margin: 0;
-  color: #d7ffd1;
+  color: var(--text-muted);
   font-size: 0.85rem;
+  font-weight: 600;
 }
 
-.rotateButton {
-  border: 1px solid rgba(255, 248, 196, 0.4);
-  border-radius: 14px;
-  padding: 0.72rem 0.95rem;
-  background:
-    linear-gradient(160deg, rgba(255, 200, 65, 0.28), rgba(255, 154, 38, 0.18)),
-    linear-gradient(160deg, #0f7f3f, #0c6f37);
-  color: #ffe8a1;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.28);
-  transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.rotateButton:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 243, 179, 0.78);
-  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.32);
-}
-
-.rotateButton:hover svg {
-  transform: rotate(90deg);
-}
-
-.rotateButton svg {
-  flex-shrink: 0;
-  color: #ffd76f;
-  transition: transform 0.22s ease;
-}
-
-.coinBox {
+.marketGrid {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  color: #f3ffe8;
-  font-size: 2.2rem;
-  font-weight: 500;
-}
-
-.kicker {
-  display: none;
-}
-
-.marketHeader {
-  display: none;
-}
-
-.liveMessage {
-  margin: 0.65rem 0 0;
-  color: #edffe8;
-  font-size: 0.9rem;
-}
-
-.rotateButton:focus-visible,
-.marketSlot:focus-visible {
-  outline: 3px solid #ffd96a;
-  outline-offset: 3px;
+  flex-direction: column;
+  gap: 0.65rem;
 }
 
 @media (max-width: 980px) {
   .gameShell {
     grid-template-columns: 1fr;
   }
-
   .matchHud {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
-
-  .marketSection {
-    order: 2;
-  }
-
-  .marketGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .marketSlot {
-    min-height: 140px;
-    grid-template-columns: 1fr;
-    justify-items: center;
-    text-align: center;
-  }
-
-  .cardStats {
-    justify-items: center;
-  }
-
   .boardStage {
-    min-height: 470px;
+    min-height: 420px;
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 600px) {
   .main {
-    padding: 0.8rem;
+    padding: 5rem 1rem 1rem;
   }
-
   .matchHud {
     grid-template-columns: 1fr;
   }
-
-  .boardStage {
-    min-height: 390px;
-  }
-
-  .dropLane {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .marketGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .rotateButton {
-    font-size: 0.95rem;
-  }
-
-  .coinBox {
-    font-size: 1.75rem;
+  .brandFloating {
+    font-size: 1.3rem;
   }
 }
