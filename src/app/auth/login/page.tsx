@@ -1,7 +1,8 @@
 "use client";
 
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, User } from "lucide-react";
+import { Button } from "antd";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -14,7 +15,6 @@ export default function LoginPage() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [remember, setRemember] = useState(true);
 
   const {
     register,
@@ -29,112 +29,129 @@ export default function LoginPage() {
       setError(null);
       await login(data);
     } catch {
-      setError("Falha ao realizar login. Verifique suas credenciais.");
+      setError("Falha ao entrar. Verifique e-mail/apelido e senha.");
     }
   };
 
   return (
     <main className={styles.container}>
-      <aside className={styles.heroSide} aria-hidden="true">
-        <div className={styles.heroPattern} />
-        <span className={styles.heroLogo}>⚽</span>
-        <span className={styles.heroFooter}>
-          AutoSoccer · Monte sua equipe e jogue como um lord
-        </span>
-      </aside>
+      <span className={styles.brandFloating} aria-hidden="true">
+        AutoSoccer
+        <span className={styles.brandSub}>⚽</span>
+      </span>
 
-      <section className={styles.formSide}>
-        <div className={styles.formInner}>
-          <div className={styles.brandWrap}>
-            <span className={styles.brandMark}>⚽</span>
-            <span className={styles.brandTitle}>AutoSoccer</span>
-          </div>
-
-          <div className={styles.heading}>
-            <h1 className={styles.title}>Acesse a sua conta!</h1>
-            <p className={styles.subtitle}>
-              Por favor, insira os seus dados para acessar o painel.
-            </p>
-          </div>
-
-          <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="identifier">
-                E-mail ou Apelido
-              </label>
-              <div className={styles.inputContainer}>
-                <User className={styles.icon} size={18} />
-                <input
-                  id="identifier"
-                  type="text"
-                  placeholder="Digite aqui o seu e-mail..."
-                  className={styles.input}
-                  autoComplete="username"
-                  {...register("identifier")}
-                />
-              </div>
-              {errors.identifier && (
-                <p className={styles.errorText}>{errors.identifier.message}</p>
-              )}
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="password">
-                Senha
-              </label>
-              <div className={styles.inputContainer}>
-                <Lock className={styles.icon} size={18} />
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Sua senha"
-                  className={styles.input}
-                  autoComplete="current-password"
-                  {...register("password")}
-                />
-                <button
-                  type="button"
-                  className={styles.iconRight}
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className={styles.errorText}>{errors.password.message}</p>
-              )}
-            </div>
-
-            <label className={styles.checkboxRow}>
-              <input
-                type="checkbox"
-                className={styles.checkbox}
-                checked={remember}
-                onChange={(event) => setRemember(event.target.checked)}
-              />
-              Lembrar-me
-            </label>
-
-            {error && <p className={styles.errorText}>{error}</p>}
-
-            <button
-              type="submit"
-              className={styles.button}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Entrando..." : "Acessar Conta"}
-            </button>
-          </form>
-
-          <p className={styles.footerText}>
-            Não possui uma conta?{" "}
-            <Link href="/auth/register" className={styles.link}>
-              Cadastre-se
-            </Link>
-          </p>
+      <form className={styles.card} onSubmit={handleSubmit(onSubmit)}>
+        <div className={styles.fieldGroup}>
+          <label className={styles.label} htmlFor="identifier">
+            Email
+          </label>
+          <input
+            id="identifier"
+            type="text"
+            placeholder="Enter email..."
+            className={styles.input}
+            autoComplete="username"
+            {...register("identifier")}
+          />
+          {errors.identifier && (
+            <p className={styles.errorText}>{errors.identifier.message}</p>
+          )}
         </div>
-      </section>
+
+        <div className={styles.fieldGroup}>
+          <label className={styles.label} htmlFor="password">
+            Password
+          </label>
+          <div className={styles.passwordWrap}>
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password..."
+              className={styles.input}
+              autoComplete="current-password"
+              {...register("password")}
+            />
+            <button
+              type="button"
+              className={styles.eyeButton}
+              onClick={() => setShowPassword((value) => !value)}
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            >
+              {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+            </button>
+          </div>
+          {errors.password && (
+            <p className={styles.errorText}>{errors.password.message}</p>
+          )}
+        </div>
+
+        <button
+          type="button"
+          className={styles.forgot}
+          onClick={() =>
+            setError("Funcionalidade de recuperar senha em breve.")
+          }
+        >
+          Forgot Password
+        </button>
+
+        {error && <p className={styles.errorText}>{error}</p>}
+
+        <div className={styles.actions}>
+          <Button
+            htmlType="submit"
+            type="primary"
+            size="large"
+            loading={isSubmitting}
+            block
+            style={{
+              height: 60,
+              fontSize: "1.5rem",
+              fontWeight: 800,
+              border: "4px solid #1f2937",
+              boxShadow: "0 6px 0 #b45309",
+              textShadow: "0 2px 0 rgba(0,0,0,0.18)",
+            }}
+          >
+            Log In
+          </Button>
+
+          <div className={styles.smallButtonsRow}>
+            <Link href="/auth/register" className={styles.guestLink}>
+              <Button
+                type="primary"
+                size="large"
+                block
+                style={{
+                  height: 50,
+                  fontSize: "1.1rem",
+                  fontWeight: 800,
+                  border: "4px solid #1f2937",
+                  boxShadow: "0 5px 0 #b45309",
+                }}
+              >
+                Register
+              </Button>
+            </Link>
+            <Link href="/game" className={styles.guestLink}>
+              <Button
+                type="primary"
+                size="large"
+                block
+                style={{
+                  height: 50,
+                  fontSize: "1.1rem",
+                  fontWeight: 800,
+                  border: "4px solid #1f2937",
+                  boxShadow: "0 5px 0 #b45309",
+                }}
+              >
+                Play as Guest
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </form>
     </main>
   );
 }
