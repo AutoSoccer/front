@@ -54,9 +54,14 @@ export default function AthleteMarketItemCard({ item, index, onDragStart }: Athl
             <strong className={styles.statLabel}>DEF</strong>
             <span className={styles.statValue}>{item.stats.def}</span>
           </span>
-          <span className={styles.statsLine}>
+          <span className={`${styles.statsLine} ${styles.statsLineWide}`}>
             <strong className={styles.statLabel}>HAB</strong>
-            <span className={styles.statValue}>{item.stats.hab}</span>
+            <span
+              className={`${styles.statValue} ${styles.statValueText}`}
+              title={item.stats.hab}
+            >
+              {item.stats.hab}
+            </span>
           </span>
         </div>
       </div>
