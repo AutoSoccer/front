@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7ec8e3"/>
+      <stop offset="0.6" stop-color="#a8dceb"/>
+      <stop offset="1" stop-color="#cbe9f1"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a3d977"/>
+      <stop offset="0.4" stop-color="#74b94a"/>
+      <stop offset="1" stop-color="#3f8c2f"/>
+    </linearGradient>
+    <linearGradient id="grassFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5fa635"/>
+      <stop offset="1" stop-color="#2e7320"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f8c34"/>
+      <stop offset="1" stop-color="#246b1a"/>
+    </linearGradient>
+    <linearGradient id="mountain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a7b9c"/>
+      <stop offset="1" stop-color="#324c6a"/>
+    </linearGradient>
+    <linearGradient id="mountainSnow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dfe9f2"/>
+      <stop offset="1" stop-color="#a8b8cc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+
+  <!-- Clouds -->
+  <g fill="#ffffff" opacity="0.92">
+    <ellipse cx="180" cy="180" rx="120" ry="36"/>
+    <ellipse cx="240" cy="160" rx="80" ry="30"/>
+    <ellipse cx="140" cy="160" rx="70" ry="26"/>
+
+    <ellipse cx="540" cy="120" rx="100" ry="30"/>
+    <ellipse cx="600" cy="100" rx="70" ry="26"/>
+
+    <ellipse cx="960" cy="200" rx="140" ry="40"/>
+    <ellipse cx="1030" cy="170" rx="90" ry="30"/>
+    <ellipse cx="900" cy="180" rx="80" ry="28"/>
+
+    <ellipse cx="1400" cy="140" rx="120" ry="34"/>
+    <ellipse cx="1460" cy="118" rx="80" ry="28"/>
+
+    <ellipse cx="1750" cy="220" rx="140" ry="38"/>
+    <ellipse cx="1820" cy="200" rx="90" ry="30"/>
+  </g>
+
+  <!-- Distant mountains -->
+  <path d="M 0 700 L 200 480 L 360 580 L 520 420 L 700 540 L 900 460 L 1080 540 L 1260 440 L 1460 540 L 1640 480 L 1820 560 L 1920 500 L 1920 720 L 0 720 Z" fill="url(#mountain)"/>
+
+  <!-- Mountain snow caps -->
+  <path d="M 180 500 L 220 460 L 260 520 Z" fill="url(#mountainSnow)" opacity="0.85"/>
+  <path d="M 500 440 L 540 410 L 580 460 Z" fill="url(#mountainSnow)" opacity="0.85"/>
+  <path d="M 880 480 L 920 450 L 960 500 Z" fill="url(#mountainSnow)" opacity="0.85"/>
+  <path d="M 1240 460 L 1280 430 L 1320 480 Z" fill="url(#mountainSnow)" opacity="0.85"/>
+  <path d="M 1620 500 L 1660 470 L 1700 520 Z" fill="url(#mountainSnow)" opacity="0.85"/>
+
+  <!-- Hills -->
+  <path d="M 0 760 Q 240 660 480 740 T 960 720 T 1440 740 T 1920 700 L 1920 800 L 0 800 Z" fill="url(#hill)" opacity="0.85"/>
+
+  <!-- Grass background -->
+  <rect x="0" y="720" width="1920" height="360" fill="url(#grass)"/>
+
+  <!-- Trees in distance -->
+  <g fill="#2e7320">
+    <ellipse cx="120" cy="780" rx="40" ry="50"/>
+    <ellipse cx="380" cy="800" rx="48" ry="60"/>
+    <ellipse cx="700" cy="780" rx="42" ry="52"/>
+    <ellipse cx="1020" cy="800" rx="50" ry="62"/>
+    <ellipse cx="1400" cy="790" rx="45" ry="55"/>
+    <ellipse cx="1720" cy="800" rx="48" ry="58"/>
+  </g>
+  <g fill="#1f5618">
+    <rect x="115" y="800" width="10" height="30"/>
+    <rect x="375" y="820" width="10" height="36"/>
+    <rect x="695" y="800" width="10" height="32"/>
+    <rect x="1015" y="820" width="10" height="38"/>
+    <rect x="1395" y="810" width="10" height="32"/>
+    <rect x="1715" y="820" width="10" height="36"/>
+  </g>
+
+  <!-- Front grass -->
+  <rect x="0" y="900" width="1920" height="180" fill="url(#grassFront)"/>
+
+  <!-- Grass tufts -->
+  <g fill="#1f5618" opacity="0.55">
+    <path d="M 60 920 l 6 -16 l 4 12 l 6 -10 l 2 14 Z"/>
+    <path d="M 320 940 l 6 -16 l 4 12 l 6 -10 l 2 14 Z"/>
+    <path d="M 580 928 l 6 -16 l 4 12 l 6 -10 l 2 14 Z"/>
+    <path d="M 880 945 l 6 -16 l 4 12 l 6 -10 l 2 14 Z"/>
+    <path d="M 1180 920 l 6 -16 l 4 12 l 6 -10 l 2 14 Z"/>
+    <path d="M 1500 940 l 6 -16 l 4 12 l 6 -10 l 2 14 Z"/>
+    <path d="M 1780 925 l 6 -16 l 4 12 l 6 -10 l 2 14 Z"/>
+  </g>
+</svg>
