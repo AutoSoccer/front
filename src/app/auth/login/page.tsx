@@ -35,9 +35,8 @@ export default function LoginPage() {
 
   return (
     <main className={styles.container}>
-      <span className={styles.brandFloating} aria-hidden="true">
-        AutoSoccer
-        <span className={styles.brandSub}>⚽</span>
+      <span className={styles.brandFloating} aria-label="AutoSoccer">
+        <img src="/logo.png" alt="AutoSoccer" />
       </span>
 
       <form className={styles.card} onSubmit={handleSubmit(onSubmit)}>
