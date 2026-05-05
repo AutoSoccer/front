@@ -1,21 +1,22 @@
 :root {
-  /* Brasil — primaria (verde) */
-  --brand-primary: #009c3b;
-  --brand-hover: #007a2e;
-  --brand-active: #045423;
-  --brand-soft: #dcfce7;
-  --brand-active-bg: linear-gradient(90deg, #bbf7d0 0%, #22c55e 100%);
-  --brand-active-text: #14532d;
+  /* Arcade — primaria (laranja) */
+  --brand-primary: #f97316;
+  --brand-hover: #ea580c;
+  --brand-active: #c2410c;
+  --brand-shadow: #b45309;
+  --brand-soft: #fff7ed;
+  --brand-active-bg: linear-gradient(180deg, #fdba74 0%, #f97316 100%);
+  --brand-active-text: #7c2d12;
 
-  /* Brasil — accent (amarelo) */
-  --accent-yellow: #ffdf00;
-  --accent-yellow-soft: #fef9c3;
-  --accent-yellow-text: #713f12;
+  /* Madeira (botoes do menu) */
+  --wood-light: #f3d39c;
+  --wood-base: #c89a64;
+  --wood-shadow: #92703d;
+  --wood-text: #5b3a1a;
 
-  /* Brasil — accent (azul) */
-  --accent-blue: #002776;
-  --accent-blue-soft: #dbeafe;
-  --accent-blue-hover: #001a4d;
+  /* Skies (cenario) */
+  --sky-blue: #7ec8e3;
+  --grass-green: #3f8c2f;
 
   --bg-page: #f9fafb;
   --bg-surface: #ffffff;
@@ -23,11 +24,13 @@
 
   --border: #e5e7eb;
   --border-strong: #d1d5db;
+  --border-arcade: #1f2937;
 
   --text-strong: #111827;
   --text-body: #374151;
   --text-muted: #6b7280;
   --text-faint: #9ca3af;
+  --text-arcade: #5b3a1a;
 
   --success: #16a34a;
   --success-bg: #dcfce7;
@@ -39,13 +42,14 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+  --radius-arcade: 14px;
 
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
   --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.12);
-
-  --shadow-brand: 0 4px 12px rgba(0, 156, 59, 0.25);
-  --shadow-brand-strong: 0 6px 18px rgba(0, 156, 59, 0.32);
+  --shadow-arcade: 0 6px 0 var(--brand-shadow);
+  --shadow-arcade-pressed: 0 2px 0 var(--brand-shadow);
+  --shadow-wood: 0 6px 0 var(--wood-shadow);
 }
 
 html,
