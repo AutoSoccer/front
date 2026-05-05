@@ -35,162 +35,193 @@ export default function RegisterPage() {
 
   return (
     <main className={styles.container}>
-      <div className={styles.formWrapper}>
-        <h1 className={styles.title}>Crie sua conta</h1>
+      <aside className={styles.heroSide} aria-hidden="true">
+        <span className={styles.heroLogo}>⚽</span>
+        <span className={styles.heroFooter}>
+          AutoSoccer · Crie sua conta e comece a montar a sua equipe
+        </span>
+      </aside>
 
-        <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-          <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="name">
-              Nome completo
-            </label>
-            <div className={styles.inputContainer}>
-              <User className={styles.icon} size={20} />
-              <input
-                id="name"
-                type="text"
-                placeholder="Seu nome"
-                className={styles.input}
-                {...register("name")}
-              />
-            </div>
-            {errors.name && (
-              <p className={styles.errorText}>{errors.name.message}</p>
-            )}
+      <section className={styles.formSide}>
+        <div className={styles.formInner}>
+          <div className={styles.brandWrap}>
+            <span className={styles.brandMark}>⚽</span>
+            <span className={styles.brandTitle}>AutoSoccer</span>
           </div>
 
-          <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="nickname">
-              Apelido
-            </label>
-            <div className={styles.inputContainer}>
-              <User className={styles.icon} size={20} />
-              <input
-                id="nickname"
-                type="text"
-                placeholder="Seu apelido"
-                className={styles.input}
-                {...register("nickname")}
-              />
-            </div>
-            {errors.nickname && (
-              <p className={styles.errorText}>{errors.nickname.message}</p>
-            )}
+          <div className={styles.heading}>
+            <h1 className={styles.title}>Crie a sua conta!</h1>
+            <p className={styles.subtitle}>
+              Preencha os dados abaixo para se juntar ao painel.
+            </p>
           </div>
 
-          <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="email">
-              E-mail
-            </label>
-            <div className={styles.inputContainer}>
-              <Mail className={styles.icon} size={20} />
-              <input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                className={styles.input}
-                {...register("email")}
-              />
+          <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+            <div className={styles.inputGroup}>
+              <label className={styles.label} htmlFor="name">
+                Nome completo
+              </label>
+              <div className={styles.inputContainer}>
+                <User className={styles.icon} size={18} />
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Seu nome"
+                  className={styles.input}
+                  {...register("name")}
+                />
+              </div>
+              {errors.name && (
+                <p className={styles.errorText}>{errors.name.message}</p>
+              )}
             </div>
-            {errors.email && (
-              <p className={styles.errorText}>{errors.email.message}</p>
-            )}
-          </div>
 
-          <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="phone_number">
-              Telefone
-            </label>
-            <div className={styles.inputContainer}>
-              <Phone className={styles.icon} size={20} />
-              <input
-                id="phone_number"
-                type="tel"
-                placeholder="(00) 00000-0000"
-                className={styles.input}
-                {...register("phone_number")}
-              />
+            <div className={styles.row}>
+              <div className={styles.inputGroup}>
+                <label className={styles.label} htmlFor="nickname">
+                  Apelido
+                </label>
+                <div className={styles.inputContainer}>
+                  <User className={styles.icon} size={18} />
+                  <input
+                    id="nickname"
+                    type="text"
+                    placeholder="Seu nick"
+                    className={styles.input}
+                    {...register("nickname")}
+                  />
+                </div>
+                {errors.nickname && (
+                  <p className={styles.errorText}>{errors.nickname.message}</p>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label className={styles.label} htmlFor="phone_number">
+                  Telefone
+                </label>
+                <div className={styles.inputContainer}>
+                  <Phone className={styles.icon} size={18} />
+                  <input
+                    id="phone_number"
+                    type="tel"
+                    placeholder="(00) 00000-0000"
+                    className={styles.input}
+                    {...register("phone_number")}
+                  />
+                </div>
+                {errors.phone_number && (
+                  <p className={styles.errorText}>
+                    {errors.phone_number.message}
+                  </p>
+                )}
+              </div>
             </div>
-            {errors.phone_number && (
-              <p className={styles.errorText}>{errors.phone_number.message}</p>
-            )}
-          </div>
 
-          <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="password">
-              Senha
-            </label>
-            <div className={styles.inputContainer}>
-              <Lock className={styles.icon} size={20} />
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Crie uma senha"
-                className={styles.input}
-                {...register("password")}
-              />
-              <button
-                type="button"
-                className={styles.iconRight}
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
+            <div className={styles.inputGroup}>
+              <label className={styles.label} htmlFor="email">
+                E-mail
+              </label>
+              <div className={styles.inputContainer}>
+                <Mail className={styles.icon} size={18} />
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  className={styles.input}
+                  {...register("email")}
+                />
+              </div>
+              {errors.email && (
+                <p className={styles.errorText}>{errors.email.message}</p>
+              )}
             </div>
-            {errors.password && (
-              <p className={styles.errorText}>{errors.password.message}</p>
-            )}
-          </div>
 
-          <div className={styles.inputGroup}>
-            <label className={styles.label} htmlFor="confirmPassword">
-              Confirme a senha
-            </label>
-            <div className={styles.inputContainer}>
-              <Lock className={styles.icon} size={20} />
-              <input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Repita sua senha"
-                className={styles.input}
-                {...register("confirmPassword")}
-              />
-              <button
-                type="button"
-                className={styles.iconRight}
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label={
-                  showConfirmPassword ? "Ocultar senha" : "Mostrar senha"
-                }
-              >
-                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
+            <div className={styles.row}>
+              <div className={styles.inputGroup}>
+                <label className={styles.label} htmlFor="password">
+                  Senha
+                </label>
+                <div className={styles.inputContainer}>
+                  <Lock className={styles.icon} size={18} />
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Crie uma senha"
+                    className={styles.input}
+                    {...register("password")}
+                  />
+                  <button
+                    type="button"
+                    className={styles.iconRight}
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className={styles.errorText}>{errors.password.message}</p>
+                )}
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label className={styles.label} htmlFor="confirmPassword">
+                  Confirmar
+                </label>
+                <div className={styles.inputContainer}>
+                  <Lock className={styles.icon} size={18} />
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Repita"
+                    className={styles.input}
+                    {...register("confirmPassword")}
+                  />
+                  <button
+                    type="button"
+                    className={styles.iconRight}
+                    onClick={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }
+                    aria-label={
+                      showConfirmPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className={styles.errorText}>
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
             </div>
-            {errors.confirmPassword && (
-              <p className={styles.errorText}>
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
 
-          {error && <p className={styles.errorText}>{error}</p>}
+            {error && <p className={styles.errorText}>{error}</p>}
 
-          <button
-            type="submit"
-            className={styles.button}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Cadastrando..." : "Cadastrar"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className={styles.button}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Cadastrando..." : "Criar Conta"}
+            </button>
+          </form>
 
-        <p className={styles.footerText}>
-          Já possui uma conta?{" "}
-          <Link href="/auth/login" className={styles.link}>
-            Entrar
-          </Link>
-        </p>
-      </div>
+          <p className={styles.footerText}>
+            Já possui uma conta?{" "}
+            <Link href="/auth/login" className={styles.link}>
+              Entrar
+            </Link>
+          </p>
+        </div>
+      </section>
     </main>
   );
 }
