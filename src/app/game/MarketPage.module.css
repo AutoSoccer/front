@@ -205,6 +205,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-height: 0;
 }
 
 .areaLabel {
@@ -225,8 +226,11 @@
 .slotsGrid {
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
   gap: 0.5rem;
   flex: 1;
+  min-height: 0;
 }
 
 .fieldSlot {
@@ -239,6 +243,8 @@
   transition: all 0.15s ease;
   cursor: pointer;
   overflow: hidden;
+  min-height: 0;
+  height: 100%;
 }
 
 .fieldSlot:hover {
@@ -271,12 +277,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.8rem;
+  gap: 0.3rem;
+  padding: 0.5rem;
   position: relative;
   cursor: grab;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.22);
+  overflow: hidden;
 }
 
 .boardItem:hover {
@@ -292,21 +299,25 @@
 
 .itemIcon {
   display: block;
-  width: 84px;
-  height: 84px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
-  font-size: 2.6rem;
+  font-size: 2rem;
   text-align: center;
-  line-height: 84px;
+  line-height: 64px;
   flex-shrink: 0;
 }
 
 .itemName {
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.85rem;
   color: var(--text-strong);
   line-height: 1.1;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .sellPrice {
