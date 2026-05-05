@@ -29,6 +29,12 @@
   padding: 0.8rem;
 }
 
+.boardHeader {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 0.65rem;
+}
+
 .boardTitle {
   margin: 0;
   color: #f2fff2;
@@ -37,9 +43,50 @@
 }
 
 .boardHint {
-  margin: 0.3rem 0 0.6rem;
+  margin: 0.3rem 0 0;
   color: #daf7dc;
   font-size: 0.9rem;
+}
+
+.matchHud {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.hudItem {
+  border-radius: 12px;
+  border: 1px solid rgba(227, 255, 232, 0.25);
+  background:
+    radial-gradient(circle at 20% 18%, rgba(142, 255, 183, 0.2), transparent 36%),
+    linear-gradient(160deg, rgba(20, 106, 46, 0.88), rgba(8, 70, 36, 0.95));
+  padding: 0.45rem 0.55rem;
+  display: grid;
+  gap: 0.18rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+}
+
+.hudLabel {
+  font-size: 0.63rem;
+  line-height: 1;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(218, 253, 225, 0.86);
+  font-weight: 700;
+}
+
+.hudValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 800;
+  color: #f7fff7;
+}
+
+.hudValue svg {
+  color: #ffd66d;
 }
 
 .boardStage {
@@ -81,7 +128,7 @@
 
 .pitchCircle {
   position: absolute;
-  right: -84px;
+  right: -170px;
   top: 50%;
   transform: translateY(-50%);
   width: 300px;
@@ -100,14 +147,85 @@
   border-left: 0;
 }
 
+.boardAreas {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.fieldArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
+  flex: 1;
+}
+
+.areaLabel {
+  margin: 0;
+  color: #f2fff2;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.slotsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.4rem;
+  width: 100%;
+  flex: 1;
+}
+
+.fieldSlot {
+  aspect-ratio: auto;
+  min-height: 100px;
+  border-radius: 8px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.15);
+  display: grid;
+  place-items: center;
+  padding: 0.4rem;
+  text-align: center;
+  transition: all 0.2s ease;
+  cursor: grab;
+  overflow: hidden;
+  flex: 1;
+}
+
+.fieldSlot:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.fieldSlotActive {
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.emptySlot {
+  color: rgba(235, 255, 236, 0.6);
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.areaCount {
+  display: none;
+}
+
 .dropLane {
   position: absolute;
   z-index: 2;
   inset: 0;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.4rem;
   padding: 0.35rem;
+  padding-left: 135px;
 }
 
 .boardBox {
@@ -134,33 +252,79 @@
   border-color: #ff0030;
 }
 
-.lane4 {
-  border-color: #2e7eff;
-}
-
-.lane5 {
-  border-color: #a63cff;
-}
-
 .boardBoxActive {
   transform: translateY(-2px);
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.75);
 }
 
 .boardItem {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.2rem;
-  justify-items: center;
   color: #f4fff4;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  padding: 0.3rem;
+  border-radius: 6px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.boardItem:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 214, 106, 0.5);
+}
+
+.boardItem:active {
+  cursor: grabbing;
+}
+
+.boardItem:focus-visible {
+  outline: 2px solid #ffd66a;
+  outline-offset: 2px;
+}
+
+.sellPrice {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  background: rgba(255, 214, 106, 0.28);
+  color: #ffd66a;
+  padding: 0.12rem 0.28rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.boardItem:hover .sellPrice {
+  opacity: 1;
 }
 
 .itemIcon {
   font-size: 1.2rem;
+  max-width: 90px;
+  max-height: 90px;
+  overflow: hidden;
+}
+
+.itemIcon img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
 }
 
 .itemName {
   font-weight: 700;
-  font-size: 0.84rem;
+  font-size: 0.7rem;
+  margin-top: 0.08rem;
+  line-height: 1;
 }
 
 .dropText {
@@ -225,6 +389,13 @@
   box-shadow: inset 0 -8px 10px rgba(0, 0, 0, 0.2);
 }
 
+.cardAvatarImage {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
+}
+
 .cardStats {
   display: grid;
   gap: 0.18rem;
@@ -258,22 +429,39 @@
 }
 
 .rotateButton {
-  border: 0;
+  border: 1px solid rgba(255, 248, 196, 0.4);
   border-radius: 14px;
-  padding: 0.7rem 0.7rem;
-  background: transparent;
-  color: #ffb300;
-  font-size: 2rem;
-  font-weight: 600;
+  padding: 0.72rem 0.95rem;
+  background:
+    linear-gradient(160deg, rgba(255, 200, 65, 0.28), rgba(255, 154, 38, 0.18)),
+    linear-gradient(160deg, #0f7f3f, #0c6f37);
+  color: #ffe8a1;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.28);
+  transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.rotateButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 243, 179, 0.78);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.32);
+}
+
+.rotateButton:hover svg {
+  transform: rotate(90deg);
 }
 
 .rotateButton svg {
   flex-shrink: 0;
+  color: #ffd76f;
+  transition: transform 0.22s ease;
 }
 
 .coinBox {
@@ -311,6 +499,10 @@
     grid-template-columns: 1fr;
   }
 
+  .matchHud {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .marketSection {
     order: 2;
   }
@@ -340,6 +532,10 @@
     padding: 0.8rem;
   }
 
+  .matchHud {
+    grid-template-columns: 1fr;
+  }
+
   .boardStage {
     min-height: 390px;
   }
@@ -353,7 +549,7 @@
   }
 
   .rotateButton {
-    font-size: 1.4rem;
+    font-size: 0.95rem;
   }
 
   .coinBox {
