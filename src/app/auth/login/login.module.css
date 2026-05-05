@@ -11,14 +11,14 @@
 }
 
 .brandFloating {
-  position: absolute;
+  position: fixed;
   top: 1rem;
-  left: 1.4rem;
+  left: 1rem;
   display: block;
-  width: 96px;
-  height: 96px;
-  filter: drop-shadow(0 5px 0 rgba(0, 0, 0, 0.35));
-  z-index: 5;
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.35));
+  z-index: 50;
 }
 
 .brandFloating img {
@@ -140,9 +140,8 @@
 
 @media (max-width: 600px) {
   .brandFloating {
-    font-size: 1.2rem;
-    top: 1rem;
-    left: 1rem;
+    width: 52px;
+    height: 52px;
   }
   .card {
     padding: 1.4rem;
