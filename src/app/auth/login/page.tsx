@@ -42,12 +42,12 @@ export default function LoginPage() {
       <form className={styles.card} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.fieldGroup}>
           <label className={styles.label} htmlFor="identifier">
-            Email
+            E-mail
           </label>
           <input
             id="identifier"
             type="text"
-            placeholder="Enter email..."
+            placeholder="Digite seu e-mail..."
             className={styles.input}
             autoComplete="username"
             {...register("identifier")}
@@ -59,13 +59,13 @@ export default function LoginPage() {
 
         <div className={styles.fieldGroup}>
           <label className={styles.label} htmlFor="password">
-            Password
+            Senha
           </label>
           <div className={styles.passwordWrap}>
             <input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="Enter password..."
+              placeholder="Digite sua senha..."
               className={styles.input}
               autoComplete="current-password"
               {...register("password")}
@@ -91,7 +91,7 @@ export default function LoginPage() {
             setError("Funcionalidade de recuperar senha em breve.")
           }
         >
-          Forgot Password
+          Esqueci minha senha
         </button>
 
         {error && <p className={styles.errorText}>{error}</p>}
@@ -112,7 +112,7 @@ export default function LoginPage() {
               textShadow: "0 2px 0 rgba(0,0,0,0.18)",
             }}
           >
-            Log In
+            Entrar
           </Button>
 
           <div className={styles.smallButtonsRow}>
@@ -129,7 +129,7 @@ export default function LoginPage() {
                   boxShadow: "0 5px 0 #b45309",
                 }}
               >
-                Register
+                Cadastrar
               </Button>
             </Link>
             <Link href="/game" className={styles.guestLink}>
@@ -145,7 +145,7 @@ export default function LoginPage() {
                   boxShadow: "0 5px 0 #b45309",
                 }}
               >
-                Play as Guest
+                Jogar como Convidado
               </Button>
             </Link>
           </div>

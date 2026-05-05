@@ -21,7 +21,7 @@ export default function AthleteMarketItemCard({ item, index, onDragStart }: Athl
   if (!item) {
     return (
       <div className={styles.marketSlotEmpty}>
-        <span>Slot disponivel {index + 1}</span>
+        <span>Vaga disponível {index + 1}</span>
       </div>
     );
   }
