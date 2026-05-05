@@ -17,9 +17,8 @@ export default function HomePage() {
 
   return (
     <main className={styles.main}>
-      <span className={styles.brandFloating}>
-        AutoSoccer
-        <span className={styles.brandSub}>⚽</span>
+      <span className={styles.brandFloating} aria-label="AutoSoccer">
+        <img src="/logo.png" alt="AutoSoccer" />
       </span>
 
       {isAuthenticated && <ProfileCorner />}
@@ -31,15 +30,15 @@ export default function HomePage() {
           <Link href="/game" className={`${styles.menuButton} ${styles.menuButtonHero}`}>
             Jogar <TrophyFilled />
           </Link>
-          <Link href="/game" className={styles.menuButton}>
+          {/* <Link href="/game" className={styles.menuButton}>
             Atletas
-          </Link>
+          </Link> */}
           <Link href="/profile" className={styles.menuButton}>
             <TeamOutlined /> Perfil
           </Link>
-          <Link href="/game" className={styles.menuButton}>
+          {/* <Link href="/game" className={styles.menuButton}>
             Histórico
-          </Link>
+          </Link> */}
 
           {!isAuthenticated && (
             <p className={styles.guestNotice}>

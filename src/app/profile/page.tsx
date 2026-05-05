@@ -36,9 +36,8 @@ export default function ProfilePage() {
   if (isLoading || !user) {
     return (
       <main className={styles.container}>
-        <span className={styles.brandFloating}>
-          AutoSoccer
-          <span className={styles.brandSub}>⚽</span>
+        <span className={styles.brandFloating} aria-label="AutoSoccer">
+          <img src="/logo.png" alt="AutoSoccer" />
         </span>
         <p className={styles.loading}>Carregando perfil...</p>
       </main>
@@ -49,9 +48,8 @@ export default function ProfilePage() {
 
   return (
     <main className={styles.container}>
-      <span className={styles.brandFloating}>
-        AutoSoccer
-        <span className={styles.brandSub}>⚽</span>
+      <span className={styles.brandFloating} aria-label="AutoSoccer">
+        <img src="/logo.png" alt="AutoSoccer" />
       </span>
 
       <ProfileCorner />
