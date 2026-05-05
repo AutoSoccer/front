@@ -60,7 +60,7 @@ export default function AthleteMarketItemCard({ item, index, onDragStart }: Athl
               className={`${styles.statValue} ${styles.statValueText}`}
               title={item.stats.hab}
             >
-              {item.stats.hab}
+              {item.stats.hab.split(" ")[0]}
             </span>
           </span>
         </div>
