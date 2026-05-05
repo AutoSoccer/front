@@ -45,14 +45,14 @@ export default function ProfileCorner({ coins }: ProfileCornerProps) {
 
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
-      {typeof coins === "number" && (
+      {/* {typeof coins === "number" && (
         <span className={styles.coinPill} aria-label={`Saldo: ${coins} moedas`}>
           <span className={styles.coinIcon}>
             <DollarOutlined />
           </span>
           {coins}
         </span>
-      )}
+      )} */}
 
       <button
         type="button"

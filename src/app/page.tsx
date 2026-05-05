@@ -62,7 +62,7 @@ export default function HomePage() {
         </Link>
       </div>
 
-      <div className={styles.tipBox}>You look great today!</div>
+      <div className={styles.tipBox}>Você está ótimo hoje!</div>
     </main>
   );
 }

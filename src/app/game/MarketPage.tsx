@@ -3,6 +3,7 @@
 import {
   DollarOutlined,
   HeartFilled,
+  PlayCircleFilled,
   ReloadOutlined,
   TrophyFilled,
 } from "@ant-design/icons";
@@ -167,20 +168,46 @@ export default function MarketPage() {
     );
   }
 
+  function handlePlayMatch() {
+    const onBoard = boardSlots.filter((s) => s.item !== null).length;
+    if (onBoard === 0) {
+      return;
+    }
+    // TODO: integrar com simulacao de partida
+    alert(`Iniciando partida com ${onBoard} atleta(s) em campo!`);
+  }
+
+  const athletesOnBoard = boardSlots.filter((s) => s.item !== null).length;
+
   return (
     <main className={styles.main}>
-      <span className={styles.brandFloating}>
-        AutoSoccer
-        <span className={styles.brandSub}>⚽</span>
+      <span className={styles.brandFloating} aria-label="AutoSoccer">
+        <img src="/logo.png" alt="AutoSoccer" />
       </span>
       <ProfileCorner coins={coins} />
 
       <div className={styles.gameShell}>
         <section className={styles.boardSection} aria-labelledby="board-title">
           <div className={styles.boardHeader}>
-            <h2 id="board-title" className={styles.boardTitle}>
-              Planejamento da Equipe
-            </h2>
+            <div className={styles.boardHeaderTop}>
+              <h2 id="board-title" className={styles.boardTitle}>
+                Planejamento da Equipe
+              </h2>
+              <button
+                type="button"
+                className={styles.playButton}
+                onClick={handlePlayMatch}
+                disabled={athletesOnBoard === 0}
+                title={
+                  athletesOnBoard === 0
+                    ? "Escale ao menos 1 atleta para jogar"
+                    : "Iniciar partida"
+                }
+              >
+                <PlayCircleFilled />
+                Jogar
+              </button>
+            </div>
 
             <div className={styles.matchHud} aria-label="Resumo da partida">
               <div className={styles.hudItem}>
@@ -197,7 +224,7 @@ export default function MarketPage() {
               </div>
 
               <div className={styles.hudItem}>
-                <span className={styles.hudLabel}>Vitorias</span>
+                <span className={styles.hudLabel}>Vitórias</span>
                 <span className={styles.hudValue}>
                   <TrophyFilled />
                   {victories}
@@ -241,7 +268,7 @@ export default function MarketPage() {
                           }}
                           onDragLeave={() => setDragOverId(null)}
                           onDrop={(event) => handleDrop(event, slot.id)}
-                          aria-label={`Slot ${slot.slotIndex + 1} em ${areaLabels[areaIndex]}`}
+                          aria-label={`Vaga ${slot.slotIndex + 1} em ${areaLabels[areaIndex]}`}
                         >
                           {slot.item ? (
                             <div
