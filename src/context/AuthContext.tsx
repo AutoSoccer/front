@@ -34,8 +34,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setIsLoading(false);
-      return;
+      const loadingTimer = window.setTimeout(() => setIsLoading(false), 0);
+      return () => window.clearTimeout(loadingTimer);
     }
 
     authService
