@@ -2,256 +2,278 @@
 
 import {
   DollarOutlined,
-  HeartFilled,
   PlayCircleFilled,
   ReloadOutlined,
+  ShoppingOutlined,
   TrophyFilled,
 } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button, message } from "antd";
+import { isAxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import AthleteMarketItemCard from "@/components/AthleteMarketItem";
 import ProfileCorner from "@/components/ProfileCorner";
-import {
-  MAX_BATTLES,
-  readGameSession,
-  writeGameSession,
-  type GameSession,
-} from "@/lib/gameSession";
+import { gameService } from "@/services/gameService";
+import type { MarketAthlete, ShopItem, TeamAthlete } from "@/types/game";
 
-import { athletePool, type AthleteMarketItem } from "./athletes";
 import styles from "./MarketPage.module.css";
 
-type BoardSlot = {
-  id: string;
-  areaIndex: number;
-  slotIndex: number;
-  item: AthleteMarketItem | null;
-};
-
 const areaLabels = ["Defesa", "Centro", "Ataque"];
+const TEAM_MAX = 6;
+const GRID_COLS = 3;
 
-function findAthleteById(id: string | null | undefined): AthleteMarketItem | null {
-  if (!id) return null;
-  return athletePool.find((item) => item?.id === id) ?? null;
+// Linha do grid (posY) sugerida por tipo de atleta — formacao pre-determinada (RF008).
+function rowForType(type: TeamAthlete["type"]): number {
+  if (type === "goalkeeper" || type === "defender") return 0;
+  if (type === "attacker") return 2;
+  return 1;
 }
 
-function createBoardSlots(
-  selectedAthleteIds: Array<string | null> = []
-): BoardSlot[] {
+type BoardSlot = {
+  posX: number;
+  posY: number;
+  athlete: TeamAthlete | null;
+};
+
+function emptyBoard(): BoardSlot[] {
   const slots: BoardSlot[] = [];
-  for (let areaIndex = 0; areaIndex < 3; areaIndex++) {
-    for (let slotIndex = 0; slotIndex < 3; slotIndex++) {
-      const boardIndex = areaIndex * 3 + slotIndex;
-      slots.push({
-        id: `slot-${areaIndex}-${slotIndex}`,
-        areaIndex,
-        slotIndex,
-        item: findAthleteById(selectedAthleteIds[boardIndex]),
-      });
+  for (let posY = 0; posY < 3; posY++) {
+    for (let posX = 0; posX < 3; posX++) {
+      slots.push({ posX, posY, athlete: null });
     }
   }
   return slots;
 }
 
-function shuffleItems(
-  items: Array<AthleteMarketItem | null>
-): Array<AthleteMarketItem | null> {
-  const next = [...items];
-  for (let i = next.length - 1; i > 0; i -= 1) {
-    const randomIndex = Math.floor(Math.random() * (i + 1));
-    [next[i], next[randomIndex]] = [next[randomIndex], next[i]];
+/** Distribui os atletas do time no grid pela linha sugerida do tipo. */
+function placeTeamOnBoard(athletes: TeamAthlete[]): BoardSlot[] {
+  const board = emptyBoard();
+  const used = new Set<number>();
+  for (const athlete of athletes) {
+    const preferredRow = rowForType(athlete.type);
+    const rowOrder = [preferredRow, 1, 0, 2].filter(
+      (row, idx, arr) => arr.indexOf(row) === idx
+    );
+    let placed = false;
+    for (const posY of rowOrder) {
+      for (let posX = 0; posX < GRID_COLS && !placed; posX++) {
+        const slot = board.find((s) => s.posX === posX && s.posY === posY);
+        if (slot && slot.athlete === null) {
+          slot.athlete = athlete;
+          used.add(athlete.id);
+          placed = true;
+        }
+      }
+      if (placed) break;
+    }
   }
-  return next;
+  return board;
 }
 
-function renderAthleteIcon(icon: string, className: string) {
-  if (icon.startsWith("/")) {
-    return <img src={icon} alt="" className={className} aria-hidden="true" />;
-  }
-  return <span className={className}>{icon}</span>;
+function slotKey(posX: number, posY: number): string {
+  return `${posX},${posY}`;
 }
 
-function getSelectedAthleteIds(slots: BoardSlot[]): Array<string | null> {
-  return slots.map((slot) => slot.item?.id ?? null);
+function apiErrorMessage(error: unknown, fallback: string): string {
+  if (isAxiosError(error)) {
+    const data = error.response?.data as { message?: string } | undefined;
+    return data?.message ?? fallback;
+  }
+  return fallback;
 }
 
 export default function MarketPage() {
   const router = useRouter();
-  const [gameSession, setGameSession] = useState<GameSession>(() =>
-    readGameSession()
-  );
-  const [marketItems, setMarketItems] = useState<Array<AthleteMarketItem | null>>(
-    athletePool.slice(0, 3)
-  );
-  const [boardSlots, setBoardSlots] = useState<BoardSlot[]>(() =>
-    createBoardSlots(readGameSession().selectedAthleteIds)
-  );
-  const [dragOverId, setDragOverId] = useState<string | null>(null);
-  const [isSellZoneActive, setIsSellZoneActive] = useState(false);
-  const coins = gameSession.coins;
-  const currentBattle = gameSession.currentBattle;
-  const victories = gameSession.victories;
-  const lives = gameSession.lives;
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const availableCount = useMemo(
-    () => marketItems.filter((item) => item !== null).length,
-    [marketItems]
+  const [coins, setCoins] = useState(0);
+  const [market, setMarket] = useState<MarketAthlete[]>([]);
+  const [refreshCost, setRefreshCost] = useState(0);
+  const [team, setTeam] = useState<TeamAthlete[]>([]);
+  const [board, setBoard] = useState<BoardSlot[]>(() => emptyBoard());
+  const [items, setItems] = useState<ShopItem[]>([]);
+  const [round, setRound] = useState(1);
+  const [victory, setVictory] = useState(0);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isBusy, setIsBusy] = useState(false);
+  const [dragOverKey, setDragOverKey] = useState<string | null>(null);
+
+  const athletesOnBoard = useMemo(
+    () => board.filter((slot) => slot.athlete !== null).length,
+    [board]
   );
 
-  function commitGameSession(
-    updater: (currentSession: GameSession) => GameSession
-  ) {
-    setGameSession((currentSession) => {
-      const nextSession = writeGameSession(updater(currentSession));
-      return nextSession;
+  // Carrega mercado, equipe e itens do backend em paralelo.
+  const loadAll = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const [marketData, teamData, itemsData] = await Promise.all([
+        gameService.getMarket(),
+        gameService.getTeam(),
+        gameService.getItems().catch(() => []),
+      ]);
+
+      setMarket(marketData.athletes);
+      setRefreshCost(marketData.refresh_cost);
+      setItems(itemsData);
+
+      if (teamData) {
+        setTeam(teamData.athletes);
+        setBoard(placeTeamOnBoard(teamData.athletes));
+        setRound(teamData.round);
+        setVictory(teamData.victory);
+      } else {
+        setTeam([]);
+        setBoard(emptyBoard());
+      }
+    } catch (error) {
+      messageApi.error(apiErrorMessage(error, "Falha ao carregar o jogo."));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [messageApi]);
+
+  // Saldo de moedas vem do perfil (/auth/me).
+  const refreshCoins = useCallback(async () => {
+    try {
+      const raw = localStorage.getItem("user");
+      const stored = raw ? (JSON.parse(raw) as { coins?: number }) : null;
+      if (stored?.coins !== undefined) {
+        setCoins(stored.coins);
+      }
+    } catch {
+      // ignora — o saldo aparece apos a primeira acao do backend.
+    }
+  }, []);
+
+  useEffect(() => {
+    // Defere para fora do corpo sincrono do effect (evita setState sincrono).
+    const timer = setTimeout(() => {
+      void loadAll();
+      void refreshCoins();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadAll, refreshCoins]);
+
+  const ownedIds = useMemo(() => new Set(team.map((a) => a.id)), [team]);
+
+  async function handleBuyAthlete(athlete: MarketAthlete) {
+    if (isBusy) return;
+    if (team.length >= TEAM_MAX) {
+      messageApi.warning(`Time cheio (max ${TEAM_MAX} atletas).`);
+      return;
+    }
+    setIsBusy(true);
+    try {
+      const result = await gameService.buyAthlete(athlete.id);
+      if (result?.user?.coins !== undefined) {
+        setCoins(result.user.coins);
+      }
+      messageApi.success(`${athlete.name} contratado!`);
+      await loadAll();
+    } catch (error) {
+      messageApi.error(apiErrorMessage(error, "Nao foi possivel comprar o atleta."));
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
+  async function handleRefreshMarket() {
+    if (isBusy) return;
+    setIsBusy(true);
+    try {
+      const data = await gameService.refreshMarket();
+      setMarket(data.athletes);
+      setRefreshCost(data.refresh_cost);
+      messageApi.success("Mercado atualizado.");
+    } catch (error) {
+      messageApi.error(apiErrorMessage(error, "Nao foi possivel atualizar o mercado."));
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
+  // ----- Drag & drop para posicionar atletas do time no grid -----
+  function handleDragStart(event: React.DragEvent, athleteId: number, from: string) {
+    event.dataTransfer.setData("athleteId", String(athleteId));
+    event.dataTransfer.setData("from", from);
+    event.dataTransfer.effectAllowed = "move";
+  }
+
+  function handleDropOnSlot(event: React.DragEvent, posX: number, posY: number) {
+    event.preventDefault();
+    setDragOverKey(null);
+    const athleteId = Number(event.dataTransfer.getData("athleteId"));
+    if (!athleteId) return;
+
+    setBoard((current) => {
+      const next = current.map((slot) => ({ ...slot }));
+      const target = next.find((s) => s.posX === posX && s.posY === posY);
+      if (!target) return current;
+
+      const source = next.find((s) => s.athlete?.id === athleteId);
+      const athlete =
+        source?.athlete ?? team.find((a) => a.id === athleteId) ?? null;
+      if (!athlete) return current;
+
+      if (target.athlete && source) {
+        // troca de posicoes
+        source.athlete = target.athlete;
+      } else if (source) {
+        source.athlete = null;
+      }
+      target.athlete = athlete;
+      return next;
     });
   }
 
-  function handleRotateMarket() {
-    if (coins < 1) return;
-    commitGameSession((currentSession) => ({
-      ...currentSession,
-      coins: currentSession.coins - 1,
-    }));
-    setMarketItems(() => shuffleItems(athletePool).slice(0, 3));
-  }
-
-  function handleDragStart(
-    event: React.DragEvent<HTMLButtonElement>,
-    itemId: string
-  ) {
-    event.dataTransfer.setData("text/plain", itemId);
-    event.dataTransfer.effectAllowed = "move";
-  }
-
-  function handleDragStartFromSlot(
-    event: React.DragEvent<HTMLDivElement>,
-    itemId: string,
-    sourceSlotId: string
-  ) {
-    event.dataTransfer.setData("itemId", itemId);
-    event.dataTransfer.setData("sourceSlotId", sourceSlotId);
-    event.dataTransfer.effectAllowed = "move";
-  }
-
-  function handleDragEndFromSlot() {
-    setDragOverId(null);
-    setIsSellZoneActive(false);
-  }
-
-  function handleSellAthlete(slotId: string) {
-    const nextSlots = boardSlots.map((slot) =>
-      slot.id === slotId ? { ...slot, item: null } : slot
+  function handleRemoveFromBoard(posX: number, posY: number) {
+    setBoard((current) =>
+      current.map((slot) =>
+        slot.posX === posX && slot.posY === posY ? { ...slot, athlete: null } : slot
+      )
     );
-
-    setBoardSlots(nextSlots);
-    commitGameSession((currentSession) => ({
-      ...currentSession,
-      coins: currentSession.coins + 2,
-      selectedAthleteIds: getSelectedAthleteIds(nextSlots),
-    }));
   }
 
-  function handleSellDrop(event: React.DragEvent<HTMLDivElement>) {
-    event.preventDefault();
-    setDragOverId(null);
-    setIsSellZoneActive(false);
+  // Atletas do time ainda nao posicionados no grid (banco de reservas).
+  const benchAthletes = useMemo(() => {
+    const placed = new Set(
+      board.filter((s) => s.athlete).map((s) => s.athlete!.id)
+    );
+    return team.filter((a) => !placed.has(a.id));
+  }, [board, team]);
 
-    const sourceSlotId = event.dataTransfer.getData("sourceSlotId");
-    if (!sourceSlotId) return;
-
-    const sourceSlot = boardSlots.find((slot) => slot.id === sourceSlotId);
-    if (!sourceSlot?.item) return;
-
-    handleSellAthlete(sourceSlotId);
-  }
-
-  function handleDrop(event: React.DragEvent<HTMLDivElement>, slotId: string) {
-    event.preventDefault();
-    setDragOverId(null);
-
-    const sourceSlotId = event.dataTransfer.getData("sourceSlotId");
-    const draggedId =
-      event.dataTransfer.getData("itemId") ||
-      event.dataTransfer.getData("text/plain");
-
-    if (!draggedId) return;
-
-    const targetSlot = boardSlots.find((s) => s.id === slotId);
-    if (!targetSlot || targetSlot.item !== null) return;
-
-    if (sourceSlotId) {
-      const sourceSlot = boardSlots.find((s) => s.id === sourceSlotId);
-      if (!sourceSlot || !sourceSlot.item) return;
-
-      const athletesInTargetArea = boardSlots.filter(
-        (s) => s.areaIndex === targetSlot.areaIndex && s.item !== null
-      ).length;
-      if (athletesInTargetArea >= 3) return;
-
-      const nextSlots = boardSlots.map((slot) => {
-        if (slot.id === sourceSlotId) return { ...slot, item: null };
-        if (slot.id === slotId) return { ...slot, item: sourceSlot.item };
-        return slot;
-      });
-
-      setBoardSlots(nextSlots);
-      commitGameSession((currentSession) => ({
-        ...currentSession,
-        selectedAthleteIds: getSelectedAthleteIds(nextSlots),
-      }));
+  async function handlePlay() {
+    if (isBusy) return;
+    if (athletesOnBoard !== TEAM_MAX) {
+      messageApi.warning(
+        `Posicione exatamente ${TEAM_MAX} atletas para jogar (atual: ${athletesOnBoard}).`
+      );
       return;
     }
-
-    const draggedItem = marketItems.find((item) => item?.id === draggedId);
-    if (!draggedItem) return;
-
-    const alreadyOnBoard = boardSlots.some(
-      (slot) => slot.item?.id === draggedId
-    );
-    if (alreadyOnBoard) return;
-
-    const athletesOnBoard = boardSlots.filter((s) => s.item !== null).length;
-    if (athletesOnBoard >= 5) return;
-
-    const athletesInArea = boardSlots.filter(
-      (s) => s.areaIndex === targetSlot.areaIndex && s.item !== null
-    ).length;
-    if (athletesInArea >= 3) return;
-
-    if (coins < 3) return;
-
-    const nextSlots = boardSlots.map((slot) =>
-      slot.id === slotId ? { ...slot, item: draggedItem } : slot
-    );
-
-    setBoardSlots(nextSlots);
-    commitGameSession((currentSession) => ({
-      ...currentSession,
-      coins: currentSession.coins - 3,
-      selectedAthleteIds: getSelectedAthleteIds(nextSlots),
-    }));
-
-    setMarketItems((current) =>
-      current.map((item) => (item?.id !== draggedId ? item : null))
-    );
-  }
-
-  function handlePlayMatch() {
-    const onBoard = boardSlots.filter((s) => s.item !== null).length;
-    if (onBoard === 0) {
-      return;
+    setIsBusy(true);
+    try {
+      const positions = board
+        .filter((slot) => slot.athlete !== null)
+        .map((slot) => ({
+          athleteId: slot.athlete!.id,
+          posX: slot.posX,
+          posY: slot.posY,
+        }));
+      const snap = await gameService.salvarEstado(positions);
+      // Passa o snapshot para a batalha jogar exatamente esta formacao.
+      sessionStorage.setItem("autosoccer:snapshotId", String(snap.snapshotId));
+      router.push("/battle");
+    } catch (error) {
+      messageApi.error(apiErrorMessage(error, "Nao foi possivel salvar a formacao."));
+      setIsBusy(false);
     }
-
-    router.push("/battle");
   }
-
-  const athletesOnBoard = boardSlots.filter((s) => s.item !== null).length;
 
   return (
     <main className={styles.main}>
+      {contextHolder}
       <span className={styles.brandFloating} aria-label="AutoSoccer">
         <img src="/logo.png" alt="AutoSoccer" />
       </span>
@@ -267,11 +289,11 @@ export default function MarketPage() {
               <button
                 type="button"
                 className={styles.playButton}
-                onClick={handlePlayMatch}
-                disabled={athletesOnBoard === 0}
+                onClick={handlePlay}
+                disabled={isBusy || athletesOnBoard !== TEAM_MAX}
                 title={
-                  athletesOnBoard === 0
-                    ? "Escale ao menos 1 atleta para jogar"
+                  athletesOnBoard !== TEAM_MAX
+                    ? `Posicione ${TEAM_MAX} atletas para jogar`
                     : "Iniciar partida"
                 }
               >
@@ -288,27 +310,21 @@ export default function MarketPage() {
                   {coins}
                 </span>
               </div>
-
               <div className={styles.hudItem}>
-                <span className={styles.hudLabel}>Batalha</span>
-                <span className={styles.hudValue}>
-                  {currentBattle}/{MAX_BATTLES}
-                </span>
+                <span className={styles.hudLabel}>Rodada</span>
+                <span className={styles.hudValue}>{round}</span>
               </div>
-
               <div className={styles.hudItem}>
                 <span className={styles.hudLabel}>Vitórias</span>
                 <span className={styles.hudValue}>
                   <TrophyFilled />
-                  {victories}
+                  {victory}
                 </span>
               </div>
-
               <div className={styles.hudItem}>
-                <span className={styles.hudLabel}>Vidas</span>
+                <span className={styles.hudLabel}>Elenco</span>
                 <span className={styles.hudValue}>
-                  <HeartFilled />
-                  {lives}
+                  {team.length}/{TEAM_MAX}
                 </span>
               </div>
             </div>
@@ -320,129 +336,206 @@ export default function MarketPage() {
             <div className={styles.pitchQuarterArc} aria-hidden="true" />
 
             <div className={styles.boardAreas}>
-              {[0, 1, 2].map((areaIndex) => {
-                const slotsInArea = boardSlots.filter(
-                  (s) => s.areaIndex === areaIndex
-                );
-
-                return (
-                  <div key={`area-${areaIndex}`} className={styles.fieldArea}>
-                    <h3 className={styles.areaLabel}>{areaLabels[areaIndex]}</h3>
-                    <div className={styles.slotsGrid}>
-                      {slotsInArea.map((slot) => (
+              {[0, 1, 2].map((posY) => (
+                <div key={`area-${posY}`} className={styles.fieldArea}>
+                  <h3 className={styles.areaLabel}>{areaLabels[posY]}</h3>
+                  <div className={styles.slotsGrid}>
+                    {[0, 1, 2].map((posX) => {
+                      const slot = board.find(
+                        (s) => s.posX === posX && s.posY === posY
+                      )!;
+                      const key = slotKey(posX, posY);
+                      return (
                         <div
-                          key={slot.id}
+                          key={key}
                           className={`${styles.fieldSlot} ${
-                            dragOverId === slot.id ? styles.fieldSlotActive : ""
+                            dragOverKey === key ? styles.fieldSlotActive : ""
                           }`}
                           onDragOver={(event) => {
                             event.preventDefault();
-                            setDragOverId(slot.id);
+                            setDragOverKey(key);
                           }}
-                          onDragLeave={() => setDragOverId(null)}
-                          onDrop={(event) => handleDrop(event, slot.id)}
-                          aria-label={`Vaga ${slot.slotIndex + 1} em ${areaLabels[areaIndex]}`}
+                          onDragLeave={() => setDragOverKey(null)}
+                          onDrop={(event) => handleDropOnSlot(event, posX, posY)}
+                          aria-label={`Vaga ${posX + 1} em ${areaLabels[posY]}`}
                         >
-                          {slot.item ? (
+                          {slot.athlete ? (
                             <div
                               className={styles.boardItem}
                               draggable
                               onDragStart={(event) =>
-                                handleDragStartFromSlot(
-                                  event,
-                                  slot.item!.id,
-                                  slot.id
-                                )
+                                handleDragStart(event, slot.athlete!.id, "board")
                               }
-                              onDragEnd={handleDragEndFromSlot}
-                              aria-label={`${slot.item.name} em campo`}
-                              title="Arraste para mover ou vender"
+                              onDoubleClick={() =>
+                                handleRemoveFromBoard(posX, posY)
+                              }
+                              title="Arraste para mover · clique duplo para tirar"
                             >
-                              {renderAthleteIcon(slot.item.icon, styles.itemIcon)}
                               <span className={styles.itemName}>
-                                {slot.item.name}
+                                {slot.athlete.name}
+                              </span>
+                              <span className={styles.itemOverall}>
+                                {slot.athlete.overall}
                               </span>
                             </div>
                           ) : (
                             <span className={styles.emptySlot}>+</span>
                           )}
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
+
+          {benchAthletes.length > 0 && (
+            <div className={styles.bench} aria-label="Reservas">
+              <span className={styles.benchLabel}>Reservas:</span>
+              {benchAthletes.map((athlete) => (
+                <div
+                  key={athlete.id}
+                  className={styles.benchItem}
+                  draggable
+                  onDragStart={(event) =>
+                    handleDragStart(event, athlete.id, "bench")
+                  }
+                  title="Arraste para o campo"
+                >
+                  {athlete.name} · {athlete.overall}
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <aside className={styles.sidebar}>
           <section className={styles.marketSection} aria-labelledby="market-title">
-          <div className={styles.marketHeader}>
-            <h1 id="market-title" className={styles.title}>
-              Mercado
-            </h1>
-            <p className={styles.marketHint}>
-              Itens disponíveis: {availableCount} / 3
-            </p>
-          </div>
+            <div className={styles.marketHeader}>
+              <h1 id="market-title" className={styles.title}>
+                Mercado
+              </h1>
+              <p className={styles.marketHint}>
+                {isLoading ? "Carregando..." : `${market.length} atletas`}
+              </p>
+            </div>
 
-          <div className={styles.marketGrid}>
-            {marketItems.map((item, index) => (
-              <AthleteMarketItemCard
-                key={item?.id ?? `empty-${index + 1}`}
-                item={item}
-                index={index}
-                onDragStart={handleDragStart}
-              />
-            ))}
-          </div>
+            <div className={styles.marketGrid}>
+              {market.map((athlete) => {
+                const owned = ownedIds.has(athlete.id) || athlete.status === "OWNED";
+                return (
+                  <button
+                    key={athlete.id}
+                    type="button"
+                    className={styles.marketItem}
+                    onClick={() => handleBuyAthlete(athlete)}
+                    disabled={isBusy || owned || coins < athlete.cost}
+                    title={
+                      owned
+                        ? "Ja contratado"
+                        : coins < athlete.cost
+                          ? "Moedas insuficientes"
+                          : `Contratar por ${athlete.cost}`
+                    }
+                  >
+                    <span className={styles.itemName}>{athlete.name}</span>
+                    <div className={styles.itemStats}>
+                      <span className={styles.statChip}>ATK {athlete.attack}</span>
+                      <span className={styles.statChip}>VEL {athlete.velocity}</span>
+                      <span className={styles.statChip}>DEF {athlete.defense}</span>
+                    </div>
+                    <span className={styles.itemCost}>
+                      {owned ? "No elenco" : `${athlete.cost} 🪙`}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
-          <Button
-            type="primary"
-            size="large"
-            block
-            icon={<ReloadOutlined />}
-            onClick={handleRotateMarket}
-            disabled={coins < 1}
-            style={{
-              height: 52,
-              fontSize: "1.1rem",
-              fontWeight: 800,
-              border: "4px solid #1f2937",
-              boxShadow: "0 5px 0 #b45309",
-              textShadow: "0 2px 0 rgba(0,0,0,0.15)",
-            }}
-          >
-            Atualizar Mercado · 1 🪙
-          </Button>
+            <Button
+              type="primary"
+              size="large"
+              block
+              icon={<ReloadOutlined />}
+              onClick={handleRefreshMarket}
+              disabled={isBusy}
+              style={{
+                height: 52,
+                fontSize: "1.1rem",
+                fontWeight: 800,
+                border: "4px solid #1f2937",
+                boxShadow: "0 5px 0 #b45309",
+              }}
+            >
+              Atualizar Mercado{refreshCost > 0 ? ` · ${refreshCost} 🪙` : ""}
+            </Button>
           </section>
 
-          <div
-            className={`${styles.sellDropZone} ${
-              isSellZoneActive ? styles.sellDropZoneActive : ""
-            }`}
-            onDragOver={(event) => {
-              event.preventDefault();
-              setDragOverId(null);
-              setIsSellZoneActive(true);
-            }}
-            onDragLeave={() => setIsSellZoneActive(false)}
-            onDrop={handleSellDrop}
-            aria-label="Arraste um atleta para vender por 2 moedas"
-            title="Vender atleta por 2 moedas"
-          >
-            <img
-              src="/sell-boots-cropped.png"
-              alt=""
-              className={styles.sellDropImage}
-              aria-hidden="true"
-            />
-            <span className={styles.sellDropLabel}>Venda</span>
-            <span className={styles.sellDropReward}>+2</span>
-          </div>
+          {items.length > 0 && (
+            <section className={styles.marketSection} aria-label="Loja de itens">
+              <div className={styles.marketHeader}>
+                <h2 className={styles.title}>
+                  <ShoppingOutlined /> Itens
+                </h2>
+              </div>
+              <div className={styles.itemsList}>
+                {items.map((item) => (
+                  <ItemRow
+                    key={item.id}
+                    item={item}
+                    disabled={isBusy || coins < item.cost}
+                    onBuy={async () => {
+                      setIsBusy(true);
+                      try {
+                        const r = await gameService.buyItem(item.id);
+                        if (r?.user?.coins !== undefined) setCoins(r.user.coins);
+                        messageApi.success(`${item.name} comprado!`);
+                      } catch (error) {
+                        messageApi.error(
+                          apiErrorMessage(error, "Nao foi possivel comprar o item.")
+                        );
+                      } finally {
+                        setIsBusy(false);
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+              <p className={styles.itemsHint}>
+                Compre itens e aplique-os aos atletas no modo de preparacao.
+              </p>
+            </section>
+          )}
         </aside>
       </div>
     </main>
+  );
+}
+
+function ItemRow({
+  item,
+  disabled,
+  onBuy,
+}: {
+  item: ShopItem;
+  disabled: boolean;
+  onBuy: () => void;
+}) {
+  const mods: string[] = [];
+  if (item.modifiers.attack) mods.push(`ATK +${item.modifiers.attack}`);
+  if (item.modifiers.defense) mods.push(`DEF +${item.modifiers.defense}`);
+  if (item.modifiers.velocity) mods.push(`VEL +${item.modifiers.velocity}`);
+
+  return (
+    <div className={styles.itemRow}>
+      <div className={styles.itemRowInfo}>
+        <strong>{item.name}</strong>
+        <span className={styles.itemRowMods}>{mods.join(" · ")}</span>
+      </div>
+      <Button size="small" onClick={onBuy} disabled={disabled}>
+        {item.cost} 🪙
+      </Button>
+    </div>
   );
 }

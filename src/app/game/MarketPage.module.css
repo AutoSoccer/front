@@ -444,3 +444,94 @@
     height: 92px;
   }
 }
+
+/* ---- Integracao backend: overall no token, reservas, itens ---- */
+.itemOverall {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #b45309;
+  background: rgba(251, 191, 36, 0.25);
+  border-radius: 6px;
+  padding: 0 6px;
+  margin-top: 2px;
+}
+
+.itemCost {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #166534;
+}
+
+.bench {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 2px dashed rgba(31, 41, 55, 0.25);
+  border-radius: 12px;
+}
+
+.benchLabel {
+  font-weight: 800;
+  color: #1f2937;
+  font-size: 0.85rem;
+}
+
+.benchItem {
+  cursor: grab;
+  padding: 6px 10px;
+  background: #fff;
+  border: 3px solid #1f2937;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  box-shadow: 0 3px 0 rgba(31, 41, 55, 0.35);
+}
+
+.benchItem:active {
+  cursor: grabbing;
+}
+
+.itemCost {
+  font-size: 0.78rem;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 3px solid #1f2937;
+  border-radius: 10px;
+}
+
+.itemRowInfo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.itemRowMods {
+  font-size: 0.74rem;
+  color: #475569;
+  font-weight: 700;
+}
+
+.itemsHint {
+  margin-top: 8px;
+  font-size: 0.74rem;
+  color: #64748b;
+  text-align: center;
+}

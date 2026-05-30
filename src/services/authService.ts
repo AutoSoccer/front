@@ -13,6 +13,13 @@ export const authService = {
     return response.data;
   },
 
+  // RF005 — cria uma conta de convidado e retorna { token, user }.
+  // Envia {} explicito: o Fastify rejeita body vazio com Content-Type JSON.
+  guest: async () => {
+    const response = await api.post("/auth/guest", {});
+    return response.data;
+  },
+
   register: async (data: RegisterFormInputs) => {
     // O backend provavelmente não precisa do confirmPassword, então enviamos apenas o necessário
     const payload = {
