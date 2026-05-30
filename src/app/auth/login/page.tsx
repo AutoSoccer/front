@@ -12,9 +12,10 @@ import { loginSchema, type LoginFormInputs } from "@/lib/schemas/auth";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginAsGuest } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isGuestLoading, setIsGuestLoading] = useState(false);
 
   const {
     register,
@@ -30,6 +31,17 @@ export default function LoginPage() {
       await login(data);
     } catch {
       setError("Falha ao entrar. Verifique e-mail/apelido e senha.");
+    }
+  };
+
+  const onGuest = async () => {
+    setError(null);
+    setIsGuestLoading(true);
+    try {
+      await loginAsGuest();
+    } catch {
+      setError("Não foi possível entrar como convidado.");
+      setIsGuestLoading(false);
     }
   };
 
@@ -132,22 +144,23 @@ export default function LoginPage() {
                 Cadastrar
               </Button>
             </Link>
-            <Link href="/game" className={styles.guestLink}>
-              <Button
-                type="primary"
-                size="large"
-                block
-                style={{
-                  height: 50,
-                  fontSize: "1.1rem",
-                  fontWeight: 800,
-                  border: "4px solid #1f2937",
-                  boxShadow: "0 5px 0 #b45309",
-                }}
-              >
-                Jogar como Convidado
-              </Button>
-            </Link>
+            <Button
+              type="primary"
+              size="large"
+              block
+              loading={isGuestLoading}
+              onClick={onGuest}
+              className={styles.guestLink}
+              style={{
+                height: 50,
+                fontSize: "1.1rem",
+                fontWeight: 800,
+                border: "4px solid #1f2937",
+                boxShadow: "0 5px 0 #b45309",
+              }}
+            >
+              Jogar como Convidado
+            </Button>
           </div>
         </div>
       </form>

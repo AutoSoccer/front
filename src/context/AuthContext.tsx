@@ -19,6 +19,7 @@ export type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (data: LoginFormInputs) => Promise<void>;
+  loginAsGuest: () => Promise<void>;
   register: (data: RegisterFormInputs) => Promise<void>;
   logout: () => void;
 };
@@ -63,6 +64,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [router]
   );
 
+  const loginAsGuest = useCallback(async () => {
+    const response = await authService.guest();
+    localStorage.setItem("token", response.token);
+    localStorage.setItem("user", JSON.stringify(response.user));
+    setUser(response.user);
+    router.push("/game");
+  }, [router]);
+
   const register = useCallback(
     async (data: RegisterFormInputs) => {
       await authService.register(data);
@@ -84,10 +93,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: !!user,
       isLoading,
       login,
+      loginAsGuest,
       register,
       logout,
     }),
-    [user, isLoading, login, register, logout]
+    [user, isLoading, login, loginAsGuest, register, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
