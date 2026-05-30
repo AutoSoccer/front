@@ -126,6 +126,23 @@ function eventSideClass(event: ApiEvent): string {
     : styles.logItemOpponent;
 }
 
+// Posicao horizontal da bola na arena (RF006): 0% = gol do jogador (esquerda),
+// 100% = gol do rival (direita), 50% = meio-campo (ponte central).
+// A bola avanca da defesa ao ataque conforme a posse e a linha (ballRow).
+function ballLeftPercent(event: ApiEvent | undefined): number {
+  if (!event) return 50;
+  if (event.goal) {
+    // Gol: a bola termina na meta do time que sofreu.
+    return event.possession === "player" ? 94 : 6;
+  }
+  const row = Math.max(0, Math.min(2, event.ballRow));
+  // player ataca para a direita: defesa(16%) -> meio(33%) -> ataque(48%, perto da ponte)
+  const playerByRow = [16, 33, 48];
+  // opponent ataca para a esquerda: defesa(84%) -> meio(67%) -> ataque(52%)
+  const opponentByRow = [84, 67, 52];
+  return event.possession === "player" ? playerByRow[row] : opponentByRow[row];
+}
+
 function scoreUpTo(events: ApiEvent[], lastIndex: number): string {
   let player = 0;
   let opponent = 0;
@@ -294,6 +311,12 @@ export default function BattlePage() {
   const playerField = useMemo(() => buildField(data?.player), [data]);
   const opponentField = useMemo(() => buildField(data?.opponent), [data]);
 
+  // Bola que acompanha as jogadas turno a turno (RF006).
+  const showBall = status === "playing" && visibleCount > 0;
+  const ballLeft = showBall ? ballLeftPercent(lastShown) : 50;
+  const ballIsGoal = !!lastShown?.goal;
+  const ballPossession = lastShown?.possession ?? "player";
+
   const winner = data?.winner ?? "draw";
   const resolution = data?.resolution;
   const persisted = data?.persisted;
@@ -361,6 +384,25 @@ export default function BattlePage() {
             grid={opponentField}
             mirrored
           />
+
+          {showBall && (
+            <div
+              className={`${styles.ballTracker} ${
+                ballIsGoal ? styles.ballTrackerGoal : ""
+              }`}
+              style={{ left: `${ballLeft}%` }}
+              aria-hidden="true"
+            >
+              <span
+                className={`${styles.ballHalo} ${
+                  ballPossession === "player"
+                    ? styles.ballHaloPlayer
+                    : styles.ballHaloOpponent
+                }`}
+              />
+              <span className={styles.ball}>⚽</span>
+            </div>
+          )}
         </section>
 
         <section className={styles.logPanel} aria-labelledby="log-title">
