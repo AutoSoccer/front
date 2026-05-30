@@ -212,8 +212,19 @@ export default function BattlePage() {
   useEffect(() => {
     let active = true;
 
+    // Usa o snapshot salvo no mercado (formacao exata); senao o backend cria um.
+    const snapshotIdRaw =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("autosoccer:snapshotId")
+        : null;
+    const body = snapshotIdRaw ? { snapshot_id: Number(snapshotIdRaw) } : {};
+    if (snapshotIdRaw && typeof window !== "undefined") {
+      // consome o snapshot — proxima partida exige nova formacao.
+      sessionStorage.removeItem("autosoccer:snapshotId");
+    }
+
     api
-      .post<JogarRodadaResponse>("/partida/jogar-rodada", {})
+      .post<JogarRodadaResponse>("/partida/jogar-rodada", body)
       .then((response) => {
         if (!active) return;
         setData(response.data);
@@ -246,8 +257,9 @@ export default function BattlePage() {
     const timers: Array<ReturnType<typeof setTimeout>> = [];
 
     if (events.length === 0) {
-      setIsEndModalOpen(true);
-      return;
+      // Defere para fora do corpo sincrono do effect (evita setState sincrono).
+      const t = setTimeout(() => setIsEndModalOpen(true), 0);
+      return () => clearTimeout(t);
     }
 
     events.forEach((_, index) => {
