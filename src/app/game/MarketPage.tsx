@@ -12,6 +12,7 @@ import { isAxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import MarketAthleteCard from "@/components/MarketAthleteCard";
 import ProfileCorner from "@/components/ProfileCorner";
 import { gameService } from "@/services/gameService";
 import type { MarketAthlete, ShopItem, TeamAthlete } from "@/types/game";
@@ -371,6 +372,12 @@ export default function MarketPage() {
                               }
                               title="Arraste para mover · clique duplo para tirar"
                             >
+                              <img
+                                src="/athlete.svg"
+                                alt=""
+                                className={styles.itemIcon}
+                                aria-hidden="true"
+                              />
                               <span className={styles.itemName}>
                                 {slot.athlete.name}
                               </span>
@@ -425,30 +432,13 @@ export default function MarketPage() {
               {market.map((athlete) => {
                 const owned = ownedIds.has(athlete.id) || athlete.status === "OWNED";
                 return (
-                  <button
+                  <MarketAthleteCard
                     key={athlete.id}
-                    type="button"
-                    className={styles.marketItem}
-                    onClick={() => handleBuyAthlete(athlete)}
-                    disabled={isBusy || owned || coins < athlete.cost}
-                    title={
-                      owned
-                        ? "Ja contratado"
-                        : coins < athlete.cost
-                          ? "Moedas insuficientes"
-                          : `Contratar por ${athlete.cost}`
-                    }
-                  >
-                    <span className={styles.itemName}>{athlete.name}</span>
-                    <div className={styles.itemStats}>
-                      <span className={styles.statChip}>ATK {athlete.attack}</span>
-                      <span className={styles.statChip}>VEL {athlete.velocity}</span>
-                      <span className={styles.statChip}>DEF {athlete.defense}</span>
-                    </div>
-                    <span className={styles.itemCost}>
-                      {owned ? "No elenco" : `${athlete.cost} 🪙`}
-                    </span>
-                  </button>
+                    athlete={athlete}
+                    owned={owned}
+                    disabled={isBusy || coins < athlete.cost}
+                    onBuy={handleBuyAthlete}
+                  />
                 );
               })}
             </div>

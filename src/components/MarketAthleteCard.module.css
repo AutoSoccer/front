@@ -1,0 +1,158 @@
+.marketSlot {
+  border-radius: 14px;
+  min-height: 120px;
+  background: #ffffff;
+  border: 4px solid var(--border-arcade);
+  padding: 0.6rem;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.22);
+  color: var(--text-strong);
+}
+
+.marketSlot:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25);
+}
+
+.marketSlot:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.22);
+}
+
+.marketSlot:focus-visible {
+  outline: 3px solid #ffd96a;
+  outline-offset: 2px;
+}
+
+.marketSlot:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.cardAvatar {
+  width: 64px;
+  height: 80px;
+  border-radius: 10px;
+  border: 3px solid var(--border-arcade);
+  background: linear-gradient(180deg, #ffe7b8 0%, #f3d39c 100%);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.cardAvatarImage {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.cardName {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardTag {
+  border: 2px solid var(--border-arcade);
+  background: var(--brand-primary);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 0.18rem 0.5rem;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.cardTagOwned {
+  background: var(--success, #16a34a);
+}
+
+.cardStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem 0.5rem;
+  min-width: 0;
+}
+
+.statsLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  background: #f3f4f6;
+  border: 2px solid var(--border-arcade);
+  border-radius: 6px;
+  padding: 0.15rem 0.4rem;
+  min-width: 0;
+}
+
+.statLabel {
+  color: var(--text-muted);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.statValue {
+  color: var(--text-strong);
+  font-weight: 800;
+  font-size: 0.78rem;
+  min-width: 0;
+}
+
+.costLine {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+.costValue {
+  color: #b45309;
+}
+
+@media (max-width: 600px) {
+  .marketSlot {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .cardHeader,
+  .cardStats {
+    width: 100%;
+  }
+  .cardHeader {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
