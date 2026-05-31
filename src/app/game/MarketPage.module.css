@@ -143,7 +143,7 @@
 
 .boardStage {
   position: relative;
-  min-height: 520px;
+  min-height: 580px;
   border-radius: 10px;
   border: 4px solid var(--border-arcade);
   background:
@@ -300,25 +300,24 @@
 
 .itemIcon {
   display: block;
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
-  font-size: 2rem;
+  font-size: 1.6rem;
   text-align: center;
-  line-height: 64px;
+  line-height: 48px;
   flex-shrink: 0;
 }
 
 .itemName {
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text-strong);
-  line-height: 1.1;
+  line-height: 1.15;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .sellDropZone {
