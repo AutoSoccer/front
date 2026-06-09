@@ -1,8 +1,32 @@
 {
   "title": "Meu Perfil",
-  "menu": {
-    "profile": "Meu Perfil",
-    "market": "Mercado",
-    "logout": "Sair"
+  "loading": "Carregando perfil...",
+  "tags": {
+    "trainer": "Treinador",
+    "initialLeague": "Liga Inicial"
+  },
+  "fields": {
+    "name": "Nome",
+    "namePlaceholder": "Seu nome",
+    "nickname": "Apelido",
+    "nicknamePlaceholder": "Seu apelido",
+    "email": "E-mail",
+    "emailPlaceholder": "seu@email.com",
+    "phone": "Telefone",
+    "phonePlaceholder": "(00) 00000-0000"
+  },
+  "stats": {
+    "victories": "Vitórias",
+    "defeats": "Derrotas",
+    "trophies": "Troféus"
+  },
+  "feedback": {
+    "success": "Dados validados! Salvamento será integrado em breve.",
+    "error": "Não foi possível salvar as alterações."
+  },
+  "actions": {
+    "back": "Voltar ao Menu",
+    "save": "Salvar",
+    "logout": "Sair da conta"
   }
 }

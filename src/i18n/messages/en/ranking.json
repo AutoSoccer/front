@@ -1,4 +1,44 @@
 {
   "title": "Ranking",
-  "empty": "No players in the ranking yet."
+  "empty": "No players in the ranking yet.",
+  "loading": "Loading ranking...",
+  "header": {
+    "season": "Overall season",
+    "subtitle": "AutoSoccer's greatest trophy collectors.",
+    "backHomeAria": "Back to menu"
+  },
+  "podium": {
+    "aria": "Ranking podium"
+  },
+  "list": {
+    "label": "Overall standings",
+    "top": "Top 50",
+    "playersCount": "{count} players",
+    "you": "You"
+  },
+  "loadingPanel": "Updating standings...",
+  "error": "Could not load the ranking right now.",
+  "retry": "Try again",
+  "emptyPodium": {
+    "title": "The podium is still empty",
+    "description": "The first player to complete a campaign opens the ranking."
+  },
+  "user": {
+    "guestTitle": "Sign in to see your stats",
+    "guestDescription": "Guests can follow the ranking, but only registered accounts keep campaigns and trophies.",
+    "guestLogin": "Sign in",
+    "noCampaign": "No campaign completed",
+    "noCampaignDescription": "Finish your first campaign to unlock win rate, position and competitive history.",
+    "startCampaign": "Start campaign",
+    "yourPerformance": "Your performance",
+    "noPosition": "No position",
+    "winRateAria": "{winRate}% wins and {lossRate}% losses",
+    "winRateLabel": "wins",
+    "victoriesLegend": "Wins",
+    "defeatsLegend": "Losses",
+    "trophies": "Trophies",
+    "victories": "Wins",
+    "defeats": "Losses",
+    "completedCampaigns": "{count} campaigns completed"
+  }
 }

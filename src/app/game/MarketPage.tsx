@@ -9,12 +9,14 @@ import {
   TrophyFilled,
 } from "@ant-design/icons";
 import { Button } from "antd";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import AthleteMarketItemCard from "@/components/AthleteMarketItem";
 import ProfileCorner from "@/components/ProfileCorner";
 import { useAuth } from "@/hooks/useAuth";
+import { getErrorMessage } from "@/lib/errors";
 import {
   INITIAL_LIVES,
   readGameSession,
@@ -23,6 +25,7 @@ import {
   writeGameSession,
   type GameSession,
 } from "@/lib/gameSession";
+import { useAreaLabels } from "@/lib/labels";
 import { gameService } from "@/services/gameService";
 
 import {
@@ -38,7 +41,6 @@ type BoardSlot = {
   item: AthleteMarketItem | null;
 };
 
-const areaLabels = ["Defesa", "Centro", "Ataque"];
 const BOARD_LIMIT = 6;
 
 function createEmptyBoardSlots(): BoardSlot[] {
@@ -128,20 +130,13 @@ function getSelectedAthleteIds(slots: BoardSlot[]): Array<string | null> {
   return slots.map((slot) => slot.item?.id ?? null);
 }
 
-function getErrorMessage(error: unknown): string {
-  if (typeof error === "object" && error !== null && "response" in error) {
-    const maybeResponse = error as {
-      response?: { data?: { message?: string } };
-    };
-    return maybeResponse.response?.data?.message ?? "Nao foi possivel concluir a acao.";
-  }
-
-  return "Nao foi possivel concluir a acao.";
-}
-
 export default function MarketPage() {
   const router = useRouter();
   const { user } = useAuth();
+  const t = useTranslations("game.market");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
+  const areaLabels = useAreaLabels();
   const [gameSession, setGameSession] = useState<GameSession>(() =>
     readGameSession()
   );
@@ -169,6 +164,9 @@ export default function MarketPage() {
     () => marketItems.filter((item) => item !== null).length,
     [marketItems]
   );
+
+  const resolveActionError = (error: unknown): string =>
+    getErrorMessage(error, tErrors) || t("errors.genericAction");
 
   useEffect(() => {
     let cancelled = false;
@@ -215,7 +213,7 @@ export default function MarketPage() {
         setRefreshCost(market.refresh_cost);
       } catch (error) {
         if (!cancelled) {
-          setErrorMessage(getErrorMessage(error));
+          setErrorMessage(resolveActionError(error));
         }
       } finally {
         if (!cancelled) {
@@ -229,6 +227,7 @@ export default function MarketPage() {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   function commitGameSession(
@@ -243,7 +242,7 @@ export default function MarketPage() {
   async function handleRotateMarket() {
     if (isActionPending) return;
     if (coins < refreshCost) {
-      setErrorMessage("Saldo insuficiente para atualizar o mercado.");
+      setErrorMessage(t("errors.insufficientCoinsRefresh"));
       return;
     }
 
@@ -258,7 +257,7 @@ export default function MarketPage() {
         coins: market.coins,
       }));
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      setErrorMessage(resolveActionError(error));
     } finally {
       setIsActionPending(false);
     }
@@ -313,7 +312,7 @@ export default function MarketPage() {
         selectedAthleteIds: getSelectedAthleteIds(nextSlots),
       }));
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      setErrorMessage(resolveActionError(error));
     } finally {
       setIsActionPending(false);
     }
@@ -394,7 +393,7 @@ export default function MarketPage() {
     if (athletesInArea >= 3) return;
 
     if (coins < draggedItem.cost) {
-      setErrorMessage("Saldo insuficiente para comprar este atleta.");
+      setErrorMessage(t("errors.insufficientCoinsBuy"));
       return;
     }
 
@@ -416,7 +415,7 @@ export default function MarketPage() {
         selectedAthleteIds: getSelectedAthleteIds(nextSlots),
       }));
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      setErrorMessage(resolveActionError(error));
     } finally {
       setIsActionPending(false);
     }
@@ -450,18 +449,21 @@ export default function MarketPage() {
       setIsAbandonModalOpen(false);
       router.push("/");
     } catch (error) {
-      setErrorMessage(getErrorMessage(error));
+      setErrorMessage(resolveActionError(error));
     } finally {
       setIsActionPending(false);
     }
   }
 
   const athletesOnBoard = boardSlots.filter((s) => s.item !== null).length;
+  const planningTitle = teamName
+    ? t("planningWithTeam", { teamName })
+    : t("planningTitle");
 
   return (
     <main className={styles.main}>
-      <span className={styles.brandFloating} aria-label="AutoSoccer">
-        <img src="/logo.png" alt="AutoSoccer" />
+      <span className={styles.brandFloating} aria-label={tCommon("appName")}>
+        <img src="/logo.png" alt={tCommon("appName")} />
       </span>
       <ProfileCorner coins={coins} />
 
@@ -470,7 +472,7 @@ export default function MarketPage() {
           <div className={styles.boardHeader}>
             <div className={styles.boardHeaderTop}>
               <h2 id="board-title" className={styles.boardTitle}>
-                {teamName ? `Planejamento - ${teamName}` : "Planejamento da Equipe"}
+                {planningTitle}
               </h2>
               <div className={styles.boardActions}>
                 <button
@@ -481,12 +483,12 @@ export default function MarketPage() {
                     setIsAbandonModalOpen(true);
                   }}
                   disabled={isLoading || isActionPending}
-                  title="Desistir da campanha"
+                  title={t("giveTitle")}
                 >
                   <span className={styles.brokenHeartIcon} aria-hidden="true">
                     <HeartOutlined />
                   </span>
-                  Desistir
+                  {t("give")}
                 </button>
                 <button
                   type="button"
@@ -495,19 +497,19 @@ export default function MarketPage() {
                   disabled={athletesOnBoard === 0 || isLoading || isActionPending}
                   title={
                     athletesOnBoard === 0
-                      ? "Escale ao menos 1 atleta para jogar"
-                      : "Iniciar partida"
+                      ? t("playDisabledTitle")
+                      : t("playEnabledTitle")
                   }
                 >
                   <PlayCircleFilled />
-                  Jogar
+                  {t("play")}
                 </button>
               </div>
             </div>
 
-            <div className={styles.matchHud} aria-label="Resumo da partida">
+            <div className={styles.matchHud} aria-label={t("matchSummary")}>
               <div className={styles.hudItem}>
-                <span className={styles.hudLabel}>Moedas</span>
+                <span className={styles.hudLabel}>{t("coins")}</span>
                 <span className={styles.hudValue}>
                   <DollarOutlined />
                   {coins}
@@ -515,12 +517,12 @@ export default function MarketPage() {
               </div>
 
               <div className={styles.hudItem}>
-                <span className={styles.hudLabel}>Rodada</span>
+                <span className={styles.hudLabel}>{t("round")}</span>
                 <span className={styles.hudValue}>{currentBattle}</span>
               </div>
 
               <div className={styles.hudItem}>
-                <span className={styles.hudLabel}>Vitorias</span>
+                <span className={styles.hudLabel}>{t("victories")}</span>
                 <span className={styles.hudValue}>
                   <TrophyFilled />
                   {victories}/{WINS_TO_FINISH}
@@ -528,7 +530,7 @@ export default function MarketPage() {
               </div>
 
               <div className={styles.hudItem}>
-                <span className={styles.hudLabel}>Vidas</span>
+                <span className={styles.hudLabel}>{t("lives")}</span>
                 <span className={styles.hudValue}>
                   <HeartFilled />
                   {lives}
@@ -570,7 +572,10 @@ export default function MarketPage() {
                           }}
                           onDragLeave={() => setDragOverId(null)}
                           onDrop={(event) => void handleDrop(event, slot.id)}
-                          aria-label={`Vaga ${slot.slotIndex + 1} em ${areaLabels[areaIndex]}`}
+                          aria-label={t("areaLabel", {
+                            slot: slot.slotIndex + 1,
+                            area: areaLabels[areaIndex],
+                          })}
                         >
                           {slot.item ? (
                             <div
@@ -584,8 +589,10 @@ export default function MarketPage() {
                                 )
                               }
                               onDragEnd={handleDragEndFromSlot}
-                              aria-label={`${slot.item.name} em campo`}
-                              title="Arraste para mover ou vender"
+                              aria-label={t("boardItemLabel", {
+                                name: slot.item.name,
+                              })}
+                              title={t("boardItemTitle")}
                             >
                               {renderAthleteIcon(slot.item.icon, styles.itemIcon)}
                               <span className={styles.itemName}>
@@ -593,7 +600,9 @@ export default function MarketPage() {
                               </span>
                             </div>
                           ) : (
-                            <span className={styles.emptySlot}>+</span>
+                            <span className={styles.emptySlot}>
+                              {t("emptyMarket")}
+                            </span>
                           )}
                         </div>
                       ))}
@@ -609,12 +618,15 @@ export default function MarketPage() {
           <section className={styles.marketSection} aria-labelledby="market-title">
             <div className={styles.marketHeader}>
               <h1 id="market-title" className={styles.title}>
-                Mercado
+                {t("title")}
               </h1>
               <p className={styles.marketHint}>
                 {isLoading
-                  ? "Carregando..."
-                  : `Itens disponiveis: ${availableCount} / ${marketItems.length}`}
+                  ? tCommon("loading")
+                  : t("available", {
+                      available: availableCount,
+                      total: marketItems.length,
+                    })}
               </p>
             </div>
 
@@ -634,7 +646,7 @@ export default function MarketPage() {
               size="large"
               block
               icon={<ReloadOutlined />}
-              aria-label={`Atualizar Mercado por ${refreshCost} moeda`}
+              aria-label={t("refreshAria", { cost: refreshCost })}
               onClick={() => void handleRotateMarket()}
               disabled={isLoading || isActionPending || coins < refreshCost}
               style={{
@@ -646,7 +658,7 @@ export default function MarketPage() {
                 textShadow: "0 2px 0 rgba(0,0,0,0.15)",
               }}
             >
-              Atualizar Mercado ({refreshCost} <DollarOutlined aria-hidden="true" />)
+              {t("refresh")} ({refreshCost} <DollarOutlined aria-hidden="true" />)
             </Button>
           </section>
 
@@ -661,8 +673,8 @@ export default function MarketPage() {
             }}
             onDragLeave={() => setIsSellZoneActive(false)}
             onDrop={handleSellDrop}
-            aria-label="Arraste um atleta para vender por 2 moedas"
-            title="Vender atleta por 2 moedas"
+            aria-label={t("sellAria")}
+            title={t("sellTitle")}
           >
             <img
               src="/sell-boots-cropped.png"
@@ -670,8 +682,8 @@ export default function MarketPage() {
               className={styles.sellDropImage}
               aria-hidden="true"
             />
-            <span className={styles.sellDropLabel}>Venda</span>
-            <span className={styles.sellDropReward}>+2</span>
+            <span className={styles.sellDropLabel}>{t("sellLabel")}</span>
+            <span className={styles.sellDropReward}>{t("sellReward")}</span>
           </div>
         </aside>
       </div>
@@ -688,11 +700,8 @@ export default function MarketPage() {
                 <HeartOutlined />
               </span>
             </span>
-            <h2 id="abandon-title">Quer mesmo desistir?</h2>
-            <p id="abandon-description">
-              Seu time e todo o progresso desta campanha serão apagados. Seus
-              troféus e histórico não serão alterados.
-            </p>
+            <h2 id="abandon-title">{t("abandon.title")}</h2>
+            <p id="abandon-description">{t("abandon.description")}</p>
             {errorMessage && (
               <p className={styles.confirmError} role="alert">
                 {errorMessage}
@@ -704,7 +713,7 @@ export default function MarketPage() {
                 onClick={() => setIsAbandonModalOpen(false)}
                 disabled={isActionPending}
               >
-                Continuar
+                {t("abandon.continue")}
               </Button>
               <Button
                 type="primary"
@@ -718,7 +727,7 @@ export default function MarketPage() {
                 onClick={() => void handleConfirmAbandon()}
                 loading={isActionPending}
               >
-                Sim, desistir
+                {t("abandon.confirm")}
               </Button>
             </div>
           </div>

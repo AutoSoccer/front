@@ -3,5 +3,43 @@
   "campaign": {
     "start": "Start campaign",
     "starting": "Starting..."
+  },
+  "market": {
+    "title": "Market",
+    "planningTitle": "Team Planning",
+    "planningWithTeam": "Planning - {teamName}",
+    "available": "Available items: {available} / {total}",
+    "matchSummary": "Match summary",
+    "coins": "Coins",
+    "round": "Round",
+    "victories": "Wins",
+    "lives": "Lives",
+    "give": "Give up",
+    "giveTitle": "Give up campaign",
+    "play": "Play",
+    "playDisabledTitle": "Pick at least 1 athlete to play",
+    "playEnabledTitle": "Start match",
+    "refresh": "Refresh Market",
+    "refreshAria": "Refresh market for {cost} coin",
+    "refresh_with_cost": "Refresh Market ({cost})",
+    "areaLabel": "Slot {slot} in {area}",
+    "boardItemLabel": "{name} on the field",
+    "boardItemTitle": "Drag to move or sell",
+    "sellLabel": "Sell",
+    "sellAria": "Drag an athlete to sell for 2 coins",
+    "sellTitle": "Sell athlete for 2 coins",
+    "sellReward": "+2",
+    "emptyMarket": "+",
+    "errors": {
+      "insufficientCoinsRefresh": "Not enough coins to refresh the market.",
+      "insufficientCoinsBuy": "Not enough coins to buy this athlete.",
+      "genericAction": "Could not complete the action."
+    },
+    "abandon": {
+      "title": "Are you sure you want to give up?",
+      "description": "Your team and all progress in this campaign will be erased. Your trophies and history will not be changed.",
+      "continue": "Continue",
+      "confirm": "Yes, give up"
+    }
   }
 }

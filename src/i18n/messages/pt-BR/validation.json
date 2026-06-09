@@ -1,5 +1,19 @@
 {
-  "required": "Campo obrigatorio.",
-  "email": "Informe um e-mail valido.",
-  "minLength": "Tamanho minimo nao atingido."
+  "required": "Campo obrigatório.",
+  "email": "Informe um e-mail válido.",
+  "minLength": "Tamanho mínimo não atingido.",
+  "auth": {
+    "identifierRequired": "O e-mail ou apelido é obrigatório.",
+    "identifierInvalid": "Informe um e-mail ou apelido válido.",
+    "emailRequired": "O e-mail é obrigatório.",
+    "emailInvalid": "E-mail inválido.",
+    "passwordMin": "A senha deve ter pelo menos 6 caracteres.",
+    "passwordInvalid": "Senha inválida.",
+    "confirmRequired": "A confirmação de senha é obrigatória.",
+    "passwordsMismatch": "As senhas não coincidem.",
+    "nameMin": "O nome é muito curto.",
+    "nameInvalid": "O nome deve conter apenas letras.",
+    "nickname": "O apelido deve ter de 2 a 20 caracteres (letras, números e _).",
+    "phoneInvalid": "Telefone inválido. Use o formato (00) 00000-0000."
+  }
 }

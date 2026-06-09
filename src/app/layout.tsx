@@ -7,7 +7,7 @@ import AntdProvider from "@/providers/AntdProvider";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("home");
+  const t = await getTranslations("common.meta");
   return {
     title: t("title"),
     description: t("description"),

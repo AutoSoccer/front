@@ -1,8 +1,32 @@
 {
   "title": "My Profile",
-  "menu": {
-    "profile": "My Profile",
-    "market": "Market",
-    "logout": "Logout"
+  "loading": "Loading profile...",
+  "tags": {
+    "trainer": "Trainer",
+    "initialLeague": "Initial League"
+  },
+  "fields": {
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "nickname": "Nickname",
+    "nicknamePlaceholder": "Your nickname",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "phone": "Phone",
+    "phonePlaceholder": "(00) 00000-0000"
+  },
+  "stats": {
+    "victories": "Wins",
+    "defeats": "Losses",
+    "trophies": "Trophies"
+  },
+  "feedback": {
+    "success": "Data validated! Saving will be integrated soon.",
+    "error": "Could not save changes."
+  },
+  "actions": {
+    "back": "Back to menu",
+    "save": "Save",
+    "logout": "Sign out"
   }
 }

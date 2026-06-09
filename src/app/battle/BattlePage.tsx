@@ -10,10 +10,12 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Button } from "antd";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import ProfileCorner from "@/components/ProfileCorner";
+import { getErrorMessage } from "@/lib/errors";
 import {
   INITIAL_LIVES,
   readGameSession,
@@ -94,18 +96,23 @@ function sideForEvent(event: MatchEvent): MatchSide {
   return event.possession;
 }
 
-function titleForEvent(event: MatchEvent): string {
-  if (event.goal) return "Gol!";
-  if (event.kind === "turnover") return "Posse perdida";
-  if (event.kind === "shot") return "Finalizacao";
+type EventsTranslator = ReturnType<typeof useTranslations<"battle.events">>;
+
+function titleForEvent(event: MatchEvent, tEvents: EventsTranslator): string {
+  if (event.goal) return tEvents("goal");
+  if (event.kind === "turnover") return tEvents("turnover");
+  if (event.kind === "shot") return tEvents("shot");
   if (event.kind === "pass") {
-    return event.success ? "Passe completo" : "Passe interceptado";
+    return event.success ? tEvents("passOk") : tEvents("passFail");
   }
-  if (event.kind === "move") return "Avanco";
-  return event.success ? "Disputa vencida" : "Desarme";
+  if (event.kind === "move") return tEvents("advance");
+  return event.success ? tEvents("won") : tEvents("tackle");
 }
 
-function buildTurnLogs(events: MatchEvent[]): MatchTurnLog[] {
+function buildTurnLogs(
+  events: MatchEvent[],
+  tEvents: EventsTranslator,
+): MatchTurnLog[] {
   let playerScore = 0;
   let opponentScore = 0;
 
@@ -122,18 +129,12 @@ function buildTurnLogs(events: MatchEvent[]): MatchTurnLog[] {
       turn: event.turn,
       minute: formatMinute(event.turn),
       side: sideForEvent(event),
-      title: titleForEvent(event),
+      title: titleForEvent(event, tEvents),
       description: event.description,
       score: `${playerScore}x${opponentScore}`,
       outcome: event.goal ? "goal" : undefined,
     };
   });
-}
-
-function resultLabel(match: MatchResponse): string {
-  if (match.winner === "player") return "Vitoria";
-  if (match.winner === "opponent") return "Derrota";
-  return "Empate";
 }
 
 function nextSessionFromMatch(
@@ -174,6 +175,7 @@ function SharedBattleField({
   match: MatchResponse | null;
   visibleEventCount: number;
 }) {
+  const t = useTranslations("battle.field");
   const state = useMemo(() => {
     if (!match) {
       return { tokens: [] as FieldToken[], ball: null };
@@ -204,21 +206,18 @@ function SharedBattleField({
   }, [match, visibleEventCount]);
 
   return (
-    <section
-      className={styles.sharedField}
-      aria-label="Campo compartilhado horizontal 6 por 3"
-    >
+    <section className={styles.sharedField} aria-label={t("aria")}>
       <div
         className={`${styles.fieldTeamHeader} ${styles.fieldTeamHeaderMine}`}
       >
         <UserOutlined />
-        <strong>{match?.lineups.player.name ?? "Seu time"}</strong>
+        <strong>{match?.lineups.player.name ?? t("myTeam")}</strong>
       </div>
       <div
         className={`${styles.fieldTeamHeader} ${styles.fieldTeamHeaderOpponent}`}
       >
         <TeamOutlined />
-        <strong>{match?.lineups.opponent.name ?? "Adversario"}</strong>
+        <strong>{match?.lineups.opponent.name ?? t("opponent")}</strong>
       </div>
 
       <div className={styles.goalLine} aria-hidden="true" />
@@ -247,7 +246,12 @@ function SharedBattleField({
                           : styles.fieldPlayerTokenOpponent
                       }`}
                       key={`${token.team}-${token.athlete.id}`}
-                      title={`${token.athlete.name} - ATK ${token.athlete.attack} / VEL ${token.athlete.velocity} / DEF ${token.athlete.defense}`}
+                      title={t("tokenTitle", {
+                        name: token.athlete.name,
+                        attack: token.athlete.attack,
+                        velocity: token.athlete.velocity,
+                        defense: token.athlete.defense,
+                      })}
                     >
                       {renderAthleteIcon(styles.fieldPlayerIcon)}
                       <span>{token.athlete.name}</span>
@@ -257,7 +261,9 @@ function SharedBattleField({
                 {hasBall && (
                   <span
                     className={styles.ball}
-                    title={`Bola com ${state.ball?.athleteName ?? ""}`}
+                    title={t("ballTitle", {
+                      name: state.ball?.athleteName ?? "",
+                    })}
                   />
                 )}
               </div>
@@ -271,6 +277,10 @@ function SharedBattleField({
 
 export default function BattlePage() {
   const router = useRouter();
+  const t = useTranslations("battle");
+  const tEvents = useTranslations("battle.events");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const roundRequestRef = useRef<Promise<MatchResponse> | null>(null);
   const [gameSession, setGameSession] = useState<GameSession>(() =>
     readGameSession()
@@ -282,13 +292,20 @@ export default function BattlePage() {
   const [isBattleFinished, setIsBattleFinished] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const resultLabel = (matchValue: MatchResponse): string => {
+    if (matchValue.winner === "player") return t("result.victory");
+    if (matchValue.winner === "opponent") return t("result.defeat");
+    return t("result.draw");
+  };
+
   const currentLog = visibleLogs[visibleLogs.length - 1];
   const currentScore =
     currentLog?.score ??
     (match ? `${match.score.player}x${match.score.opponent}` : "0x0");
   const currentTurn = currentLog?.turn ?? 0;
   const totalTurns = match?.totalTurns ?? 12;
-  const finalOutcome = match?.winner === "draw" ? "Empate" : "Gol";
+  const finalOutcome =
+    match?.winner === "draw" ? t("outcome.draw") : t("outcome.goal");
   const rewardPrefix = (match?.resolution.coinsEarned ?? 0) > 0 ? "+" : "";
   const trophyPrefix = (match?.resolution.trophiesDelta ?? 0) > 0 ? "+" : "";
 
@@ -302,7 +319,7 @@ export default function BattlePage() {
       const positions = buildPositionsFromSession(session);
 
       if (positions.length === 0) {
-        setErrorMessage("Escale ao menos 1 atleta antes de jogar.");
+        setErrorMessage(t("errors.noAthletes"));
         setIsWaitingForRound(false);
         return;
       }
@@ -318,7 +335,7 @@ export default function BattlePage() {
         setMatch(result);
         setIsWaitingForRound(false);
 
-        const logs = buildTurnLogs(result.events);
+        const logs = buildTurnLogs(result.events, tEvents);
         if (logs.length === 0) {
           setVisibleLogs([]);
           setIsBattleFinished(true);
@@ -340,12 +357,9 @@ export default function BattlePage() {
         });
       } catch (error) {
         if (!cancelled) {
-          const message =
-            typeof error === "object" && error !== null && "response" in error
-              ? (error as { response?: { data?: { message?: string } } }).response
-                  ?.data?.message
-              : null;
-          setErrorMessage(message ?? "Nao foi possivel iniciar a batalha.");
+          setErrorMessage(
+            getErrorMessage(error, tErrors) || t("errors.battleStartFailed"),
+          );
           setIsWaitingForRound(false);
         }
       }
@@ -357,6 +371,7 @@ export default function BattlePage() {
       cancelled = true;
       timers.forEach((timer) => clearTimeout(timer));
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleReturnToMarket() {
@@ -376,24 +391,27 @@ export default function BattlePage() {
 
   return (
     <main className={styles.main}>
-      <span className={styles.brandFloating} aria-label="AutoSoccer">
-        <img src="/logo.png" alt="AutoSoccer" />
+      <span className={styles.brandFloating} aria-label={tCommon("appName")}>
+        <img src="/logo.png" alt={tCommon("appName")} />
       </span>
       <ProfileCorner />
 
       <div className={styles.battleShell}>
-        <header className={styles.headerCombined} aria-label="Resumo da batalha">
+        <header
+          className={styles.headerCombined}
+          aria-label={t("header.summaryAria")}
+        >
           <div className={styles.headerSection}>
-            <h1 className={styles.title}>Batalha</h1>
+            <h1 className={styles.title}>{t("title")}</h1>
           </div>
           <div className={styles.headerDivider} aria-hidden="true" />
           <div className={styles.headerSection}>
-            <span className={styles.hudLabel}>Placar</span>
+            <span className={styles.hudLabel}>{t("header.score")}</span>
             <strong className={styles.scoreValue}>{currentScore}</strong>
           </div>
           <div className={styles.headerDivider} aria-hidden="true" />
           <div className={styles.headerSection}>
-            <span className={styles.hudLabel}>Turno</span>
+            <span className={styles.hudLabel}>{t("header.turn")}</span>
             <strong className={styles.hudValue}>
               {currentTurn}/{totalTurns}
             </strong>
@@ -403,27 +421,34 @@ export default function BattlePage() {
         {match && isBattleFinished && !isEndModalOpen && (
           <section
             className={styles.resultSummary}
-            aria-label="Resultado final da batalha"
+            aria-label={t("summary.ariaLabel")}
           >
             <div className={styles.resultSummaryMain}>
               <span className={styles.resultSummaryLabel}>
                 {resultLabel(match)}
               </span>
               <strong>
-                Placar final {match.score.player}x{match.score.opponent}
+                {t("summary.finalScore", {
+                  player: match.score.player,
+                  opponent: match.score.opponent,
+                })}
               </strong>
             </div>
             <div className={styles.resultSummaryRewards}>
               <span>
                 <DollarOutlined />
-                {rewardPrefix}
-                {match.resolution.coinsEarned} moedas
+                {t("summary.coins", {
+                  prefix: rewardPrefix,
+                  count: match.resolution.coinsEarned,
+                })}
               </span>
               {match.resolution.matchEnded && (
                 <span>
                   <TrophyFilled />
-                  {trophyPrefix}
-                  {match.resolution.trophiesDelta} troféus
+                  {t("summary.trophies", {
+                    prefix: trophyPrefix,
+                    count: match.resolution.trophiesDelta,
+                  })}
                 </span>
               )}
             </div>
@@ -433,13 +458,13 @@ export default function BattlePage() {
               icon={<ArrowLeftOutlined />}
               onClick={handleReturnToMarket}
             >
-              Voltar ao Mercado
+              {t("summary.backToMarket")}
             </Button>
           </section>
         )}
 
         <div className={styles.battleGrid}>
-          <section className={styles.arena} aria-label="Campo da partida">
+          <section className={styles.arena} aria-label={t("field.aria")}>
             <SharedBattleField
               match={match}
               visibleEventCount={visibleLogs.length}
@@ -448,26 +473,26 @@ export default function BattlePage() {
 
           <section className={styles.logPanel} aria-labelledby="log-title">
             <div className={styles.logHeader}>
-              <h2 id="log-title">Logs da rodada</h2>
+              <h2 id="log-title">{t("log.title")}</h2>
               <span className={styles.logStatus}>
                 {isWaitingForRound
-                  ? "Aguardando..."
+                  ? t("log.waiting")
                   : `${visibleLogs.length}/${totalTurns}`}
               </span>
             </div>
 
             <ul className={styles.logsList}>
               {isWaitingForRound ? (
-                <li className={styles.loadingLog}>Preparando partida...</li>
+                <li className={styles.loadingLog}>{t("log.preparing")}</li>
               ) : errorMessage ? (
                 <li className={styles.loadingLog}>
                   <span>{errorMessage}</span>
                   <Button type="primary" onClick={() => router.push("/game")}>
-                    Voltar ao Mercado
+                    {t("summary.backToMarket")}
                   </Button>
                 </li>
               ) : visibleLogs.length === 0 ? (
-                <li className={styles.loadingLog}>Rodada finalizada.</li>
+                <li className={styles.loadingLog}>{t("log.finished")}</li>
               ) : (
                 visibleLogs.map((log) => (
                   <li
@@ -496,12 +521,15 @@ export default function BattlePage() {
             <span className={styles.resultBadge}>{finalOutcome}</span>
             <h2>
               {match.resolution.matchEnded
-                ? "Campanha finalizada"
-                : "Batalha finalizada"}
+                ? t("modal.campaignEnded")
+                : t("modal.battleEnded")}
             </h2>
             <p>
-              {resultLabel(match)} - Placar final: {match.score.player}x
-              {match.score.opponent}
+              {t("modal.result", {
+                result: resultLabel(match),
+                player: match.score.player,
+                opponent: match.score.opponent,
+              })}
             </p>
             <div className={styles.rewardStack}>
               <div className={styles.coinDelta}>
@@ -510,7 +538,7 @@ export default function BattlePage() {
                   {rewardPrefix}
                   {match.resolution.coinsEarned}
                 </strong>
-                <span>moedas</span>
+                <span>{t("modal.coins")}</span>
               </div>
 
               {match.resolution.matchEnded && (
@@ -520,7 +548,7 @@ export default function BattlePage() {
                     {trophyPrefix}
                     {match.resolution.trophiesDelta}
                   </strong>
-                  <span>trofeus</span>
+                  <span>{t("modal.trophies")}</span>
                 </div>
               )}
             </div>
@@ -532,7 +560,7 @@ export default function BattlePage() {
                     icon={<EyeOutlined />}
                     onClick={() => setIsEndModalOpen(false)}
                   >
-                    Ver resultados
+                    {t("modal.viewResults")}
                   </Button>
                   <Button
                     type="primary"
@@ -540,7 +568,7 @@ export default function BattlePage() {
                     icon={<HomeFilled />}
                     onClick={handleGoToMenu}
                   >
-                    Menu
+                    {t("modal.menu")}
                   </Button>
                 </>
               ) : (
@@ -550,7 +578,7 @@ export default function BattlePage() {
                     icon={<EyeOutlined />}
                     onClick={() => setIsEndModalOpen(false)}
                   >
-                    Ver resultados
+                    {t("modal.viewResults")}
                   </Button>
                   <Button
                     type="primary"
@@ -558,7 +586,7 @@ export default function BattlePage() {
                     icon={<ArrowLeftOutlined />}
                     onClick={handleReturnToMarket}
                   >
-                    Voltar ao Mercado
+                    {t("modal.backToMarket")}
                   </Button>
                 </>
               )}

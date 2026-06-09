@@ -3,19 +3,27 @@
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "antd";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useAuth } from "@/hooks/useAuth";
-import { loginSchema, type LoginFormInputs } from "@/lib/schemas/auth";
+import { getErrorMessage } from "@/lib/errors";
+import { buildLoginSchema, type LoginFormInputs } from "@/lib/schemas/auth";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
   const { login, loginAsGuest } = useAuth();
+  const t = useTranslations("auth.login");
+  const tCommon = useTranslations("common");
+  const tValidation = useTranslations("validation");
+  const tErrors = useTranslations("errors");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isGuestLoading, setIsGuestLoading] = useState(false);
+
+  const loginSchema = useMemo(() => buildLoginSchema(tValidation), [tValidation]);
 
   const {
     register,
@@ -29,8 +37,8 @@ export default function LoginPage() {
     try {
       setError(null);
       await login(data);
-    } catch {
-      setError("Falha ao entrar. Verifique e-mail/apelido e senha.");
+    } catch (err) {
+      setError(getErrorMessage(err, tErrors) || t("errorGeneric"));
     }
   };
 
@@ -39,27 +47,27 @@ export default function LoginPage() {
       setError(null);
       setIsGuestLoading(true);
       await loginAsGuest();
-    } catch {
-      setError("Nao foi possivel entrar como convidado. Tente novamente.");
+    } catch (err) {
+      setError(getErrorMessage(err, tErrors) || t("errorGuest"));
       setIsGuestLoading(false);
     }
   };
 
   return (
     <main className={styles.container}>
-      <span className={styles.brandFloating} aria-label="AutoSoccer">
-        <img src="/logo.png" alt="AutoSoccer" />
+      <span className={styles.brandFloating} aria-label={tCommon("appName")}>
+        <img src="/logo.png" alt={tCommon("appName")} />
       </span>
 
       <form className={styles.card} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.fieldGroup}>
           <label className={styles.label} htmlFor="identifier">
-            E-mail
+            {t("email")}
           </label>
           <input
             id="identifier"
             type="text"
-            placeholder="Digite seu e-mail..."
+            placeholder={t("emailPlaceholder")}
             className={styles.input}
             autoComplete="username"
             {...register("identifier")}
@@ -71,13 +79,13 @@ export default function LoginPage() {
 
         <div className={styles.fieldGroup}>
           <label className={styles.label} htmlFor="password">
-            Senha
+            {t("password")}
           </label>
           <div className={styles.passwordWrap}>
             <input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="Digite sua senha..."
+              placeholder={t("passwordPlaceholder")}
               className={styles.input}
               autoComplete="current-password"
               {...register("password")}
@@ -86,7 +94,7 @@ export default function LoginPage() {
               type="button"
               className={styles.eyeButton}
               onClick={() => setShowPassword((value) => !value)}
-              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              aria-label={showPassword ? t("hidePassword") : t("showPassword")}
             >
               {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
             </button>
@@ -99,11 +107,9 @@ export default function LoginPage() {
         <button
           type="button"
           className={styles.forgot}
-          onClick={() =>
-            setError("Funcionalidade de recuperar senha em breve.")
-          }
+          onClick={() => setError(t("forgotInfo"))}
         >
-          Esqueci minha senha
+          {t("forgot")}
         </button>
 
         {error && <p className={styles.errorText}>{error}</p>}
@@ -124,7 +130,7 @@ export default function LoginPage() {
               textShadow: "0 2px 0 rgba(0,0,0,0.18)",
             }}
           >
-            Entrar
+            {t("submit")}
           </Button>
 
           <div className={styles.smallButtonsRow}>
@@ -141,7 +147,7 @@ export default function LoginPage() {
                   boxShadow: "0 5px 0 #b45309",
                 }}
               >
-                Cadastrar
+                {t("register")}
               </Button>
             </Link>
             <Button
@@ -160,7 +166,7 @@ export default function LoginPage() {
                 boxShadow: "0 5px 0 #b45309",
               }}
             >
-              Jogar como Convidado
+              {t("guest")}
             </Button>
           </div>
         </div>
