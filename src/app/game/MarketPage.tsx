@@ -3,24 +3,32 @@
 import {
   DollarOutlined,
   HeartFilled,
+  HeartOutlined,
   PlayCircleFilled,
   ReloadOutlined,
   TrophyFilled,
 } from "@ant-design/icons";
 import { Button } from "antd";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import AthleteMarketItemCard from "@/components/AthleteMarketItem";
 import ProfileCorner from "@/components/ProfileCorner";
+import { useAuth } from "@/hooks/useAuth";
 import {
-  MAX_BATTLES,
+  INITIAL_LIVES,
   readGameSession,
+  resetGameSession,
+  WINS_TO_FINISH,
   writeGameSession,
   type GameSession,
 } from "@/lib/gameSession";
+import { gameService } from "@/services/gameService";
 
-import { athletePool, type AthleteMarketItem } from "./athletes";
+import {
+  mapApiAthleteToMarketItem,
+  type AthleteMarketItem,
+} from "./athletes";
 import styles from "./MarketPage.module.css";
 
 type BoardSlot = {
@@ -31,39 +39,82 @@ type BoardSlot = {
 };
 
 const areaLabels = ["Defesa", "Centro", "Ataque"];
+const BOARD_LIMIT = 6;
 
-function findAthleteById(id: string | null | undefined): AthleteMarketItem | null {
-  if (!id) return null;
-  return athletePool.find((item) => item?.id === id) ?? null;
-}
-
-function createBoardSlots(
-  selectedAthleteIds: Array<string | null> = []
-): BoardSlot[] {
+function createEmptyBoardSlots(): BoardSlot[] {
   const slots: BoardSlot[] = [];
-  for (let areaIndex = 0; areaIndex < 3; areaIndex++) {
-    for (let slotIndex = 0; slotIndex < 3; slotIndex++) {
-      const boardIndex = areaIndex * 3 + slotIndex;
+  for (let areaIndex = 0; areaIndex < 3; areaIndex += 1) {
+    for (let slotIndex = 0; slotIndex < 3; slotIndex += 1) {
       slots.push({
         id: `slot-${areaIndex}-${slotIndex}`,
         areaIndex,
         slotIndex,
-        item: findAthleteById(selectedAthleteIds[boardIndex]),
+        item: null,
       });
     }
   }
   return slots;
 }
 
-function shuffleItems(
-  items: Array<AthleteMarketItem | null>
-): Array<AthleteMarketItem | null> {
-  const next = [...items];
-  for (let i = next.length - 1; i > 0; i -= 1) {
-    const randomIndex = Math.floor(Math.random() * (i + 1));
-    [next[i], next[randomIndex]] = [next[randomIndex], next[i]];
+function findAthleteById(
+  id: string | null | undefined,
+  athletes: AthleteMarketItem[]
+): AthleteMarketItem | null {
+  if (!id) return null;
+  return athletes.find((item) => item.id === id) ?? null;
+}
+
+function preferredAreaForAthlete(athlete: AthleteMarketItem): number {
+  if (athlete.type === "defender") return 0;
+  if (athlete.type === "midfielder") return 1;
+  return 2;
+}
+
+function placeAthleteInFirstOpenSlot(
+  slots: BoardSlot[],
+  athlete: AthleteMarketItem
+): void {
+  const preferredArea = preferredAreaForAthlete(athlete);
+  const areaOrder = [preferredArea, 1, 0, 2].filter(
+    (areaIndex, index, list) => list.indexOf(areaIndex) === index
+  );
+
+  for (const areaIndex of areaOrder) {
+    const slot = slots.find(
+      (entry) => entry.areaIndex === areaIndex && entry.item === null
+    );
+    if (slot) {
+      slot.item = athlete;
+      return;
+    }
   }
-  return next;
+}
+
+function createBoardSlots(
+  selectedAthleteIds: Array<string | null> = [],
+  ownedAthletes: AthleteMarketItem[] = []
+): BoardSlot[] {
+  const slots = createEmptyBoardSlots();
+  const placed = new Set<string>();
+
+  selectedAthleteIds.forEach((athleteId, index) => {
+    const athlete = findAthleteById(athleteId, ownedAthletes);
+    if (!athlete || placed.has(athlete.id) || !slots[index]) {
+      return;
+    }
+    slots[index].item = athlete;
+    placed.add(athlete.id);
+  });
+
+  for (const athlete of ownedAthletes) {
+    if (placed.has(athlete.id)) {
+      continue;
+    }
+    placeAthleteInFirstOpenSlot(slots, athlete);
+    placed.add(athlete.id);
+  }
+
+  return slots;
 }
 
 function renderAthleteIcon(icon: string, className: string) {
@@ -77,19 +128,38 @@ function getSelectedAthleteIds(slots: BoardSlot[]): Array<string | null> {
   return slots.map((slot) => slot.item?.id ?? null);
 }
 
+function getErrorMessage(error: unknown): string {
+  if (typeof error === "object" && error !== null && "response" in error) {
+    const maybeResponse = error as {
+      response?: { data?: { message?: string } };
+    };
+    return maybeResponse.response?.data?.message ?? "Nao foi possivel concluir a acao.";
+  }
+
+  return "Nao foi possivel concluir a acao.";
+}
+
 export default function MarketPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [gameSession, setGameSession] = useState<GameSession>(() =>
     readGameSession()
   );
   const [marketItems, setMarketItems] = useState<Array<AthleteMarketItem | null>>(
-    athletePool.slice(0, 3)
+    []
   );
   const [boardSlots, setBoardSlots] = useState<BoardSlot[]>(() =>
-    createBoardSlots(readGameSession().selectedAthleteIds)
+    createEmptyBoardSlots()
   );
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [isSellZoneActive, setIsSellZoneActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isActionPending, setIsActionPending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [refreshCost, setRefreshCost] = useState(1);
+  const [isAbandonModalOpen, setIsAbandonModalOpen] = useState(false);
+  const [teamName, setTeamName] = useState("");
+
   const coins = gameSession.coins;
   const currentBattle = gameSession.currentBattle;
   const victories = gameSession.victories;
@@ -100,6 +170,67 @@ export default function MarketPage() {
     [marketItems]
   );
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadGameData() {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const [currentUser, market, team] = await Promise.all([
+          gameService.getCurrentUser(),
+          gameService.getMarket(),
+          gameService.getTeam(),
+        ]);
+
+        if (cancelled) {
+          return;
+        }
+
+        const owned = team?.athletes.map(mapApiAthleteToMarketItem) ?? [];
+        const storedSession = readGameSession();
+        const nextSession: GameSession = {
+          ...storedSession,
+          coins: currentUser.coins ?? storedSession.coins,
+          currentBattle: team?.round ?? storedSession.currentBattle,
+          victories: team?.victory ?? storedSession.victories,
+          losses: team?.lose ?? storedSession.losses,
+          lives:
+            typeof team?.lose === "number"
+              ? Math.max(0, INITIAL_LIVES - team.lose)
+              : storedSession.lives,
+        };
+        const slots = createBoardSlots(nextSession.selectedAthleteIds, owned);
+        const selectedAthleteIds = getSelectedAthleteIds(slots);
+        const syncedSession = writeGameSession({
+          ...nextSession,
+          selectedAthleteIds,
+        });
+
+        setBoardSlots(slots);
+        setGameSession(syncedSession);
+        setTeamName(team?.name ?? "");
+        setMarketItems(market.athletes.map(mapApiAthleteToMarketItem));
+        setRefreshCost(market.refresh_cost);
+      } catch (error) {
+        if (!cancelled) {
+          setErrorMessage(getErrorMessage(error));
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadGameData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
   function commitGameSession(
     updater: (currentSession: GameSession) => GameSession
   ) {
@@ -109,13 +240,28 @@ export default function MarketPage() {
     });
   }
 
-  function handleRotateMarket() {
-    if (coins < 1) return;
-    commitGameSession((currentSession) => ({
-      ...currentSession,
-      coins: currentSession.coins - 1,
-    }));
-    setMarketItems(() => shuffleItems(athletePool).slice(0, 3));
+  async function handleRotateMarket() {
+    if (isActionPending) return;
+    if (coins < refreshCost) {
+      setErrorMessage("Saldo insuficiente para atualizar o mercado.");
+      return;
+    }
+
+    setIsActionPending(true);
+    setErrorMessage(null);
+    try {
+      const market = await gameService.refreshMarket();
+      setMarketItems(market.athletes.map(mapApiAthleteToMarketItem));
+      setRefreshCost(market.refresh_cost);
+      commitGameSession((currentSession) => ({
+        ...currentSession,
+        coins: market.coins,
+      }));
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsActionPending(false);
+    }
   }
 
   function handleDragStart(
@@ -141,17 +287,36 @@ export default function MarketPage() {
     setIsSellZoneActive(false);
   }
 
-  function handleSellAthlete(slotId: string) {
-    const nextSlots = boardSlots.map((slot) =>
-      slot.id === slotId ? { ...slot, item: null } : slot
-    );
+  async function sellAthleteFromBoard(slotId: string) {
+    if (isActionPending) {
+      return;
+    }
 
-    setBoardSlots(nextSlots);
-    commitGameSession((currentSession) => ({
-      ...currentSession,
-      coins: currentSession.coins + 2,
-      selectedAthleteIds: getSelectedAthleteIds(nextSlots),
-    }));
+    const soldSlot = boardSlots.find((slot) => slot.id === slotId);
+    if (!soldSlot?.item) {
+      return;
+    }
+
+    setIsActionPending(true);
+    setErrorMessage(null);
+
+    try {
+      const sale = await gameService.sellAthlete(soldSlot.item.athleteId);
+      const nextSlots = boardSlots.map((slot) =>
+        slot.id === slotId ? { ...slot, item: null } : slot
+      );
+
+      setBoardSlots(nextSlots);
+      commitGameSession((currentSession) => ({
+        ...currentSession,
+        coins: sale.user.coins,
+        selectedAthleteIds: getSelectedAthleteIds(nextSlots),
+      }));
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsActionPending(false);
+    }
   }
 
   function handleSellDrop(event: React.DragEvent<HTMLDivElement>) {
@@ -165,12 +330,19 @@ export default function MarketPage() {
     const sourceSlot = boardSlots.find((slot) => slot.id === sourceSlotId);
     if (!sourceSlot?.item) return;
 
-    handleSellAthlete(sourceSlotId);
+    void sellAthleteFromBoard(sourceSlotId);
   }
 
-  function handleDrop(event: React.DragEvent<HTMLDivElement>, slotId: string) {
+  async function handleDrop(
+    event: React.DragEvent<HTMLDivElement>,
+    slotId: string
+  ) {
     event.preventDefault();
     setDragOverId(null);
+
+    if (isActionPending) {
+      return;
+    }
 
     const sourceSlotId = event.dataTransfer.getData("sourceSlotId");
     const draggedId =
@@ -214,29 +386,40 @@ export default function MarketPage() {
     if (alreadyOnBoard) return;
 
     const athletesOnBoard = boardSlots.filter((s) => s.item !== null).length;
-    if (athletesOnBoard >= 5) return;
+    if (athletesOnBoard >= BOARD_LIMIT) return;
 
     const athletesInArea = boardSlots.filter(
       (s) => s.areaIndex === targetSlot.areaIndex && s.item !== null
     ).length;
     if (athletesInArea >= 3) return;
 
-    if (coins < 3) return;
+    if (coins < draggedItem.cost) {
+      setErrorMessage("Saldo insuficiente para comprar este atleta.");
+      return;
+    }
 
-    const nextSlots = boardSlots.map((slot) =>
-      slot.id === slotId ? { ...slot, item: draggedItem } : slot
-    );
+    setIsActionPending(true);
+    setErrorMessage(null);
+    try {
+      const purchase = await gameService.buyAthlete(draggedItem.athleteId);
+      const nextSlots = boardSlots.map((slot) =>
+        slot.id === slotId ? { ...slot, item: draggedItem } : slot
+      );
 
-    setBoardSlots(nextSlots);
-    commitGameSession((currentSession) => ({
-      ...currentSession,
-      coins: currentSession.coins - 3,
-      selectedAthleteIds: getSelectedAthleteIds(nextSlots),
-    }));
-
-    setMarketItems((current) =>
-      current.map((item) => (item?.id !== draggedId ? item : null))
-    );
+      setBoardSlots(nextSlots);
+      setMarketItems((current) =>
+        current.map((item) => (item?.id !== draggedId ? item : null))
+      );
+      commitGameSession((currentSession) => ({
+        ...currentSession,
+        coins: purchase.user.coins,
+        selectedAthleteIds: getSelectedAthleteIds(nextSlots),
+      }));
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsActionPending(false);
+    }
   }
 
   function handlePlayMatch() {
@@ -245,7 +428,32 @@ export default function MarketPage() {
       return;
     }
 
+    const nextSession = writeGameSession({
+      ...gameSession,
+      selectedAthleteIds: getSelectedAthleteIds(boardSlots),
+    });
+    setGameSession(nextSession);
     router.push("/battle");
+  }
+
+  async function handleConfirmAbandon() {
+    if (isActionPending) return;
+
+    setIsActionPending(true);
+    setErrorMessage(null);
+
+    try {
+      await gameService.abandonCampaign();
+      const resetSession = resetGameSession();
+      setGameSession(resetSession);
+      setBoardSlots(createEmptyBoardSlots());
+      setIsAbandonModalOpen(false);
+      router.push("/");
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsActionPending(false);
+    }
   }
 
   const athletesOnBoard = boardSlots.filter((s) => s.item !== null).length;
@@ -262,22 +470,39 @@ export default function MarketPage() {
           <div className={styles.boardHeader}>
             <div className={styles.boardHeaderTop}>
               <h2 id="board-title" className={styles.boardTitle}>
-                Planejamento da Equipe
+                {teamName ? `Planejamento - ${teamName}` : "Planejamento da Equipe"}
               </h2>
-              <button
-                type="button"
-                className={styles.playButton}
-                onClick={handlePlayMatch}
-                disabled={athletesOnBoard === 0}
-                title={
-                  athletesOnBoard === 0
-                    ? "Escale ao menos 1 atleta para jogar"
-                    : "Iniciar partida"
-                }
-              >
-                <PlayCircleFilled />
-                Jogar
-              </button>
+              <div className={styles.boardActions}>
+                <button
+                  type="button"
+                  className={styles.abandonButton}
+                  onClick={() => {
+                    setErrorMessage(null);
+                    setIsAbandonModalOpen(true);
+                  }}
+                  disabled={isLoading || isActionPending}
+                  title="Desistir da campanha"
+                >
+                  <span className={styles.brokenHeartIcon} aria-hidden="true">
+                    <HeartOutlined />
+                  </span>
+                  Desistir
+                </button>
+                <button
+                  type="button"
+                  className={styles.playButton}
+                  onClick={handlePlayMatch}
+                  disabled={athletesOnBoard === 0 || isLoading || isActionPending}
+                  title={
+                    athletesOnBoard === 0
+                      ? "Escale ao menos 1 atleta para jogar"
+                      : "Iniciar partida"
+                  }
+                >
+                  <PlayCircleFilled />
+                  Jogar
+                </button>
+              </div>
             </div>
 
             <div className={styles.matchHud} aria-label="Resumo da partida">
@@ -290,17 +515,15 @@ export default function MarketPage() {
               </div>
 
               <div className={styles.hudItem}>
-                <span className={styles.hudLabel}>Batalha</span>
-                <span className={styles.hudValue}>
-                  {currentBattle}/{MAX_BATTLES}
-                </span>
+                <span className={styles.hudLabel}>Rodada</span>
+                <span className={styles.hudValue}>{currentBattle}</span>
               </div>
 
               <div className={styles.hudItem}>
-                <span className={styles.hudLabel}>Vitórias</span>
+                <span className={styles.hudLabel}>Vitorias</span>
                 <span className={styles.hudValue}>
                   <TrophyFilled />
-                  {victories}
+                  {victories}/{WINS_TO_FINISH}
                 </span>
               </div>
 
@@ -312,6 +535,12 @@ export default function MarketPage() {
                 </span>
               </div>
             </div>
+
+            {errorMessage && (
+              <p className={styles.marketHint} role="alert">
+                {errorMessage}
+              </p>
+            )}
           </div>
 
           <div className={styles.boardStage}>
@@ -340,7 +569,7 @@ export default function MarketPage() {
                             setDragOverId(slot.id);
                           }}
                           onDragLeave={() => setDragOverId(null)}
-                          onDrop={(event) => handleDrop(event, slot.id)}
+                          onDrop={(event) => void handleDrop(event, slot.id)}
                           aria-label={`Vaga ${slot.slotIndex + 1} em ${areaLabels[areaIndex]}`}
                         >
                           {slot.item ? (
@@ -378,44 +607,47 @@ export default function MarketPage() {
 
         <aside className={styles.sidebar}>
           <section className={styles.marketSection} aria-labelledby="market-title">
-          <div className={styles.marketHeader}>
-            <h1 id="market-title" className={styles.title}>
-              Mercado
-            </h1>
-            <p className={styles.marketHint}>
-              Itens disponíveis: {availableCount} / 3
-            </p>
-          </div>
+            <div className={styles.marketHeader}>
+              <h1 id="market-title" className={styles.title}>
+                Mercado
+              </h1>
+              <p className={styles.marketHint}>
+                {isLoading
+                  ? "Carregando..."
+                  : `Itens disponiveis: ${availableCount} / ${marketItems.length}`}
+              </p>
+            </div>
 
-          <div className={styles.marketGrid}>
-            {marketItems.map((item, index) => (
-              <AthleteMarketItemCard
-                key={item?.id ?? `empty-${index + 1}`}
-                item={item}
-                index={index}
-                onDragStart={handleDragStart}
-              />
-            ))}
-          </div>
+            <div className={styles.marketGrid}>
+              {marketItems.map((item, index) => (
+                <AthleteMarketItemCard
+                  key={item?.id ?? `empty-${index + 1}`}
+                  item={item}
+                  index={index}
+                  onDragStart={handleDragStart}
+                />
+              ))}
+            </div>
 
-          <Button
-            type="primary"
-            size="large"
-            block
-            icon={<ReloadOutlined />}
-            onClick={handleRotateMarket}
-            disabled={coins < 1}
-            style={{
-              height: 52,
-              fontSize: "1.1rem",
-              fontWeight: 800,
-              border: "4px solid #1f2937",
-              boxShadow: "0 5px 0 #b45309",
-              textShadow: "0 2px 0 rgba(0,0,0,0.15)",
-            }}
-          >
-            Atualizar Mercado · 1 🪙
-          </Button>
+            <Button
+              type="primary"
+              size="large"
+              block
+              icon={<ReloadOutlined />}
+              aria-label={`Atualizar Mercado por ${refreshCost} moeda`}
+              onClick={() => void handleRotateMarket()}
+              disabled={isLoading || isActionPending || coins < refreshCost}
+              style={{
+                height: 52,
+                fontSize: "1.1rem",
+                fontWeight: 800,
+                border: "4px solid #1f2937",
+                boxShadow: "0 5px 0 #b45309",
+                textShadow: "0 2px 0 rgba(0,0,0,0.15)",
+              }}
+            >
+              Atualizar Mercado ({refreshCost} <DollarOutlined aria-hidden="true" />)
+            </Button>
           </section>
 
           <div
@@ -443,6 +675,55 @@ export default function MarketPage() {
           </div>
         </aside>
       </div>
+
+      {isAbandonModalOpen && (
+        <div className={styles.modalOverlay} role="dialog" aria-modal="true">
+          <div
+            className={styles.confirmModal}
+            aria-labelledby="abandon-title"
+            aria-describedby="abandon-description"
+          >
+            <span className={styles.confirmIcon} aria-hidden="true">
+              <span className={styles.brokenHeartIcon}>
+                <HeartOutlined />
+              </span>
+            </span>
+            <h2 id="abandon-title">Quer mesmo desistir?</h2>
+            <p id="abandon-description">
+              Seu time e todo o progresso desta campanha serão apagados. Seus
+              troféus e histórico não serão alterados.
+            </p>
+            {errorMessage && (
+              <p className={styles.confirmError} role="alert">
+                {errorMessage}
+              </p>
+            )}
+            <div className={styles.confirmActions}>
+              <Button
+                size="large"
+                onClick={() => setIsAbandonModalOpen(false)}
+                disabled={isActionPending}
+              >
+                Continuar
+              </Button>
+              <Button
+                type="primary"
+                danger
+                size="large"
+                icon={
+                  <span className={styles.brokenHeartIcon} aria-hidden="true">
+                    <HeartOutlined />
+                  </span>
+                }
+                onClick={() => void handleConfirmAbandon()}
+                loading={isActionPending}
+              >
+                Sim, desistir
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

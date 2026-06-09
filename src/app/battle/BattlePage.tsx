@@ -1,27 +1,35 @@
 "use client";
 
 import {
+  ArrowLeftOutlined,
   DollarOutlined,
-  FlagFilled,
+  EyeOutlined,
+  HomeFilled,
   TeamOutlined,
   TrophyFilled,
   UserOutlined,
 } from "@ant-design/icons";
 import { Button } from "antd";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import ProfileCorner from "@/components/ProfileCorner";
 import {
+  INITIAL_LIVES,
   readGameSession,
   resetGameSession,
-  resolveBattle,
   writeGameSession,
-  type BattleResult,
   type GameSession,
 } from "@/lib/gameSession";
+import {
+  gameService,
+  type MatchEvent,
+  type MatchPositionPayload,
+  type MatchResponse,
+  type SnapshotAthlete,
+  type SnapshotPositions,
+} from "@/services/gameService";
 
-import { athletePool, type AthleteMarketItem } from "../game/athletes";
 import styles from "./BattlePage.module.css";
 
 type MatchSide = "player" | "opponent" | "neutral";
@@ -35,167 +43,35 @@ type MatchTurnLog = {
   description: string;
   score: string;
   outcome?: MatchOutcome;
-  result?: BattleResult;
 };
 
-type LineupSlot = {
-  areaIndex: number;
-  slotIndex: number;
-  athlete: AthleteMarketItem | null;
+type FieldToken = {
+  team: "player" | "opponent";
+  athlete: SnapshotAthlete;
+  x: number;
+  y: number;
 };
 
-const areaLabels = ["Defesa", "Centro", "Ataque"];
+const displayRows = [0, 1, 2];
+const displayColumns = [0, 1, 2, 3, 4, 5];
 
-const sampleMatchLogs: MatchTurnLog[] = [
-  {
-    turn: 1,
-    minute: "00:18",
-    side: "player",
-    title: "Saida rapida",
-    description: "Seu time troca passes pela esquerda.",
-    score: "0x0",
-  },
-  {
-    turn: 2,
-    minute: "00:36",
-    side: "opponent",
-    title: "Resposta rival",
-    description: "O adversario pressiona o meio-campo.",
-    score: "0x0",
-  },
-  {
-    turn: 3,
-    minute: "00:54",
-    side: "player",
-    title: "Drible curto",
-    description: "A jogada passa pelo centro e abre espaco.",
-    score: "0x0",
-  },
-  {
-    turn: 4,
-    minute: "01:12",
-    side: "neutral",
-    title: "Bola disputada",
-    description: "A defesa corta antes da finalizacao.",
-    score: "0x0",
-  },
-  {
-    turn: 5,
-    minute: "01:30",
-    side: "opponent",
-    title: "Contra-ataque",
-    description: "O rival acelera e obriga uma cobertura.",
-    score: "0x0",
-  },
-  {
-    turn: 6,
-    minute: "01:48",
-    side: "player",
-    title: "Passe vertical",
-    description: "O ataque recebe perto da area.",
-    score: "0x0",
-  },
-  {
-    turn: 7,
-    minute: "02:06",
-    side: "player",
-    title: "Chute bloqueado",
-    description: "A bola desvia na zaga e sai pela linha de fundo.",
-    score: "0x0",
-  },
-  {
-    turn: 8,
-    minute: "02:24",
-    side: "neutral",
-    title: "Recomposicao",
-    description: "Os dois times reorganizam as linhas.",
-    score: "0x0",
-  },
-  {
-    turn: 9,
-    minute: "02:42",
-    side: "opponent",
-    title: "Pressao final",
-    description: "O campo direito tenta chegar pelo corredor central.",
-    score: "0x0",
-  },
-  {
-    turn: 10,
-    minute: "03:00",
-    side: "player",
-    title: "Roubo de bola",
-    description: "Sua defesa recupera e aciona o ataque.",
-    score: "0x0",
-  },
-  {
-    turn: 11,
-    minute: "03:18",
-    side: "player",
-    title: "Ultimo passe",
-    description: "A bola encontra o atacante livre no centro.",
-    score: "0x0",
-  },
-  {
-    turn: 12,
-    minute: "03:36",
-    side: "player",
-    title: "Gol!",
-    description: "Finalizacao forte no canto direito.",
-    score: "1x0",
-    outcome: "goal",
-    result: "win",
-  },
-];
-
-const fieldSlots: LineupSlot[] = [
-  { areaIndex: 0, slotIndex: 0, athlete: null },
-  { areaIndex: 0, slotIndex: 1, athlete: null },
-  { areaIndex: 0, slotIndex: 2, athlete: null },
-  { areaIndex: 1, slotIndex: 0, athlete: null },
-  { areaIndex: 1, slotIndex: 1, athlete: null },
-  { areaIndex: 1, slotIndex: 2, athlete: null },
-  { areaIndex: 2, slotIndex: 0, athlete: null },
-  { areaIndex: 2, slotIndex: 1, athlete: null },
-  { areaIndex: 2, slotIndex: 2, athlete: null },
-];
-
-function getAthletes(): AthleteMarketItem[] {
-  return athletePool.filter((item): item is AthleteMarketItem => item !== null);
-}
-
-function buildLineup(athletes: AthleteMarketItem[], offset = 0): LineupSlot[] {
-  const placements = [
-    { areaIndex: 0, slotIndex: 1 },
-    { areaIndex: 1, slotIndex: 0 },
-    { areaIndex: 1, slotIndex: 2 },
-    { areaIndex: 2, slotIndex: 0 },
-    { areaIndex: 2, slotIndex: 2 },
-  ];
-
-  return fieldSlots.map((slot) => {
-    const placementIndex = placements.findIndex(
-      (placement) =>
-        placement.areaIndex === slot.areaIndex &&
-        placement.slotIndex === slot.slotIndex
-    );
-
-    if (placementIndex < 0) {
-      return slot;
+function buildPositionsFromSession(session: GameSession): MatchPositionPayload[] {
+  return session.selectedAthleteIds.flatMap((athleteId, index) => {
+    const numericId = Number(athleteId);
+    if (!Number.isInteger(numericId) || numericId <= 0) {
+      return [];
     }
 
     return {
-      ...slot,
-      athlete: athletes[(placementIndex + offset) % athletes.length] ?? null,
+      athleteId: numericId,
+      posX: index % 3,
+      posY: Math.floor(index / 3),
     };
   });
 }
 
-function renderAthleteIcon(icon: string, className: string) {
-  if (icon.startsWith("/")) {
-    return <img src={icon} alt="" className={className} aria-hidden="true" />;
-  }
-
-  return <span className={className}>{icon}</span>;
+function renderAthleteIcon(className: string) {
+  return <img src="/athlete.svg" alt="" className={className} aria-hidden="true" />;
 }
 
 function getSideClass(side: MatchSide) {
@@ -204,68 +80,190 @@ function getSideClass(side: MatchSide) {
   return styles.logItemNeutral;
 }
 
-function BattleField({
-  title,
-  subtitle,
-  slots,
-  mirrored = false,
+function formatMinute(turn: number): string {
+  const totalSeconds = turn * 18;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = String(totalSeconds % 60).padStart(2, "0");
+  return `0${minutes}:${seconds}`;
+}
+
+function sideForEvent(event: MatchEvent): MatchSide {
+  if (!event.success && event.ball.team !== event.possession) {
+    return event.ball.team;
+  }
+  return event.possession;
+}
+
+function titleForEvent(event: MatchEvent): string {
+  if (event.goal) return "Gol!";
+  if (event.kind === "turnover") return "Posse perdida";
+  if (event.kind === "shot") return "Finalizacao";
+  if (event.kind === "pass") {
+    return event.success ? "Passe completo" : "Passe interceptado";
+  }
+  if (event.kind === "move") return "Avanco";
+  return event.success ? "Disputa vencida" : "Desarme";
+}
+
+function buildTurnLogs(events: MatchEvent[]): MatchTurnLog[] {
+  let playerScore = 0;
+  let opponentScore = 0;
+
+  return events.map((event) => {
+    if (event.goal) {
+      if (event.possession === "player") {
+        playerScore += 1;
+      } else {
+        opponentScore += 1;
+      }
+    }
+
+    return {
+      turn: event.turn,
+      minute: formatMinute(event.turn),
+      side: sideForEvent(event),
+      title: titleForEvent(event),
+      description: event.description,
+      score: `${playerScore}x${opponentScore}`,
+      outcome: event.goal ? "goal" : undefined,
+    };
+  });
+}
+
+function resultLabel(match: MatchResponse): string {
+  if (match.winner === "player") return "Vitoria";
+  if (match.winner === "opponent") return "Derrota";
+  return "Empate";
+}
+
+function nextSessionFromMatch(
+  session: GameSession,
+  match: MatchResponse
+): GameSession {
+  return {
+    ...session,
+    coins: match.resolution.coins,
+    currentBattle: match.persisted.round,
+    victories: match.persisted.victory,
+    losses: match.persisted.lose,
+    lives: Math.max(0, INITIAL_LIVES - match.persisted.lose),
+  };
+}
+
+function buildFieldTokens(
+  positions: SnapshotPositions,
+  team: "player" | "opponent"
+): FieldToken[] {
+  return positions.flatMap((row, rowIndex) =>
+    row.flatMap((athlete, columnIndex) => {
+      if (!athlete) return [];
+      return {
+        team,
+        athlete,
+        x: columnIndex,
+        y: team === "player" ? rowIndex : 5 - rowIndex,
+      };
+    })
+  );
+}
+
+function SharedBattleField({
+  match,
+  visibleEventCount,
 }: {
-  title: string;
-  subtitle: string;
-  slots: LineupSlot[];
-  mirrored?: boolean;
+  match: MatchResponse | null;
+  visibleEventCount: number;
 }) {
-  const visibleAreas = mirrored ? [...areaLabels].reverse() : areaLabels;
+  const state = useMemo(() => {
+    if (!match) {
+      return { tokens: [] as FieldToken[], ball: null };
+    }
+
+    const tokens = [
+      ...buildFieldTokens(match.lineups.player.positions, "player"),
+      ...buildFieldTokens(match.lineups.opponent.positions, "opponent"),
+    ];
+    let ball = match.initialBall;
+
+    for (const event of match.events.slice(0, visibleEventCount)) {
+      for (const movement of event.movements) {
+        const token = tokens.find(
+          (entry) =>
+            entry.team === movement.team &&
+            entry.athlete.id === movement.athleteId
+        );
+        if (token) {
+          token.x = movement.to.x;
+          token.y = movement.to.y;
+        }
+      }
+      ball = event.ball;
+    }
+
+    return { tokens, ball };
+  }, [match, visibleEventCount]);
 
   return (
     <section
-      className={`${styles.fieldPanel} ${mirrored ? styles.fieldPanelMirrored : ""}`}
-      aria-label={title}
+      className={styles.sharedField}
+      aria-label="Campo compartilhado horizontal 6 por 3"
     >
-      <div className={styles.fieldHeader}>
-        <span className={styles.teamIcon}>
-          {mirrored ? <TeamOutlined /> : <UserOutlined />}
-        </span>
-        <div className={styles.teamText}>
-          <strong>{title}</strong>
-          <span>{subtitle}</span>
-        </div>
+      <div
+        className={`${styles.fieldTeamHeader} ${styles.fieldTeamHeaderMine}`}
+      >
+        <UserOutlined />
+        <strong>{match?.lineups.player.name ?? "Seu time"}</strong>
+      </div>
+      <div
+        className={`${styles.fieldTeamHeader} ${styles.fieldTeamHeaderOpponent}`}
+      >
+        <TeamOutlined />
+        <strong>{match?.lineups.opponent.name ?? "Adversario"}</strong>
       </div>
 
-      <div className={styles.fieldGoal} aria-hidden="true" />
-      <div className={styles.fieldArc} aria-hidden="true" />
-      <div className={styles.fieldCenterCircle} aria-hidden="true" />
+      <div className={styles.goalLine} aria-hidden="true" />
+      <div className={styles.sharedFieldGrid}>
+        {displayRows.flatMap((x) =>
+          displayColumns.map((y) => {
+            const tokens = state.tokens.filter(
+              (entry) => entry.x === x && entry.y === y
+            );
+            const hasBall =
+              state.ball?.position.x === x && state.ball.position.y === y;
 
-      <div className={styles.fieldAreas}>
-        {visibleAreas.map((areaLabel) => {
-          const sourceAreaIndex = areaLabels.indexOf(areaLabel);
-          const areaSlots = slots.filter(
-            (slot) => slot.areaIndex === sourceAreaIndex
-          );
-
-          return (
-            <div className={styles.fieldArea} key={areaLabel}>
-              <span className={styles.areaLabel}>{areaLabel}</span>
-              <div className={styles.fieldSlotGrid}>
-                {areaSlots.map((slot) => (
-                  <div
-                    className={styles.fieldSlot}
-                    key={`${title}-${slot.areaIndex}-${slot.slotIndex}`}
-                  >
-                    {slot.athlete ? (
-                      <div className={styles.playerToken}>
-                        {renderAthleteIcon(slot.athlete.icon, styles.playerIcon)}
-                        <span>{slot.athlete.name}</span>
-                      </div>
-                    ) : (
-                      <span className={styles.emptyToken} />
-                    )}
-                  </div>
-                ))}
+            return (
+              <div
+                className={`${styles.sharedFieldCell} ${
+                  y === 2 ? styles.centerLineCell : ""
+                }`}
+                key={`${x}-${y}`}
+              >
+                <div className={styles.cellTokens}>
+                  {tokens.map((token) => (
+                    <div
+                      className={`${styles.fieldPlayerToken} ${
+                        token.team === "player"
+                          ? styles.fieldPlayerTokenMine
+                          : styles.fieldPlayerTokenOpponent
+                      }`}
+                      key={`${token.team}-${token.athlete.id}`}
+                      title={`${token.athlete.name} - ATK ${token.athlete.attack} / VEL ${token.athlete.velocity} / DEF ${token.athlete.defense}`}
+                    >
+                      {renderAthleteIcon(styles.fieldPlayerIcon)}
+                      <span>{token.athlete.name}</span>
+                    </div>
+                  ))}
+                </div>
+                {hasBall && (
+                  <span
+                    className={styles.ball}
+                    title={`Bola com ${state.ball?.athleteName ?? ""}`}
+                  />
+                )}
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </section>
   );
@@ -273,63 +271,107 @@ function BattleField({
 
 export default function BattlePage() {
   const router = useRouter();
-  const [gameSession] = useState<GameSession>(() => readGameSession());
+  const roundRequestRef = useRef<Promise<MatchResponse> | null>(null);
+  const [gameSession, setGameSession] = useState<GameSession>(() =>
+    readGameSession()
+  );
+  const [match, setMatch] = useState<MatchResponse | null>(null);
   const [visibleLogs, setVisibleLogs] = useState<MatchTurnLog[]>([]);
   const [isWaitingForRound, setIsWaitingForRound] = useState(true);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
-
-  const athletes = useMemo(() => getAthletes(), []);
-  const playerLineup = useMemo(() => buildLineup(athletes), [athletes]);
-  const opponentLineup = useMemo(() => buildLineup(athletes, 3), [athletes]);
+  const [isBattleFinished, setIsBattleFinished] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const currentLog = visibleLogs[visibleLogs.length - 1];
-  const finalLog = sampleMatchLogs[sampleMatchLogs.length - 1];
-  const currentScore = currentLog?.score ?? "0x0";
+  const currentScore =
+    currentLog?.score ??
+    (match ? `${match.score.player}x${match.score.opponent}` : "0x0");
   const currentTurn = currentLog?.turn ?? 0;
-  const finalOutcome = finalLog.outcome === "draw" ? "Empate 0x0" : "Gol";
-  const battleResult = finalLog.result ?? "draw";
-  const battleResolution = useMemo(
-    () => resolveBattle(gameSession, battleResult),
-    [battleResult, gameSession]
-  );
-  const rewardPrefix = battleResolution.coinReward > 0 ? "+" : "";
-  const trophyPrefix = battleResolution.trophyDelta > 0 ? "+" : "";
+  const totalTurns = match?.totalTurns ?? 12;
+  const finalOutcome = match?.winner === "draw" ? "Empate" : "Gol";
+  const rewardPrefix = (match?.resolution.coinsEarned ?? 0) > 0 ? "+" : "";
+  const trophyPrefix = (match?.resolution.trophiesDelta ?? 0) > 0 ? "+" : "";
 
   useEffect(() => {
+    let cancelled = false;
     const timers: Array<ReturnType<typeof setTimeout>> = [];
 
-    const responseTimer = setTimeout(() => {
-      setIsWaitingForRound(false);
+    async function playRound() {
+      const session = readGameSession();
+      setGameSession(session);
+      const positions = buildPositionsFromSession(session);
 
-      sampleMatchLogs.forEach((_, index) => {
-        const turnTimer = setTimeout(() => {
-          setVisibleLogs(sampleMatchLogs.slice(0, index + 1));
+      if (positions.length === 0) {
+        setErrorMessage("Escale ao menos 1 atleta antes de jogar.");
+        setIsWaitingForRound(false);
+        return;
+      }
 
-          if (index === sampleMatchLogs.length - 1) {
-            setIsEndModalOpen(true);
-          }
-        }, (index + 1) * 850);
+      try {
+        if (!roundRequestRef.current) {
+          roundRequestRef.current = gameService.playMatch(positions);
+        }
 
-        timers.push(turnTimer);
-      });
-    }, 650);
+        const result = await roundRequestRef.current;
+        if (cancelled) return;
 
-    timers.push(responseTimer);
+        setMatch(result);
+        setIsWaitingForRound(false);
+
+        const logs = buildTurnLogs(result.events);
+        if (logs.length === 0) {
+          setVisibleLogs([]);
+          setIsBattleFinished(true);
+          setIsEndModalOpen(true);
+          return;
+        }
+
+        logs.forEach((_, index) => {
+          const turnTimer = setTimeout(() => {
+            setVisibleLogs(logs.slice(0, index + 1));
+
+            if (index === logs.length - 1) {
+              setIsBattleFinished(true);
+              setIsEndModalOpen(true);
+            }
+          }, (index + 1) * 850);
+
+          timers.push(turnTimer);
+        });
+      } catch (error) {
+        if (!cancelled) {
+          const message =
+            typeof error === "object" && error !== null && "response" in error
+              ? (error as { response?: { data?: { message?: string } } }).response
+                  ?.data?.message
+              : null;
+          setErrorMessage(message ?? "Nao foi possivel iniciar a batalha.");
+          setIsWaitingForRound(false);
+        }
+      }
+    }
+
+    void playRound();
 
     return () => {
+      cancelled = true;
       timers.forEach((timer) => clearTimeout(timer));
     };
   }, []);
 
-  function handleContinueBattle() {
-    writeGameSession(battleResolution.nextSession);
+  function handleReturnToMarket() {
+    if (!match) return;
+
+    const nextSession = match.resolution.matchEnded
+      ? resetGameSession()
+      : writeGameSession(nextSessionFromMatch(gameSession, match));
+    setGameSession(nextSession);
     router.push("/game");
   }
 
-  function handleFinishRun(destination: "/" | "/profile") {
-    writeGameSession(battleResolution.nextSession);
+  function handleGoToMenu() {
     resetGameSession();
-    router.push(destination);
+    router.push("/");
   }
 
   return (
@@ -351,29 +393,54 @@ export default function BattlePage() {
           </div>
           <div className={styles.hudItem}>
             <span className={styles.hudLabel}>Turno</span>
-            <strong className={styles.hudValue}>{currentTurn}/12</strong>
+            <strong className={styles.hudValue}>
+              {currentTurn}/{totalTurns}
+            </strong>
           </div>
         </section>
 
-        <section className={styles.arena} aria-label="Campo da partida">
-          <BattleField
-            title="Seu campo"
-            subtitle="Time escalado agora"
-            slots={playerLineup}
-          />
-
-          <div className={styles.centerBridge} aria-hidden="true">
-            <div className={styles.bridgeCircle}>
-              <FlagFilled />
-              <strong>{currentScore}</strong>
+        {match && isBattleFinished && !isEndModalOpen && (
+          <section
+            className={styles.resultSummary}
+            aria-label="Resultado final da batalha"
+          >
+            <div className={styles.resultSummaryMain}>
+              <span className={styles.resultSummaryLabel}>
+                {resultLabel(match)}
+              </span>
+              <strong>
+                Placar final {match.score.player}x{match.score.opponent}
+              </strong>
             </div>
-          </div>
+            <div className={styles.resultSummaryRewards}>
+              <span>
+                <DollarOutlined />
+                {rewardPrefix}
+                {match.resolution.coinsEarned} moedas
+              </span>
+              {match.resolution.matchEnded && (
+                <span>
+                  <TrophyFilled />
+                  {trophyPrefix}
+                  {match.resolution.trophiesDelta} troféus
+                </span>
+              )}
+            </div>
+            <Button
+              type="primary"
+              size="large"
+              icon={<ArrowLeftOutlined />}
+              onClick={handleReturnToMarket}
+            >
+              Voltar ao Mercado
+            </Button>
+          </section>
+        )}
 
-          <BattleField
-            title="Campo rival"
-            subtitle="Time montado antes"
-            slots={opponentLineup}
-            mirrored
+        <section className={styles.arena} aria-label="Campo da partida">
+          <SharedBattleField
+            match={match}
+            visibleEventCount={visibleLogs.length}
           />
         </section>
 
@@ -381,13 +448,24 @@ export default function BattlePage() {
           <div className={styles.logHeader}>
             <h2 id="log-title">Logs da rodada</h2>
             <span className={styles.logStatus}>
-              {isWaitingForRound ? "Aguardando..." : `${visibleLogs.length}/12`}
+              {isWaitingForRound
+                ? "Aguardando..."
+                : `${visibleLogs.length}/${totalTurns}`}
             </span>
           </div>
 
           <div className={styles.logList}>
             {isWaitingForRound ? (
               <div className={styles.loadingLog}>Preparando partida...</div>
+            ) : errorMessage ? (
+              <div className={styles.loadingLog}>
+                <span>{errorMessage}</span>
+                <Button type="primary" onClick={() => router.push("/game")}>
+                  Voltar ao Mercado
+                </Button>
+              </div>
+            ) : visibleLogs.length === 0 ? (
+              <div className={styles.loadingLog}>Rodada finalizada.</div>
             ) : (
               visibleLogs.map((log) => (
                 <article
@@ -407,59 +485,77 @@ export default function BattlePage() {
         </section>
       </div>
 
-      {isEndModalOpen && (
+      {match && isEndModalOpen && (
         <div className={styles.modalOverlay} role="dialog" aria-modal="true">
           <div className={styles.resultModal}>
             <span className={styles.resultBadge}>{finalOutcome}</span>
             <h2>
-              {battleResolution.isRunOver ? "Fim da partida" : "Batalha finalizada"}
+              {match.resolution.matchEnded
+                ? "Campanha finalizada"
+                : "Batalha finalizada"}
             </h2>
             <p>
-              {battleResolution.resultLabel} · Placar final: {finalLog.score}
+              {resultLabel(match)} - Placar final: {match.score.player}x
+              {match.score.opponent}
             </p>
             <div className={styles.rewardStack}>
               <div className={styles.coinDelta}>
                 <DollarOutlined />
                 <strong>
                   {rewardPrefix}
-                  {battleResolution.coinReward}
+                  {match.resolution.coinsEarned}
                 </strong>
                 <span>moedas</span>
               </div>
 
-              {battleResolution.isRunOver && (
+              {match.resolution.matchEnded && (
                 <div className={styles.trophyDelta}>
                   <TrophyFilled />
                   <strong>
                     {trophyPrefix}
-                    {battleResolution.trophyDelta}
+                    {match.resolution.trophiesDelta}
                   </strong>
-                  <span>troféus</span>
+                  <span>trofeus</span>
                 </div>
               )}
             </div>
-            <div
-              className={`${styles.modalActions} ${
-                battleResolution.isRunOver ? "" : styles.modalActionsSingle
-              }`}
-            >
-              {battleResolution.isRunOver ? (
+            <div className={styles.modalActions}>
+              {match.resolution.matchEnded ? (
                 <>
+                  <Button
+                    size="large"
+                    icon={<EyeOutlined />}
+                    onClick={() => setIsEndModalOpen(false)}
+                  >
+                    Ver resultados
+                  </Button>
                   <Button
                     type="primary"
                     size="large"
-                    onClick={() => handleFinishRun("/profile")}
+                    icon={<HomeFilled />}
+                    onClick={handleGoToMenu}
                   >
-                    Perfil
-                  </Button>
-                  <Button size="large" onClick={() => handleFinishRun("/")}>
                     Menu
                   </Button>
                 </>
               ) : (
-                <Button type="primary" size="large" onClick={handleContinueBattle}>
-                  Voltar ao Mercado
-                </Button>
+                <>
+                  <Button
+                    size="large"
+                    icon={<EyeOutlined />}
+                    onClick={() => setIsEndModalOpen(false)}
+                  >
+                    Ver resultados
+                  </Button>
+                  <Button
+                    type="primary"
+                    size="large"
+                    icon={<ArrowLeftOutlined />}
+                    onClick={handleReturnToMarket}
+                  >
+                    Voltar ao Mercado
+                  </Button>
+                </>
               )}
             </div>
           </div>
