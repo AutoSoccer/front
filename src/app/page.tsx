@@ -5,6 +5,7 @@ import {
   TeamOutlined,
   TrophyFilled,
 } from "@ant-design/icons";
+import { ChartNoAxesColumnIncreasing } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
@@ -91,6 +92,9 @@ export default function HomePage() {
           </Link> */}
           <Link href="/profile" className={styles.menuButton}>
             <TeamOutlined /> Perfil
+          </Link>
+          <Link href="/ranking" className={styles.menuButton}>
+            <ChartNoAxesColumnIncreasing aria-hidden="true" /> Ranking
           </Link>
           {/* <Link href="/game" className={styles.menuButton}>
             Histórico
