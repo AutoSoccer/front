@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("user", JSON.stringify(response.user));
     resetGameSession();
     setUser(response.user);
-    router.push("/game");
+    router.push("/");
   }, [router]);
 
   const logout = useCallback(() => {

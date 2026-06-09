@@ -64,6 +64,14 @@
   font-weight: 800;
 }
 
+.boardActions {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
 .playButton {
   display: inline-flex;
   align-items: center;
@@ -82,6 +90,59 @@
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
   font-family: inherit;
   letter-spacing: 0.04em;
+}
+
+.abandonButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 52px;
+  padding: 0.65rem 1rem;
+  background: #ffffff;
+  color: var(--error);
+  border: 4px solid var(--border-arcade);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s;
+  box-shadow: 0 5px 0 #991b1b;
+  font-family: inherit;
+}
+
+.brokenHeartIcon {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.brokenHeartIcon::after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 105%;
+  border-radius: 2px;
+  background: currentColor;
+  transform: rotate(28deg);
+  box-shadow: 0 0 0 1px #ffffff;
+}
+
+.abandonButton:hover {
+  background: var(--error-bg);
+}
+
+.abandonButton:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #991b1b;
+}
+
+.abandonButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .playButton:hover {
@@ -413,6 +474,76 @@
   gap: 0.65rem;
 }
 
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(17, 24, 39, 0.68);
+}
+
+.confirmModal {
+  width: min(440px, 100%);
+  padding: 1.25rem;
+  border: 4px solid var(--border-arcade);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.36);
+  text-align: center;
+}
+
+.confirmIcon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--border-arcade);
+  border-radius: 50%;
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+.confirmIcon .brokenHeartIcon {
+  font-size: 28px;
+}
+
+.confirmModal h2 {
+  margin: 0.85rem 0 0.35rem;
+  color: var(--text-strong);
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.confirmModal p {
+  margin: 0;
+  color: var(--text-body);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.confirmError {
+  margin-top: 0.8rem !important;
+  color: var(--error) !important;
+}
+
+.confirmActions {
+  margin-top: 1.1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.confirmActions :global(.ant-btn) {
+  min-width: 0;
+  height: auto;
+  min-height: 52px;
+  padding-inline: 0.75rem;
+  white-space: normal;
+}
+
 @media (max-width: 980px) {
   .gameShell {
     grid-template-columns: 1fr;
@@ -438,6 +569,20 @@
   }
   .sellDropZone {
     min-height: 150px;
+  }
+  .boardActions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .playButton,
+  .abandonButton {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 0.6rem;
+  }
+  .confirmActions {
+    grid-template-columns: 1fr;
   }
   .sellDropImage {
     width: min(122px, 84%);

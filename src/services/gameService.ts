@@ -71,6 +71,28 @@ export type SellAthleteResponse = {
   };
 };
 
+export type AbandonCampaignResponse = {
+  user: {
+    id: number;
+    coins: number;
+    trophies: number;
+  };
+  team: {
+    id: number;
+    name: string;
+    round: number;
+    victory: number;
+    lose: number;
+    draw: number;
+    athletesCount: number;
+  } | null;
+};
+
+export type StartCampaignResponse = {
+  user: AbandonCampaignResponse["user"];
+  team: NonNullable<AbandonCampaignResponse["team"]>;
+};
+
 export type MatchPositionPayload = {
   athleteId: number;
   posX: number;
@@ -207,6 +229,20 @@ export const gameService = {
   sellAthlete: async (athleteId: number): Promise<SellAthleteResponse> => {
     const response = await api.post<SellAthleteResponse>("/equipe/vender-atleta", {
       atleta_id: athleteId,
+    });
+    return response.data;
+  },
+
+  abandonCampaign: async (): Promise<AbandonCampaignResponse> => {
+    const response = await api.post<AbandonCampaignResponse>(
+      "/partida/desistir"
+    );
+    return response.data;
+  },
+
+  startCampaign: async (name: string): Promise<StartCampaignResponse> => {
+    const response = await api.post<StartCampaignResponse>("/partida/iniciar", {
+      name,
     });
     return response.data;
   },

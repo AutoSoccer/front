@@ -3,6 +3,7 @@
 import {
   DollarOutlined,
   HeartFilled,
+  HeartOutlined,
   PlayCircleFilled,
   ReloadOutlined,
   TrophyFilled,
@@ -17,6 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   INITIAL_LIVES,
   readGameSession,
+  resetGameSession,
   WINS_TO_FINISH,
   writeGameSession,
   type GameSession,
@@ -155,6 +157,8 @@ export default function MarketPage() {
   const [isActionPending, setIsActionPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [refreshCost, setRefreshCost] = useState(1);
+  const [isAbandonModalOpen, setIsAbandonModalOpen] = useState(false);
+  const [teamName, setTeamName] = useState("");
 
   const coins = gameSession.coins;
   const currentBattle = gameSession.currentBattle;
@@ -206,6 +210,7 @@ export default function MarketPage() {
 
         setBoardSlots(slots);
         setGameSession(syncedSession);
+        setTeamName(team?.name ?? "");
         setMarketItems(market.athletes.map(mapApiAthleteToMarketItem));
         setRefreshCost(market.refresh_cost);
       } catch (error) {
@@ -431,6 +436,26 @@ export default function MarketPage() {
     router.push("/battle");
   }
 
+  async function handleConfirmAbandon() {
+    if (isActionPending) return;
+
+    setIsActionPending(true);
+    setErrorMessage(null);
+
+    try {
+      await gameService.abandonCampaign();
+      const resetSession = resetGameSession();
+      setGameSession(resetSession);
+      setBoardSlots(createEmptyBoardSlots());
+      setIsAbandonModalOpen(false);
+      router.push("/");
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
+    } finally {
+      setIsActionPending(false);
+    }
+  }
+
   const athletesOnBoard = boardSlots.filter((s) => s.item !== null).length;
 
   return (
@@ -445,22 +470,39 @@ export default function MarketPage() {
           <div className={styles.boardHeader}>
             <div className={styles.boardHeaderTop}>
               <h2 id="board-title" className={styles.boardTitle}>
-                Planejamento da Equipe
+                {teamName ? `Planejamento - ${teamName}` : "Planejamento da Equipe"}
               </h2>
-              <button
-                type="button"
-                className={styles.playButton}
-                onClick={handlePlayMatch}
-                disabled={athletesOnBoard === 0 || isLoading || isActionPending}
-                title={
-                  athletesOnBoard === 0
-                    ? "Escale ao menos 1 atleta para jogar"
-                    : "Iniciar partida"
-                }
-              >
-                <PlayCircleFilled />
-                Jogar
-              </button>
+              <div className={styles.boardActions}>
+                <button
+                  type="button"
+                  className={styles.abandonButton}
+                  onClick={() => {
+                    setErrorMessage(null);
+                    setIsAbandonModalOpen(true);
+                  }}
+                  disabled={isLoading || isActionPending}
+                  title="Desistir da campanha"
+                >
+                  <span className={styles.brokenHeartIcon} aria-hidden="true">
+                    <HeartOutlined />
+                  </span>
+                  Desistir
+                </button>
+                <button
+                  type="button"
+                  className={styles.playButton}
+                  onClick={handlePlayMatch}
+                  disabled={athletesOnBoard === 0 || isLoading || isActionPending}
+                  title={
+                    athletesOnBoard === 0
+                      ? "Escale ao menos 1 atleta para jogar"
+                      : "Iniciar partida"
+                  }
+                >
+                  <PlayCircleFilled />
+                  Jogar
+                </button>
+              </div>
             </div>
 
             <div className={styles.matchHud} aria-label="Resumo da partida">
@@ -633,6 +675,55 @@ export default function MarketPage() {
           </div>
         </aside>
       </div>
+
+      {isAbandonModalOpen && (
+        <div className={styles.modalOverlay} role="dialog" aria-modal="true">
+          <div
+            className={styles.confirmModal}
+            aria-labelledby="abandon-title"
+            aria-describedby="abandon-description"
+          >
+            <span className={styles.confirmIcon} aria-hidden="true">
+              <span className={styles.brokenHeartIcon}>
+                <HeartOutlined />
+              </span>
+            </span>
+            <h2 id="abandon-title">Quer mesmo desistir?</h2>
+            <p id="abandon-description">
+              Seu time e todo o progresso desta campanha serão apagados. Seus
+              troféus e histórico não serão alterados.
+            </p>
+            {errorMessage && (
+              <p className={styles.confirmError} role="alert">
+                {errorMessage}
+              </p>
+            )}
+            <div className={styles.confirmActions}>
+              <Button
+                size="large"
+                onClick={() => setIsAbandonModalOpen(false)}
+                disabled={isActionPending}
+              >
+                Continuar
+              </Button>
+              <Button
+                type="primary"
+                danger
+                size="large"
+                icon={
+                  <span className={styles.brokenHeartIcon} aria-hidden="true">
+                    <HeartOutlined />
+                  </span>
+                }
+                onClick={() => void handleConfirmAbandon()}
+                loading={isActionPending}
+              >
+                Sim, desistir
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
