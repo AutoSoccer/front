@@ -1,8 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+
+import "@/__tests__/mocks/router";
 
 import AthleteMarketItemCard from "@/components/AthleteMarketItem";
 import type { AthleteMarketItem } from "@/app/game/athletes";
+import { renderWithProviders as render } from "@/__tests__/utils/renderWithProviders";
 
 function buildAthlete(overrides: Partial<AthleteMarketItem> = {}): AthleteMarketItem {
   return {

@@ -1,6 +1,20 @@
 import { describe, expect, it } from "vitest";
 
-import { loginSchema, profileSchema, registerSchema } from "./auth";
+import {
+  buildLoginSchema,
+  buildProfileSchema,
+  buildRegisterSchema,
+} from "./auth";
+
+// Mock translator: retorna a propria chave para que as mensagens sejam
+// deterministicas e a logica de validacao seja exercida sem next-intl.
+const t = ((key: string) => key) as unknown as Parameters<
+  typeof buildLoginSchema
+>[0];
+
+const loginSchema = buildLoginSchema(t);
+const registerSchema = buildRegisterSchema(t);
+const profileSchema = buildProfileSchema(t);
 
 describe("loginSchema", () => {
   it("aceita identifier por email + password com 6 chars", () => {
