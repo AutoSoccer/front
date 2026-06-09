@@ -38,7 +38,7 @@ export default function AthleteMarketItemCard({ item, index, onDragStart }: Athl
       <div className={styles.cardBody}>
         <div className={styles.cardHeader}>
           <span className={styles.cardName}>{item.name}</span>
-          <span className={styles.cardTag}>ATLETA</span>
+          <span className={styles.cardTag}>{item.cost} moedas</span>
         </div>
 
         <div className={styles.cardStats}>

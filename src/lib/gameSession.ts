@@ -1,16 +1,9 @@
-export const MAX_BATTLES = 10;
+export const WINS_TO_FINISH = 10;
 export const INITIAL_COINS = 10;
 export const INITIAL_LIVES = 5;
-export const WIN_COIN_REWARD = 6;
-export const LOSS_COIN_REWARD = 3;
-export const DRAW_COIN_REWARD = 4;
-export const WIN_TROPHY_REWARD = 8;
-export const LOSS_TROPHY_PENALTY = 6;
 
 const STORAGE_KEY = "autosoccer-game-session";
 const BOARD_SLOT_COUNT = 9;
-
-export type BattleResult = "win" | "loss" | "draw";
 
 export type GameSession = {
   coins: number;
@@ -19,14 +12,6 @@ export type GameSession = {
   losses: number;
   lives: number;
   selectedAthleteIds: Array<string | null>;
-};
-
-export type BattleResolution = {
-  nextSession: GameSession;
-  coinReward: number;
-  trophyDelta: number;
-  isRunOver: boolean;
-  resultLabel: string;
 };
 
 export function createDefaultGameSession(): GameSession {
@@ -47,7 +32,9 @@ function normalizeSelectedAthletes(value: unknown): Array<string | null> {
 
   return Array.from({ length: BOARD_SLOT_COUNT }, (_, index) => {
     const item = value[index];
-    return typeof item === "string" ? item : null;
+    const raw = typeof item === "number" ? String(item) : item;
+    const athleteId = typeof raw === "string" ? Number(raw) : NaN;
+    return Number.isInteger(athleteId) && athleteId > 0 ? String(athleteId) : null;
   });
 }
 
@@ -64,7 +51,7 @@ function normalizeSession(value: unknown): GameSession {
     coins: typeof data.coins === "number" ? Math.max(0, data.coins) : fallback.coins,
     currentBattle:
       typeof data.currentBattle === "number"
-        ? Math.min(MAX_BATTLES, Math.max(1, data.currentBattle))
+        ? Math.max(1, data.currentBattle)
         : fallback.currentBattle,
     victories:
       typeof data.victories === "number" ? Math.max(0, data.victories) : fallback.victories,
@@ -106,42 +93,4 @@ export function writeGameSession(session: GameSession): GameSession {
 
 export function resetGameSession(): GameSession {
   return writeGameSession(createDefaultGameSession());
-}
-
-export function resolveBattle(
-  session: GameSession,
-  result: BattleResult
-): BattleResolution {
-  const coinReward =
-    result === "win"
-      ? WIN_COIN_REWARD
-      : result === "loss"
-        ? LOSS_COIN_REWARD
-        : DRAW_COIN_REWARD;
-
-  const nextVictories = session.victories + (result === "win" ? 1 : 0);
-  const nextLosses = session.losses + (result === "loss" ? 1 : 0);
-  const nextLives = Math.max(0, session.lives - (result === "loss" ? 1 : 0));
-  const isRunOver = session.currentBattle >= MAX_BATTLES || nextLives <= 0;
-  const trophyDelta = isRunOver
-    ? nextVictories * WIN_TROPHY_REWARD - nextLosses * LOSS_TROPHY_PENALTY
-    : 0;
-
-  return {
-    coinReward,
-    trophyDelta,
-    isRunOver,
-    resultLabel:
-      result === "win" ? "Vitória" : result === "loss" ? "Derrota" : "Empate",
-    nextSession: {
-      ...session,
-      coins: session.coins + coinReward,
-      currentBattle: isRunOver
-        ? session.currentBattle
-        : Math.min(MAX_BATTLES, session.currentBattle + 1),
-      victories: nextVictories,
-      losses: nextLosses,
-      lives: nextLives,
-    },
-  };
 }
