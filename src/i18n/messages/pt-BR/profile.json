@@ -1,0 +1,8 @@
+{
+  "title": "Meu Perfil",
+  "menu": {
+    "profile": "Meu Perfil",
+    "market": "Mercado",
+    "logout": "Sair"
+  }
+}

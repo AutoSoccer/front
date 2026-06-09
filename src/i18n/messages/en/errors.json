@@ -1,0 +1,5 @@
+{
+  "generic": "An unexpected error occurred.",
+  "network": "Connection failed. Please try again.",
+  "unauthorized": "Session expired. Please sign in again."
+}
