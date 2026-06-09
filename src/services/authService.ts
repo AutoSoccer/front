@@ -1,14 +1,25 @@
 import { LoginFormInputs, RegisterFormInputs } from "@/lib/schemas/auth";
 import api from "@/providers/api";
+import type { User } from "@/types/user";
+
+type AuthResponse = {
+  token: string;
+  user: User;
+};
 
 export const authService = {
-  login: async (data: LoginFormInputs) => {
+  login: async (data: LoginFormInputs): Promise<AuthResponse> => {
     // A rota deve convergir com /auth/login definida em seu servidor NestJS/Node
     const response = await api.post("/auth/login", data);
     return response.data;
   },
 
-  getMe: async () => {
+  createGuest: async (): Promise<AuthResponse> => {
+    const response = await api.post("/auth/guest");
+    return response.data;
+  },
+
+  getMe: async (): Promise<User> => {
     const response = await api.get("/auth/me");
     return response.data;
   },

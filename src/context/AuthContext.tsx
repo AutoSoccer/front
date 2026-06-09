@@ -11,6 +11,7 @@ import {
 } from "react";
 
 import type { LoginFormInputs, RegisterFormInputs } from "@/lib/schemas/auth";
+import { resetGameSession } from "@/lib/gameSession";
 import { authService } from "@/services/authService";
 import type { User } from "@/types/user";
 
@@ -19,6 +20,7 @@ export type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (data: LoginFormInputs) => Promise<void>;
+  loginAsGuest: () => Promise<void>;
   register: (data: RegisterFormInputs) => Promise<void>;
   logout: () => void;
 };
@@ -71,6 +73,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [router]
   );
 
+  const loginAsGuest = useCallback(async () => {
+    const response = await authService.createGuest();
+    localStorage.setItem("token", response.token);
+    localStorage.setItem("user", JSON.stringify(response.user));
+    resetGameSession();
+    setUser(response.user);
+    router.push("/game");
+  }, [router]);
+
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -84,10 +95,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: !!user,
       isLoading,
       login,
+      loginAsGuest,
       register,
       logout,
     }),
-    [user, isLoading, login, register, logout]
+    [user, isLoading, login, loginAsGuest, register, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
