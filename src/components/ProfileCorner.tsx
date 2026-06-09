@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  DollarOutlined,
   LogoutOutlined,
   ShopOutlined,
   UserOutlined,
