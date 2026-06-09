@@ -147,8 +147,39 @@
 }
 
 .resultSummary :global(.ant-btn) {
-  min-width: 190px;
+  height: auto;
+  min-width: 200px;
+  padding: 0.7rem 1.2rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  border: 4px solid var(--border-arcade) !important;
+  border-radius: 12px !important;
   white-space: normal;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s;
+}
+
+.resultSummary :global(.ant-btn-primary) {
+  background: var(--brand-primary) !important;
+  color: #ffffff !important;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 0 var(--brand-shadow) !important;
+}
+
+.resultSummary :global(.ant-btn-primary):hover {
+  background: var(--brand-hover) !important;
+  transform: translateY(-1px);
+}
+
+.resultSummary :global(.ant-btn-primary):active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--brand-shadow) !important;
+}
+
+.resultSummary :global(.ant-btn-primary):focus-visible {
+  outline: 3px solid var(--brand-soft);
+  outline-offset: 2px;
 }
 
 .hudLabel {
@@ -733,6 +764,35 @@
   text-align: center;
 }
 
+.loadingLog :global(.ant-btn) {
+  height: auto;
+  padding: 0.5rem 0.95rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  border: 3px solid var(--border-arcade) !important;
+  border-radius: 10px !important;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s;
+}
+
+.loadingLog :global(.ant-btn-primary) {
+  background: var(--brand-primary) !important;
+  color: #ffffff !important;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 0 var(--brand-shadow) !important;
+}
+
+.loadingLog :global(.ant-btn-primary):hover {
+  background: var(--brand-hover) !important;
+  transform: translateY(-1px);
+}
+
+.loadingLog :global(.ant-btn-primary):active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--brand-shadow) !important;
+}
+
 .logItemVertical {
   display: flex;
   flex-direction: column;
@@ -874,6 +934,64 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.7rem;
+}
+
+.modalActions :global(.ant-btn) {
+  width: 100%;
+  height: auto;
+  padding: 0.7rem 0.9rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  border: 4px solid var(--border-arcade) !important;
+  border-radius: 12px !important;
+  white-space: normal;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s,
+    color 0.15s;
+}
+
+.modalActions :global(.ant-btn-default) {
+  background: #ffffff !important;
+  color: var(--text-strong) !important;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.25) !important;
+}
+
+.modalActions :global(.ant-btn-default):hover {
+  background: var(--brand-soft) !important;
+  color: var(--brand-active) !important;
+  transform: translateY(-1px);
+}
+
+.modalActions :global(.ant-btn-default):active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25) !important;
+}
+
+.modalActions :global(.ant-btn-primary) {
+  background: var(--brand-primary) !important;
+  color: #ffffff !important;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 0 var(--brand-shadow) !important;
+}
+
+.modalActions :global(.ant-btn-primary):hover {
+  background: var(--brand-hover) !important;
+  transform: translateY(-1px);
+}
+
+.modalActions :global(.ant-btn-primary):active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--brand-shadow) !important;
+}
+
+.modalActions :global(.ant-btn):focus-visible {
+  outline: 3px solid var(--brand-soft);
+  outline-offset: 2px;
+}
+
+.modalActions :global(.ant-btn .anticon) {
+  font-size: 1.05em;
 }
 
 @media (max-width: 1180px) {
