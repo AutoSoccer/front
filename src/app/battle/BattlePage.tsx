@@ -382,22 +382,23 @@ export default function BattlePage() {
       <ProfileCorner />
 
       <div className={styles.battleShell}>
-        <header className={styles.battleHeader}>
-          <h1 className={styles.title}>Batalha</h1>
-        </header>
-
-        <section className={styles.matchHud} aria-label="Resumo da batalha">
-          <div className={styles.hudItem}>
+        <header className={styles.headerCombined} aria-label="Resumo da batalha">
+          <div className={styles.headerSection}>
+            <h1 className={styles.title}>Batalha</h1>
+          </div>
+          <div className={styles.headerDivider} aria-hidden="true" />
+          <div className={styles.headerSection}>
             <span className={styles.hudLabel}>Placar</span>
             <strong className={styles.scoreValue}>{currentScore}</strong>
           </div>
-          <div className={styles.hudItem}>
+          <div className={styles.headerDivider} aria-hidden="true" />
+          <div className={styles.headerSection}>
             <span className={styles.hudLabel}>Turno</span>
             <strong className={styles.hudValue}>
               {currentTurn}/{totalTurns}
             </strong>
           </div>
-        </section>
+        </header>
 
         {match && isBattleFinished && !isEndModalOpen && (
           <section
