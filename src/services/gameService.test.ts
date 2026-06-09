@@ -33,7 +33,7 @@ describe("gameService.getCurrentUser", () => {
 });
 
 describe("gameService.getTeam", () => {
-  it("chama GET /equipe e retorna team", async () => {
+  it("chama GET /team e retorna team", async () => {
     const team = {
       id: 1,
       name: "Time A",
@@ -48,7 +48,7 @@ describe("gameService.getTeam", () => {
 
     const result = await gameService.getTeam();
 
-    expect(mockedApi.get).toHaveBeenCalledWith("/equipe");
+    expect(mockedApi.get).toHaveBeenCalledWith("/team");
     expect(result).toEqual(team);
   });
 
@@ -60,7 +60,7 @@ describe("gameService.getTeam", () => {
 });
 
 describe("gameService.buyAthlete", () => {
-  it("envia atleta_id no body para /equipe/comprar-atleta", async () => {
+  it("envia atleta_id no body para /team/buy-athlete", async () => {
     const fake = {
       data: {
         user: { id: 1, coins: 5 },
@@ -72,7 +72,7 @@ describe("gameService.buyAthlete", () => {
 
     const result = await gameService.buyAthlete(42);
 
-    expect(mockedApi.post).toHaveBeenCalledWith("/equipe/comprar-atleta", {
+    expect(mockedApi.post).toHaveBeenCalledWith("/team/buy-athlete", {
       atleta_id: 42,
     });
     expect(result).toEqual(fake.data);
@@ -80,7 +80,7 @@ describe("gameService.buyAthlete", () => {
 });
 
 describe("gameService.sellAthlete", () => {
-  it("envia atleta_id no body para /equipe/vender-atleta", async () => {
+  it("envia atleta_id no body para /team/sell-athlete", async () => {
     const fake = {
       data: {
         user: { id: 1, coins: 8 },
@@ -98,7 +98,7 @@ describe("gameService.sellAthlete", () => {
 
     const result = await gameService.sellAthlete(42);
 
-    expect(mockedApi.post).toHaveBeenCalledWith("/equipe/vender-atleta", {
+    expect(mockedApi.post).toHaveBeenCalledWith("/team/sell-athlete", {
       atleta_id: 42,
     });
     expect(result).toEqual(fake.data);
@@ -106,7 +106,7 @@ describe("gameService.sellAthlete", () => {
 });
 
 describe("gameService.getMarket", () => {
-  it("chama GET /mercado e retorna market", async () => {
+  it("chama GET /market e retorna market", async () => {
     const market = {
       refresh_cost: 1,
       refreshed_at: null,
@@ -117,13 +117,13 @@ describe("gameService.getMarket", () => {
 
     const result = await gameService.getMarket();
 
-    expect(mockedApi.get).toHaveBeenCalledWith("/mercado");
+    expect(mockedApi.get).toHaveBeenCalledWith("/market");
     expect(result).toEqual(market);
   });
 });
 
 describe("gameService.refreshMarket", () => {
-  it("chama POST /mercado/refresh e retorna market", async () => {
+  it("chama POST /market/refresh e retorna market", async () => {
     const market = {
       refresh_cost: 1,
       refreshed_at: "2026-06-09T00:00:00Z",
@@ -134,13 +134,13 @@ describe("gameService.refreshMarket", () => {
 
     const result = await gameService.refreshMarket();
 
-    expect(mockedApi.post).toHaveBeenCalledWith("/mercado/refresh");
+    expect(mockedApi.post).toHaveBeenCalledWith("/market/refresh");
     expect(result).toEqual(market);
   });
 });
 
 describe("gameService.abandonCampaign", () => {
-  it("chama POST /partida/desistir", async () => {
+  it("chama POST /match/abandon", async () => {
     const fake = {
       data: {
         user: { id: 1, coins: 10, trophies: 0 },
@@ -151,13 +151,13 @@ describe("gameService.abandonCampaign", () => {
 
     const result = await gameService.abandonCampaign();
 
-    expect(mockedApi.post).toHaveBeenCalledWith("/partida/desistir");
+    expect(mockedApi.post).toHaveBeenCalledWith("/match/abandon");
     expect(result).toEqual(fake.data);
   });
 });
 
 describe("gameService.startCampaign", () => {
-  it("envia name no body para /partida/iniciar", async () => {
+  it("envia name no body para /match/start", async () => {
     const fake = {
       data: {
         user: { id: 1, coins: 10, trophies: 0 },
@@ -176,7 +176,7 @@ describe("gameService.startCampaign", () => {
 
     const result = await gameService.startCampaign("Time X");
 
-    expect(mockedApi.post).toHaveBeenCalledWith("/partida/iniciar", {
+    expect(mockedApi.post).toHaveBeenCalledWith("/match/start", {
       name: "Time X",
     });
     expect(result).toEqual(fake.data);
@@ -184,7 +184,7 @@ describe("gameService.startCampaign", () => {
 });
 
 describe("gameService.playMatch", () => {
-  it("envia positions no body para /partida/jogar", async () => {
+  it("envia positions no body para /match/play", async () => {
     const positions = [
       { athleteId: 1, posX: 0, posY: 0 },
       { athleteId: 2, posX: 1, posY: 2 },
@@ -194,7 +194,7 @@ describe("gameService.playMatch", () => {
 
     const result = await gameService.playMatch(positions);
 
-    expect(mockedApi.post).toHaveBeenCalledWith("/partida/jogar", { positions });
+    expect(mockedApi.post).toHaveBeenCalledWith("/match/play", { positions });
     expect(result).toEqual(fake.data);
   });
 
