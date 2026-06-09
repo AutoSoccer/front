@@ -555,3 +555,20 @@ Cada agente abre uma branch por workstream, faz PR para `main`, merge ao conclui
 
 > **Documento gerado a partir de auditoria automatizada (6 agentes paralelos) em `2026-06-09`.**
 > Base: `server/main` em `12d91b5`, `front/main` em `d12ca86`.
+
+---
+
+## WS-16 — Padronizacao de rotas em ingles (concluido)
+
+Atualizacao do `gameService` para consumir os novos URL paths em ingles
+expostos pelo server:
+
+| Antes | Depois |
+|---|---|
+| `/mercado`, `/mercado/refresh` | `/market`, `/market/refresh` |
+| `/equipe`, `/equipe/comprar-atleta`, `/equipe/vender-atleta` | `/team`, `/team/buy-athlete`, `/team/sell-athlete` |
+| `/partida/iniciar`, `/partida/desistir`, `/partida/jogar` | `/match/start`, `/match/abandon`, `/match/play` |
+
+Os mocks de `gameService.test.ts` foram alinhados aos novos paths.
+`authService` e `rankingService` ja consumiam paths em ingles e nao
+exigiram mudancas.
