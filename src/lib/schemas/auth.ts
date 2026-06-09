@@ -1,3 +1,4 @@
+import type { useTranslations } from "next-intl";
 import { z } from "zod";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -6,75 +7,79 @@ const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ' ]{2,60}$/;
 const PHONE_REGEX = /^\(?\d{2}\)?[\s.-]?9?\d{4}[\s.-]?\d{4}$/;
 const PASSWORD_REGEX = /^.{6,}$/;
 
-export const loginSchema = z.object({
-  identifier: z
-    .string()
-    .min(1, "O e-mail ou apelido é obrigatório.")
-    .refine(
-      (value) => EMAIL_REGEX.test(value) || NICKNAME_REGEX.test(value),
-      "Informe um e-mail ou apelido válido.",
-    ),
-  password: z
-    .string()
-    .min(6, "A senha deve ter pelo menos 6 caracteres.")
-    .regex(PASSWORD_REGEX, "Senha inválida."),
-});
+type ValidationTranslator = ReturnType<typeof useTranslations<"validation">>;
 
-export type LoginFormInputs = z.infer<typeof loginSchema>;
-
-export const registerSchema = z
-  .object({
-    name: z
+/**
+ * Constroi o schema de login com mensagens de erro traduzidas.
+ * Receba `t` do hook `useTranslations("validation")`.
+ */
+export function buildLoginSchema(t: ValidationTranslator) {
+  return z.object({
+    identifier: z
       .string()
-      .min(2, "O nome é muito curto.")
-      .regex(NAME_REGEX, "O nome deve conter apenas letras."),
-    nickname: z
-      .string()
-      .regex(
-        NICKNAME_REGEX,
-        "O apelido deve ter de 2 a 20 caracteres (letras, números e _).",
+      .min(1, t("auth.identifierRequired"))
+      .refine(
+        (value) => EMAIL_REGEX.test(value) || NICKNAME_REGEX.test(value),
+        t("auth.identifierInvalid"),
       ),
-    email: z
-      .string()
-      .min(1, "O e-mail é obrigatório.")
-      .regex(EMAIL_REGEX, "E-mail inválido."),
-    phone_number: z
-      .string()
-      .regex(PHONE_REGEX, "Telefone inválido. Use o formato (00) 00000-0000."),
     password: z
       .string()
-      .min(6, "A senha deve ter pelo menos 6 caracteres.")
-      .regex(PASSWORD_REGEX, "Senha inválida."),
-    confirmPassword: z
-      .string()
-      .min(1, "A confirmação de senha é obrigatória."),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem.",
-    path: ["confirmPassword"],
+      .min(6, t("auth.passwordMin"))
+      .regex(PASSWORD_REGEX, t("auth.passwordInvalid")),
   });
+}
 
-export type RegisterFormInputs = z.infer<typeof registerSchema>;
+export type LoginFormInputs = z.infer<ReturnType<typeof buildLoginSchema>>;
 
-export const profileSchema = z.object({
-  name: z
-    .string()
-    .min(2, "O nome é muito curto.")
-    .regex(NAME_REGEX, "O nome deve conter apenas letras."),
-  nickname: z
-    .string()
-    .regex(
-      NICKNAME_REGEX,
-      "O apelido deve ter de 2 a 20 caracteres (letras, números e _).",
-    ),
-  email: z
-    .string()
-    .min(1, "O e-mail é obrigatório.")
-    .regex(EMAIL_REGEX, "E-mail inválido."),
-  phone_number: z
-    .string()
-    .regex(PHONE_REGEX, "Telefone inválido. Use o formato (00) 00000-0000.")
-    .or(z.literal("")),
-});
+/**
+ * Constroi o schema de registro com mensagens de erro traduzidas.
+ */
+export function buildRegisterSchema(t: ValidationTranslator) {
+  return z
+    .object({
+      name: z
+        .string()
+        .min(2, t("auth.nameMin"))
+        .regex(NAME_REGEX, t("auth.nameInvalid")),
+      nickname: z.string().regex(NICKNAME_REGEX, t("auth.nickname")),
+      email: z
+        .string()
+        .min(1, t("auth.emailRequired"))
+        .regex(EMAIL_REGEX, t("auth.emailInvalid")),
+      phone_number: z.string().regex(PHONE_REGEX, t("auth.phoneInvalid")),
+      password: z
+        .string()
+        .min(6, t("auth.passwordMin"))
+        .regex(PASSWORD_REGEX, t("auth.passwordInvalid")),
+      confirmPassword: z.string().min(1, t("auth.confirmRequired")),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("auth.passwordsMismatch"),
+      path: ["confirmPassword"],
+    });
+}
 
-export type ProfileFormInputs = z.infer<typeof profileSchema>;
+export type RegisterFormInputs = z.infer<ReturnType<typeof buildRegisterSchema>>;
+
+/**
+ * Constroi o schema do perfil com mensagens de erro traduzidas.
+ */
+export function buildProfileSchema(t: ValidationTranslator) {
+  return z.object({
+    name: z
+      .string()
+      .min(2, t("auth.nameMin"))
+      .regex(NAME_REGEX, t("auth.nameInvalid")),
+    nickname: z.string().regex(NICKNAME_REGEX, t("auth.nickname")),
+    email: z
+      .string()
+      .min(1, t("auth.emailRequired"))
+      .regex(EMAIL_REGEX, t("auth.emailInvalid")),
+    phone_number: z
+      .string()
+      .regex(PHONE_REGEX, t("auth.phoneInvalid"))
+      .or(z.literal("")),
+  });
+}
+
+export type ProfileFormInputs = z.infer<ReturnType<typeof buildProfileSchema>>;

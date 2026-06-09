@@ -2,6 +2,26 @@
   "title": "AutoSoccer",
   "description": "Monte sua equipe e dispute o campeonato no AutoSoccer.",
   "actions": {
-    "play": "Jogar"
-  }
+    "play": "Jogar",
+    "profile": "Perfil",
+    "ranking": "Ranking"
+  },
+  "modal": {
+    "title": "Escolha o nome do time",
+    "label": "Nome do time",
+    "placeholder": "Ex.: Canela de Vidro FC",
+    "cancel": "Cancelar",
+    "submit": "Começar campanha",
+    "submitting": "Iniciando...",
+    "validation": "Digite um nome para o seu time.",
+    "errorGeneric": "Não foi possível iniciar a campanha."
+  },
+  "guest": {
+    "notice": "Você está em modo visitante.",
+    "signIn": "Entrar",
+    "or": "ou",
+    "createAccount": "criar conta",
+    "saveProgress": "para salvar seu progresso."
+  },
+  "tip": "Você está ótimo hoje!"
 }

@@ -10,12 +10,17 @@ import {
 } from "@ant-design/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "antd";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { useAuth } from "@/hooks/useAuth";
-import { registerSchema, type RegisterFormInputs } from "@/lib/schemas/auth";
+import { getErrorMessage } from "@/lib/errors";
+import {
+  buildRegisterSchema,
+  type RegisterFormInputs,
+} from "@/lib/schemas/auth";
 import styles from "./register.module.css";
 
 function formatPhone(value: string): string {
@@ -30,9 +35,18 @@ function formatPhone(value: string): string {
 
 export default function RegisterPage() {
   const { register: registerUser } = useAuth();
+  const t = useTranslations("auth.register");
+  const tCommon = useTranslations("common");
+  const tValidation = useTranslations("validation");
+  const tErrors = useTranslations("errors");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const registerSchema = useMemo(
+    () => buildRegisterSchema(tValidation),
+    [tValidation],
+  );
 
   const {
     register,
@@ -46,30 +60,30 @@ export default function RegisterPage() {
     try {
       setError(null);
       await registerUser(data);
-    } catch {
-      setError("Falha ao realizar cadastro. Tente novamente.");
+    } catch (err) {
+      setError(getErrorMessage(err, tErrors) || t("errorGeneric"));
     }
   };
 
   return (
     <main className={styles.container}>
-      <span className={styles.brandFloating} aria-label="AutoSoccer">
-        <img src="/logo.png" alt="AutoSoccer" />
+      <span className={styles.brandFloating} aria-label={tCommon("appName")}>
+        <img src="/logo.png" alt={tCommon("appName")} />
       </span>
 
       <form className={styles.card} onSubmit={handleSubmit(onSubmit)}>
-        <h1 className={styles.title}>Crie a sua conta</h1>
+        <h1 className={styles.title}>{t("title")}</h1>
 
         <div className={styles.fieldGroup}>
           <label className={styles.label} htmlFor="name">
-            Nome completo
+            {t("name")}
           </label>
           <div className={styles.inputWrap}>
             <UserOutlined className={styles.inputIcon} />
             <input
               id="name"
               type="text"
-              placeholder="Seu nome"
+              placeholder={t("namePlaceholder")}
               className={styles.input}
               {...register("name")}
             />
@@ -82,14 +96,14 @@ export default function RegisterPage() {
         <div className={styles.row}>
           <div className={styles.fieldGroup}>
             <label className={styles.label} htmlFor="nickname">
-              Apelido
+              {t("nickname")}
             </label>
             <div className={styles.inputWrap}>
               <UserOutlined className={styles.inputIcon} />
               <input
                 id="nickname"
                 type="text"
-                placeholder="Seu nick"
+                placeholder={t("nicknamePlaceholder")}
                 className={styles.input}
                 {...register("nickname")}
               />
@@ -101,14 +115,14 @@ export default function RegisterPage() {
 
           <div className={styles.fieldGroup}>
             <label className={styles.label} htmlFor="phone_number">
-              Telefone
+              {t("phone")}
             </label>
             <div className={styles.inputWrap}>
               <PhoneOutlined className={styles.inputIcon} />
               <input
                 id="phone_number"
                 type="tel"
-                placeholder="(00) 00000-0000"
+                placeholder={t("phonePlaceholder")}
                 inputMode="numeric"
                 maxLength={15}
                 className={styles.input}
@@ -127,14 +141,14 @@ export default function RegisterPage() {
 
         <div className={styles.fieldGroup}>
           <label className={styles.label} htmlFor="email">
-            E-mail
+            {t("email")}
           </label>
           <div className={styles.inputWrap}>
             <MailOutlined className={styles.inputIcon} />
             <input
               id="email"
               type="email"
-              placeholder="seu@email.com"
+              placeholder={t("emailPlaceholder")}
               className={styles.input}
               {...register("email")}
             />
@@ -147,14 +161,14 @@ export default function RegisterPage() {
         <div className={styles.row}>
           <div className={styles.fieldGroup}>
             <label className={styles.label} htmlFor="password">
-              Senha
+              {t("password")}
             </label>
             <div className={styles.inputWrap}>
               <LockOutlined className={styles.inputIcon} />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Crie uma senha"
+                placeholder={t("passwordPlaceholder")}
                 className={styles.input}
                 {...register("password")}
               />
@@ -162,7 +176,9 @@ export default function RegisterPage() {
                 type="button"
                 className={styles.eyeButton}
                 onClick={() => setShowPassword((value) => !value)}
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                aria-label={
+                  showPassword ? t("hidePassword") : t("showPassword")
+                }
               >
                 {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
               </button>
@@ -174,14 +190,14 @@ export default function RegisterPage() {
 
           <div className={styles.fieldGroup}>
             <label className={styles.label} htmlFor="confirmPassword">
-              Confirmar
+              {t("confirm")}
             </label>
             <div className={styles.inputWrap}>
               <LockOutlined className={styles.inputIcon} />
               <input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="Repita"
+                placeholder={t("confirmPlaceholder")}
                 className={styles.input}
                 {...register("confirmPassword")}
               />
@@ -190,7 +206,7 @@ export default function RegisterPage() {
                 className={styles.eyeButton}
                 onClick={() => setShowConfirmPassword((value) => !value)}
                 aria-label={
-                  showConfirmPassword ? "Ocultar senha" : "Mostrar senha"
+                  showConfirmPassword ? t("hidePassword") : t("showPassword")
                 }
               >
                 {showConfirmPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
@@ -222,13 +238,13 @@ export default function RegisterPage() {
             marginTop: "0.4rem",
           }}
         >
-          Criar Conta
+          {t("submit")}
         </Button>
 
         <p className={styles.footerText}>
-          Já possui uma conta?{" "}
+          {t("alreadyHaveAccount")}{" "}
           <Link href="/auth/login" className={styles.link}>
-            Entrar
+            {t("signIn")}
           </Link>
         </p>
       </form>

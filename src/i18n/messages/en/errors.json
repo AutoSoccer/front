@@ -1,5 +1,24 @@
 {
   "generic": "An unexpected error occurred.",
   "network": "Connection failed. Please try again.",
-  "unauthorized": "Session expired. Please sign in again."
+  "unauthorized": "Session expired. Please sign in again.",
+  "INVALID_CREDENTIALS": "Invalid credentials. Check email/nickname and password.",
+  "USER_NOT_FOUND": "User not found.",
+  "EMAIL_ALREADY_EXISTS": "An account with this email already exists.",
+  "NICKNAME_ALREADY_EXISTS": "An account with this nickname already exists.",
+  "VALIDATION_ERROR": "The provided data is invalid.",
+  "INSUFFICIENT_COINS": "Not enough coins to complete this action.",
+  "ATHLETE_NOT_FOUND": "Athlete not found.",
+  "ATHLETE_NOT_OWNED": "This athlete is not on your team.",
+  "TEAM_FULL": "Your team is already full.",
+  "TEAM_NOT_FOUND": "You have not started a campaign yet.",
+  "CAMPAIGN_ALREADY_RUNNING": "You already have a campaign in progress.",
+  "CAMPAIGN_NOT_RUNNING": "No campaign in progress.",
+  "MATCH_NOT_FOUND": "Match not found.",
+  "MATCH_ALREADY_FINISHED": "This match has already ended.",
+  "MARKET_NOT_AVAILABLE": "The market is not available right now.",
+  "REFRESH_NOT_ALLOWED": "The market cannot be refreshed right now.",
+  "GUEST_NOT_ALLOWED": "This action is not available for guests.",
+  "FORBIDDEN": "You do not have permission for this action.",
+  "RATE_LIMITED": "Too many attempts. Wait a few seconds."
 }

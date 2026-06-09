@@ -6,12 +6,14 @@ import {
   TrophyFilled,
 } from "@ant-design/icons";
 import { ChartNoAxesColumnIncreasing } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
 import ProfileCorner from "@/components/ProfileCorner";
 import { useAuth } from "@/hooks/useAuth";
+import { getErrorMessage } from "@/lib/errors";
 import { resetGameSession } from "@/lib/gameSession";
 import { gameService } from "@/services/gameService";
 
@@ -20,6 +22,9 @@ import styles from "./page.module.css";
 export default function HomePage() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
+  const t = useTranslations("home");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [isStartingCampaign, setIsStartingCampaign] = useState(false);
@@ -41,7 +46,7 @@ export default function HomePage() {
     const normalizedName = teamName.trim();
 
     if (!normalizedName) {
-      setStartError("Digite um nome para o seu time.");
+      setStartError(t("modal.validation"));
       return;
     }
 
@@ -54,15 +59,7 @@ export default function HomePage() {
       setIsTeamModalOpen(false);
       router.push("/game");
     } catch (error) {
-      const message =
-        typeof error === "object" && error !== null && "response" in error
-          ? (
-              error as {
-                response?: { data?: { message?: string } };
-              }
-            ).response?.data?.message
-          : null;
-      setStartError(message ?? "Nao foi possivel iniciar a campanha.");
+      setStartError(getErrorMessage(error, tErrors) || t("modal.errorGeneric"));
     } finally {
       setIsStartingCampaign(false);
     }
@@ -70,14 +67,14 @@ export default function HomePage() {
 
   return (
     <main className={styles.main}>
-      <span className={styles.brandFloating} aria-label="AutoSoccer">
-        <img src="/logo.png" alt="AutoSoccer" />
+      <span className={styles.brandFloating} aria-label={tCommon("appName")}>
+        <img src="/logo.png" alt={tCommon("appName")} />
       </span>
 
       {isAuthenticated && <ProfileCorner />}
 
       {isLoading ? (
-        <p className={styles.loadingState}>Carregando...</p>
+        <p className={styles.loadingState}>{tCommon("loading")}</p>
       ) : (
         <div className={styles.menu}>
           <button
@@ -85,44 +82,42 @@ export default function HomePage() {
             className={`${styles.menuButton} ${styles.menuButtonHero}`}
             onClick={handlePlayClick}
           >
-            Jogar <TrophyFilled />
+            {t("actions.play")} <TrophyFilled />
           </button>
-          {/* <Link href="/game" className={styles.menuButton}>
-            Atletas
-          </Link> */}
           <Link href="/profile" className={styles.menuButton}>
-            <TeamOutlined /> Perfil
+            <TeamOutlined /> {t("actions.profile")}
           </Link>
           <Link href="/ranking" className={styles.menuButton}>
-            <ChartNoAxesColumnIncreasing aria-hidden="true" /> Ranking
+            <ChartNoAxesColumnIncreasing aria-hidden="true" /> {t("actions.ranking")}
           </Link>
-          {/* <Link href="/game" className={styles.menuButton}>
-            Histórico
-          </Link> */}
 
           {!isAuthenticated && (
             <p className={styles.guestNotice}>
-              Você está em modo visitante.{" "}
+              {t("guest.notice")}{" "}
               <Link href="/auth/login" className={styles.guestLink}>
-                Entrar
+                {t("guest.signIn")}
               </Link>{" "}
-              ou{" "}
+              {t("guest.or")}{" "}
               <Link href="/auth/register" className={styles.guestLink}>
-                criar conta
+                {t("guest.createAccount")}
               </Link>{" "}
-              para salvar seu progresso.
+              {t("guest.saveProgress")}
             </p>
           )}
         </div>
       )}
 
       <div className={styles.menuFooter}>
-        <Link href="/" className={styles.footerButton} aria-label="Inicio">
+        <Link
+          href="/"
+          className={styles.footerButton}
+          aria-label={tCommon("menu.home")}
+        >
           <HomeFilled />
         </Link>
       </div>
 
-      <div className={styles.tipBox}>Você está ótimo hoje!</div>
+      <div className={styles.tipBox}>{t("tip")}</div>
       {isTeamModalOpen && (
         <div className={styles.modalOverlay} role="dialog" aria-modal="true">
           <form
@@ -133,8 +128,8 @@ export default function HomePage() {
             <span className={styles.teamModalIcon} aria-hidden="true">
               <TeamOutlined />
             </span>
-            <h2 id="team-name-title">Escolha o nome do time</h2>
-            <label htmlFor="team-name">Nome do time</label>
+            <h2 id="team-name-title">{t("modal.title")}</h2>
+            <label htmlFor="team-name">{t("modal.label")}</label>
             <input
               id="team-name"
               name="team-name"
@@ -144,7 +139,7 @@ export default function HomePage() {
               maxLength={40}
               autoComplete="off"
               autoFocus
-              placeholder="Ex.: Canela de Vidro FC"
+              placeholder={t("modal.placeholder")}
               disabled={isStartingCampaign}
             />
             <span className={styles.characterCount}>{teamName.length}/40</span>
@@ -160,14 +155,16 @@ export default function HomePage() {
                 onClick={() => setIsTeamModalOpen(false)}
                 disabled={isStartingCampaign}
               >
-                Cancelar
+                {t("modal.cancel")}
               </button>
               <button
                 type="submit"
                 className={styles.modalPrimaryButton}
                 disabled={isStartingCampaign || teamName.trim().length === 0}
               >
-                {isStartingCampaign ? "Iniciando..." : "Começar campanha"}
+                {isStartingCampaign
+                  ? t("modal.submitting")
+                  : t("modal.submit")}
               </button>
             </div>
           </form>
