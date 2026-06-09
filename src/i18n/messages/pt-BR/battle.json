@@ -1,7 +1,61 @@
 {
-  "title": "Partida",
+  "title": "Batalha",
   "result": {
-    "victory": "Vitoria",
-    "defeat": "Derrota"
+    "victory": "Vitória",
+    "defeat": "Derrota",
+    "draw": "Empate"
+  },
+  "header": {
+    "score": "Placar",
+    "turn": "Turno",
+    "summaryAria": "Resumo da batalha"
+  },
+  "events": {
+    "goal": "Gol!",
+    "turnover": "Posse perdida",
+    "shot": "Finalização",
+    "passOk": "Passe completo",
+    "passFail": "Passe interceptado",
+    "advance": "Avanço",
+    "won": "Disputa vencida",
+    "tackle": "Desarme"
+  },
+  "outcome": {
+    "goal": "Gol",
+    "draw": "Empate"
+  },
+  "field": {
+    "aria": "Campo compartilhado horizontal 6 por 3",
+    "myTeam": "Seu time",
+    "opponent": "Adversário",
+    "ballTitle": "Bola com {name}",
+    "tokenTitle": "{name} - ATK {attack} / VEL {velocity} / DEF {defense}"
+  },
+  "log": {
+    "title": "Logs da rodada",
+    "preparing": "Preparando partida...",
+    "waiting": "Aguardando...",
+    "finished": "Rodada finalizada."
+  },
+  "summary": {
+    "ariaLabel": "Resultado final da batalha",
+    "finalScore": "Placar final {player}x{opponent}",
+    "coins": "{prefix}{count} moedas",
+    "trophies": "{prefix}{count} troféus",
+    "backToMarket": "Voltar ao Mercado"
+  },
+  "modal": {
+    "campaignEnded": "Campanha finalizada",
+    "battleEnded": "Batalha finalizada",
+    "result": "{result} - Placar final: {player}x{opponent}",
+    "coins": "moedas",
+    "trophies": "trofeus",
+    "viewResults": "Ver resultados",
+    "menu": "Menu",
+    "backToMarket": "Voltar ao Mercado"
+  },
+  "errors": {
+    "noAthletes": "Escale ao menos 1 atleta antes de jogar.",
+    "battleStartFailed": "Não foi possível iniciar a batalha."
   }
 }
