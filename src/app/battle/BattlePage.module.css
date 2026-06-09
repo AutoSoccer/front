@@ -162,8 +162,8 @@
 
 .resultSummary :global(.ant-btn-primary) {
   background: var(--brand-primary) !important;
-  color: #ffffff !important;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  color: var(--text-strong) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
   box-shadow: 0 5px 0 var(--brand-shadow) !important;
 }
 
@@ -778,8 +778,8 @@
 
 .loadingLog :global(.ant-btn-primary) {
   background: var(--brand-primary) !important;
-  color: #ffffff !important;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  color: var(--text-strong) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 0 var(--brand-shadow) !important;
 }
 
@@ -970,8 +970,8 @@
 
 .modalActions :global(.ant-btn-primary) {
   background: var(--brand-primary) !important;
-  color: #ffffff !important;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  color: var(--text-strong) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
   box-shadow: 0 5px 0 var(--brand-shadow) !important;
 }
 
