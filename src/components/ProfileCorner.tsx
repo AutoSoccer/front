@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
 
+import LanguageSwitcher from "./LanguageSwitcher";
 import styles from "./ProfileCorner.module.css";
 
 function getInitial(value?: string | null): string {
@@ -45,6 +46,7 @@ export default function ProfileCorner({ coins }: ProfileCornerProps) {
 
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
+      <LanguageSwitcher />
       {/* {typeof coins === "number" && (
         <span className={styles.coinPill} aria-label={`Saldo: ${coins} moedas`}>
           <span className={styles.coinIcon}>
