@@ -1,0 +1,5 @@
+{
+  "required": "Required field.",
+  "email": "Enter a valid email.",
+  "minLength": "Minimum length not met."
+}

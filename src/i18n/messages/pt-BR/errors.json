@@ -1,0 +1,5 @@
+{
+  "generic": "Ocorreu um erro inesperado.",
+  "network": "Falha na conexao. Tente novamente.",
+  "unauthorized": "Sessao expirada. Faca login novamente."
+}

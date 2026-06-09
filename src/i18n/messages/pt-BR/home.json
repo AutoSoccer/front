@@ -1,0 +1,7 @@
+{
+  "title": "AutoSoccer",
+  "description": "Monte sua equipe e dispute o campeonato no AutoSoccer.",
+  "actions": {
+    "play": "Jogar"
+  }
+}

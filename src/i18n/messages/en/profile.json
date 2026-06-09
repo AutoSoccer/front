@@ -1,0 +1,8 @@
+{
+  "title": "My Profile",
+  "menu": {
+    "profile": "My Profile",
+    "market": "Market",
+    "logout": "Logout"
+  }
+}

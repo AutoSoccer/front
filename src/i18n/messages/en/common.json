@@ -1,0 +1,13 @@
+{
+  "appName": "AutoSoccer",
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "language": {
+    "label": "Language",
+    "portuguese": "Portuguese",
+    "english": "English"
+  }
+}

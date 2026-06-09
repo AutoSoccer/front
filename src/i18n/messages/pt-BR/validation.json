@@ -1,0 +1,5 @@
+{
+  "required": "Campo obrigatorio.",
+  "email": "Informe um e-mail valido.",
+  "minLength": "Tamanho minimo nao atingido."
+}
