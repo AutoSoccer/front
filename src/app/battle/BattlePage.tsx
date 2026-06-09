@@ -438,52 +438,56 @@ export default function BattlePage() {
           </section>
         )}
 
-        <section className={styles.arena} aria-label="Campo da partida">
-          <SharedBattleField
-            match={match}
-            visibleEventCount={visibleLogs.length}
-          />
-        </section>
+        <div className={styles.battleGrid}>
+          <section className={styles.arena} aria-label="Campo da partida">
+            <SharedBattleField
+              match={match}
+              visibleEventCount={visibleLogs.length}
+            />
+          </section>
 
-        <section className={styles.logPanel} aria-labelledby="log-title">
-          <div className={styles.logHeader}>
-            <h2 id="log-title">Logs da rodada</h2>
-            <span className={styles.logStatus}>
-              {isWaitingForRound
-                ? "Aguardando..."
-                : `${visibleLogs.length}/${totalTurns}`}
-            </span>
-          </div>
+          <section className={styles.logPanel} aria-labelledby="log-title">
+            <div className={styles.logHeader}>
+              <h2 id="log-title">Logs da rodada</h2>
+              <span className={styles.logStatus}>
+                {isWaitingForRound
+                  ? "Aguardando..."
+                  : `${visibleLogs.length}/${totalTurns}`}
+              </span>
+            </div>
 
-          <div className={styles.logList}>
-            {isWaitingForRound ? (
-              <div className={styles.loadingLog}>Preparando partida...</div>
-            ) : errorMessage ? (
-              <div className={styles.loadingLog}>
-                <span>{errorMessage}</span>
-                <Button type="primary" onClick={() => router.push("/game")}>
-                  Voltar ao Mercado
-                </Button>
-              </div>
-            ) : visibleLogs.length === 0 ? (
-              <div className={styles.loadingLog}>Rodada finalizada.</div>
-            ) : (
-              visibleLogs.map((log) => (
-                <article
-                  className={`${styles.logItem} ${getSideClass(log.side)}`}
-                  key={log.turn}
-                >
-                  <span className={styles.logMinute}>{log.minute}</span>
-                  <div className={styles.logBody}>
-                    <strong>{log.title}</strong>
-                    <p>{log.description}</p>
-                  </div>
-                  <span className={styles.logScore}>{log.score}</span>
-                </article>
-              ))
-            )}
-          </div>
-        </section>
+            <ul className={styles.logsList}>
+              {isWaitingForRound ? (
+                <li className={styles.loadingLog}>Preparando partida...</li>
+              ) : errorMessage ? (
+                <li className={styles.loadingLog}>
+                  <span>{errorMessage}</span>
+                  <Button type="primary" onClick={() => router.push("/game")}>
+                    Voltar ao Mercado
+                  </Button>
+                </li>
+              ) : visibleLogs.length === 0 ? (
+                <li className={styles.loadingLog}>Rodada finalizada.</li>
+              ) : (
+                visibleLogs.map((log) => (
+                  <li
+                    className={`${styles.logItemVertical} ${getSideClass(log.side)}`}
+                    key={log.turn}
+                  >
+                    <div className={styles.logItemHeader}>
+                      <span className={styles.logMinute}>{log.minute}</span>
+                      <span className={styles.logScore}>{log.score}</span>
+                    </div>
+                    <div className={styles.logBody}>
+                      <strong>{log.title}</strong>
+                      <p>{log.description}</p>
+                    </div>
+                  </li>
+                ))
+              )}
+            </ul>
+          </section>
+        </div>
       </div>
 
       {match && isEndModalOpen && (
