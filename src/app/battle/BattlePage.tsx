@@ -1,14 +1,17 @@
 "use client";
 
 import {
+  ArrowLeftOutlined,
   DollarOutlined,
+  EyeOutlined,
+  HomeFilled,
   TeamOutlined,
   TrophyFilled,
   UserOutlined,
 } from "@ant-design/icons";
 import { Button } from "antd";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import ProfileCorner from "@/components/ProfileCorner";
 import {
@@ -268,6 +271,7 @@ function SharedBattleField({
 
 export default function BattlePage() {
   const router = useRouter();
+  const roundRequestRef = useRef<Promise<MatchResponse> | null>(null);
   const [gameSession, setGameSession] = useState<GameSession>(() =>
     readGameSession()
   );
@@ -275,6 +279,7 @@ export default function BattlePage() {
   const [visibleLogs, setVisibleLogs] = useState<MatchTurnLog[]>([]);
   const [isWaitingForRound, setIsWaitingForRound] = useState(true);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
+  const [isBattleFinished, setIsBattleFinished] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const currentLog = visibleLogs[visibleLogs.length - 1];
@@ -303,7 +308,11 @@ export default function BattlePage() {
       }
 
       try {
-        const result = await gameService.playMatch(positions);
+        if (!roundRequestRef.current) {
+          roundRequestRef.current = gameService.playMatch(positions);
+        }
+
+        const result = await roundRequestRef.current;
         if (cancelled) return;
 
         setMatch(result);
@@ -312,6 +321,7 @@ export default function BattlePage() {
         const logs = buildTurnLogs(result.events);
         if (logs.length === 0) {
           setVisibleLogs([]);
+          setIsBattleFinished(true);
           setIsEndModalOpen(true);
           return;
         }
@@ -321,6 +331,7 @@ export default function BattlePage() {
             setVisibleLogs(logs.slice(0, index + 1));
 
             if (index === logs.length - 1) {
+              setIsBattleFinished(true);
               setIsEndModalOpen(true);
             }
           }, (index + 1) * 850);
@@ -348,16 +359,19 @@ export default function BattlePage() {
     };
   }, []);
 
-  function handleContinueBattle() {
+  function handleReturnToMarket() {
     if (!match) return;
-    const nextSession = writeGameSession(nextSessionFromMatch(gameSession, match));
+
+    const nextSession = match.resolution.matchEnded
+      ? resetGameSession()
+      : writeGameSession(nextSessionFromMatch(gameSession, match));
     setGameSession(nextSession);
     router.push("/game");
   }
 
-  function handleFinishRun(destination: "/" | "/profile") {
+  function handleGoToMenu() {
     resetGameSession();
-    router.push(destination);
+    router.push("/");
   }
 
   return (
@@ -384,6 +398,44 @@ export default function BattlePage() {
             </strong>
           </div>
         </section>
+
+        {match && isBattleFinished && !isEndModalOpen && (
+          <section
+            className={styles.resultSummary}
+            aria-label="Resultado final da batalha"
+          >
+            <div className={styles.resultSummaryMain}>
+              <span className={styles.resultSummaryLabel}>
+                {resultLabel(match)}
+              </span>
+              <strong>
+                Placar final {match.score.player}x{match.score.opponent}
+              </strong>
+            </div>
+            <div className={styles.resultSummaryRewards}>
+              <span>
+                <DollarOutlined />
+                {rewardPrefix}
+                {match.resolution.coinsEarned} moedas
+              </span>
+              {match.resolution.matchEnded && (
+                <span>
+                  <TrophyFilled />
+                  {trophyPrefix}
+                  {match.resolution.trophiesDelta} troféus
+                </span>
+              )}
+            </div>
+            <Button
+              type="primary"
+              size="large"
+              icon={<ArrowLeftOutlined />}
+              onClick={handleReturnToMarket}
+            >
+              Voltar ao Mercado
+            </Button>
+          </section>
+        )}
 
         <section className={styles.arena} aria-label="Campo da partida">
           <SharedBattleField
@@ -438,7 +490,9 @@ export default function BattlePage() {
           <div className={styles.resultModal}>
             <span className={styles.resultBadge}>{finalOutcome}</span>
             <h2>
-              {match.resolution.matchEnded ? "Fim da partida" : "Batalha finalizada"}
+              {match.resolution.matchEnded
+                ? "Campanha finalizada"
+                : "Batalha finalizada"}
             </h2>
             <p>
               {resultLabel(match)} - Placar final: {match.score.player}x
@@ -465,28 +519,43 @@ export default function BattlePage() {
                 </div>
               )}
             </div>
-            <div
-              className={`${styles.modalActions} ${
-                match.resolution.matchEnded ? "" : styles.modalActionsSingle
-              }`}
-            >
+            <div className={styles.modalActions}>
               {match.resolution.matchEnded ? (
                 <>
                   <Button
+                    size="large"
+                    icon={<EyeOutlined />}
+                    onClick={() => setIsEndModalOpen(false)}
+                  >
+                    Ver resultados
+                  </Button>
+                  <Button
                     type="primary"
                     size="large"
-                    onClick={() => handleFinishRun("/profile")}
+                    icon={<HomeFilled />}
+                    onClick={handleGoToMenu}
                   >
-                    Perfil
-                  </Button>
-                  <Button size="large" onClick={() => handleFinishRun("/")}>
                     Menu
                   </Button>
                 </>
               ) : (
-                <Button type="primary" size="large" onClick={handleContinueBattle}>
-                  Voltar ao Mercado
-                </Button>
+                <>
+                  <Button
+                    size="large"
+                    icon={<EyeOutlined />}
+                    onClick={() => setIsEndModalOpen(false)}
+                  >
+                    Ver resultados
+                  </Button>
+                  <Button
+                    type="primary"
+                    size="large"
+                    icon={<ArrowLeftOutlined />}
+                    onClick={handleReturnToMarket}
+                  >
+                    Voltar ao Mercado
+                  </Button>
+                </>
               )}
             </div>
           </div>
