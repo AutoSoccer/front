@@ -20,6 +20,7 @@ export type ApiAthlete = {
 export type MarketResponse = {
   refresh_cost: number;
   refreshed_at: string | null;
+  coins: number;
   athletes: ApiAthlete[];
 };
 
@@ -82,15 +83,28 @@ export type SnapshotAthlete = {
   velocity: number;
   attack: number;
   defense: number;
+  type?: AthleteType;
 };
 
 export type SnapshotPositions = Array<Array<SnapshotAthlete | null>>;
 
+export type FieldPosition = {
+  x: 0 | 1 | 2;
+  y: 0 | 1 | 2 | 3 | 4 | 5;
+};
+
+export type BallState = {
+  team: "player" | "opponent";
+  athleteId: number;
+  athleteName: string;
+  position: FieldPosition;
+};
+
 export type MatchEvent = {
   turn: number;
   possession: "player" | "opponent";
-  ballRow: 0 | 1 | 2;
-  kind: "pass" | "tackle" | "shot" | "turnover";
+  ballRow: 0 | 1 | 2 | 3 | 4 | 5;
+  kind: "move" | "pass" | "tackle" | "shot" | "turnover";
   attackerTeamId: number;
   defenderTeamId: number;
   attackerId: number | null;
@@ -99,8 +113,17 @@ export type MatchEvent = {
   defenderName: string | null;
   attackerRoll: number;
   defenderRoll: number;
+  successChance: number;
+  randomRoll: number;
   success: boolean;
   goal: boolean;
+  movements: Array<{
+    team: "player" | "opponent";
+    athleteId: number;
+    from: FieldPosition;
+    to: FieldPosition;
+  }>;
+  ball: BallState;
   description: string;
 };
 
@@ -125,7 +148,14 @@ export type MatchResponse = {
   };
   winner: "player" | "opponent" | "draw";
   totalTurns: number;
+  initialBall: BallState;
   events: MatchEvent[];
+  initiative: {
+    playerLeadVelocity: number;
+    opponentLeadVelocity: number;
+    startsWith: "player" | "opponent";
+    carrier: BallState;
+  };
   persisted: {
     teamId: number;
     victory: number;

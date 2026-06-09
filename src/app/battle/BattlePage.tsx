@@ -2,7 +2,6 @@
 
 import {
   DollarOutlined,
-  FlagFilled,
   TeamOutlined,
   TrophyFilled,
   UserOutlined,
@@ -43,25 +42,15 @@ type MatchTurnLog = {
   outcome?: MatchOutcome;
 };
 
-type LineupSlot = {
-  areaIndex: number;
-  slotIndex: number;
-  athlete: SnapshotAthlete | null;
+type FieldToken = {
+  team: "player" | "opponent";
+  athlete: SnapshotAthlete;
+  x: number;
+  y: number;
 };
 
-const areaLabels = ["Defesa", "Centro", "Ataque"];
-
-const fieldSlots: LineupSlot[] = [
-  { areaIndex: 0, slotIndex: 0, athlete: null },
-  { areaIndex: 0, slotIndex: 1, athlete: null },
-  { areaIndex: 0, slotIndex: 2, athlete: null },
-  { areaIndex: 1, slotIndex: 0, athlete: null },
-  { areaIndex: 1, slotIndex: 1, athlete: null },
-  { areaIndex: 1, slotIndex: 2, athlete: null },
-  { areaIndex: 2, slotIndex: 0, athlete: null },
-  { areaIndex: 2, slotIndex: 1, athlete: null },
-  { areaIndex: 2, slotIndex: 2, athlete: null },
-];
+const displayRows = [0, 1, 2];
+const displayColumns = [0, 1, 2, 3, 4, 5];
 
 function buildPositionsFromSession(session: GameSession): MatchPositionPayload[] {
   return session.selectedAthleteIds.flatMap((athleteId, index) => {
@@ -76,13 +65,6 @@ function buildPositionsFromSession(session: GameSession): MatchPositionPayload[]
       posY: Math.floor(index / 3),
     };
   });
-}
-
-function buildLineup(positions?: SnapshotPositions): LineupSlot[] {
-  return fieldSlots.map((slot) => ({
-    ...slot,
-    athlete: positions?.[slot.areaIndex]?.[slot.slotIndex] ?? null,
-  }));
 }
 
 function renderAthleteIcon(className: string) {
@@ -103,8 +85,8 @@ function formatMinute(turn: number): string {
 }
 
 function sideForEvent(event: MatchEvent): MatchSide {
-  if (event.kind === "tackle" && !event.success) {
-    return event.possession === "player" ? "opponent" : "player";
+  if (!event.success && event.ball.team !== event.possession) {
+    return event.ball.team;
   }
   return event.possession;
 }
@@ -113,7 +95,10 @@ function titleForEvent(event: MatchEvent): string {
   if (event.goal) return "Gol!";
   if (event.kind === "turnover") return "Posse perdida";
   if (event.kind === "shot") return "Finalizacao";
-  if (event.kind === "pass") return "Avanco";
+  if (event.kind === "pass") {
+    return event.success ? "Passe completo" : "Passe interceptado";
+  }
+  if (event.kind === "move") return "Avanco";
   return event.success ? "Disputa vencida" : "Desarme";
 }
 
@@ -162,68 +147,120 @@ function nextSessionFromMatch(
   };
 }
 
-function BattleField({
-  title,
-  subtitle,
-  slots,
-  mirrored = false,
+function buildFieldTokens(
+  positions: SnapshotPositions,
+  team: "player" | "opponent"
+): FieldToken[] {
+  return positions.flatMap((row, rowIndex) =>
+    row.flatMap((athlete, columnIndex) => {
+      if (!athlete) return [];
+      return {
+        team,
+        athlete,
+        x: columnIndex,
+        y: team === "player" ? rowIndex : 5 - rowIndex,
+      };
+    })
+  );
+}
+
+function SharedBattleField({
+  match,
+  visibleEventCount,
 }: {
-  title: string;
-  subtitle: string;
-  slots: LineupSlot[];
-  mirrored?: boolean;
+  match: MatchResponse | null;
+  visibleEventCount: number;
 }) {
-  const visibleAreas = mirrored ? [...areaLabels].reverse() : areaLabels;
+  const state = useMemo(() => {
+    if (!match) {
+      return { tokens: [] as FieldToken[], ball: null };
+    }
+
+    const tokens = [
+      ...buildFieldTokens(match.lineups.player.positions, "player"),
+      ...buildFieldTokens(match.lineups.opponent.positions, "opponent"),
+    ];
+    let ball = match.initialBall;
+
+    for (const event of match.events.slice(0, visibleEventCount)) {
+      for (const movement of event.movements) {
+        const token = tokens.find(
+          (entry) =>
+            entry.team === movement.team &&
+            entry.athlete.id === movement.athleteId
+        );
+        if (token) {
+          token.x = movement.to.x;
+          token.y = movement.to.y;
+        }
+      }
+      ball = event.ball;
+    }
+
+    return { tokens, ball };
+  }, [match, visibleEventCount]);
 
   return (
     <section
-      className={`${styles.fieldPanel} ${mirrored ? styles.fieldPanelMirrored : ""}`}
-      aria-label={title}
+      className={styles.sharedField}
+      aria-label="Campo compartilhado horizontal 6 por 3"
     >
-      <div className={styles.fieldHeader}>
-        <span className={styles.teamIcon}>
-          {mirrored ? <TeamOutlined /> : <UserOutlined />}
-        </span>
-        <div className={styles.teamText}>
-          <strong>{title}</strong>
-          <span>{subtitle}</span>
-        </div>
+      <div
+        className={`${styles.fieldTeamHeader} ${styles.fieldTeamHeaderMine}`}
+      >
+        <UserOutlined />
+        <strong>{match?.lineups.player.name ?? "Seu time"}</strong>
+      </div>
+      <div
+        className={`${styles.fieldTeamHeader} ${styles.fieldTeamHeaderOpponent}`}
+      >
+        <TeamOutlined />
+        <strong>{match?.lineups.opponent.name ?? "Adversario"}</strong>
       </div>
 
-      <div className={styles.fieldGoal} aria-hidden="true" />
-      <div className={styles.fieldArc} aria-hidden="true" />
-      <div className={styles.fieldCenterCircle} aria-hidden="true" />
+      <div className={styles.goalLine} aria-hidden="true" />
+      <div className={styles.sharedFieldGrid}>
+        {displayRows.flatMap((x) =>
+          displayColumns.map((y) => {
+            const tokens = state.tokens.filter(
+              (entry) => entry.x === x && entry.y === y
+            );
+            const hasBall =
+              state.ball?.position.x === x && state.ball.position.y === y;
 
-      <div className={styles.fieldAreas}>
-        {visibleAreas.map((areaLabel) => {
-          const sourceAreaIndex = areaLabels.indexOf(areaLabel);
-          const areaSlots = slots.filter(
-            (slot) => slot.areaIndex === sourceAreaIndex
-          );
-
-          return (
-            <div className={styles.fieldArea} key={areaLabel}>
-              <span className={styles.areaLabel}>{areaLabel}</span>
-              <div className={styles.fieldSlotGrid}>
-                {areaSlots.map((slot) => (
-                  <div
-                    className={styles.fieldSlot}
-                    key={`${title}-${slot.areaIndex}-${slot.slotIndex}`}
-                  >
-                    {slot.athlete ? (
-                      <div className={styles.playerToken}>
-                        {renderAthleteIcon(styles.playerIcon)}
-                        <span>{slot.athlete.name}</span>
-                      </div>
-                    ) : (
-                      <span className={styles.emptyToken} />
-                    )}
-                  </div>
-                ))}
+            return (
+              <div
+                className={`${styles.sharedFieldCell} ${
+                  y === 2 ? styles.centerLineCell : ""
+                }`}
+                key={`${x}-${y}`}
+              >
+                <div className={styles.cellTokens}>
+                  {tokens.map((token) => (
+                    <div
+                      className={`${styles.fieldPlayerToken} ${
+                        token.team === "player"
+                          ? styles.fieldPlayerTokenMine
+                          : styles.fieldPlayerTokenOpponent
+                      }`}
+                      key={`${token.team}-${token.athlete.id}`}
+                      title={`${token.athlete.name} - ATK ${token.athlete.attack} / VEL ${token.athlete.velocity} / DEF ${token.athlete.defense}`}
+                    >
+                      {renderAthleteIcon(styles.fieldPlayerIcon)}
+                      <span>{token.athlete.name}</span>
+                    </div>
+                  ))}
+                </div>
+                {hasBall && (
+                  <span
+                    className={styles.ball}
+                    title={`Bola com ${state.ball?.athleteName ?? ""}`}
+                  />
+                )}
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </section>
   );
@@ -239,15 +276,6 @@ export default function BattlePage() {
   const [isWaitingForRound, setIsWaitingForRound] = useState(true);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const playerLineup = useMemo(
-    () => buildLineup(match?.lineups.player.positions),
-    [match]
-  );
-  const opponentLineup = useMemo(
-    () => buildLineup(match?.lineups.opponent.positions),
-    [match]
-  );
 
   const currentLog = visibleLogs[visibleLogs.length - 1];
   const currentScore =
@@ -358,24 +386,9 @@ export default function BattlePage() {
         </section>
 
         <section className={styles.arena} aria-label="Campo da partida">
-          <BattleField
-            title="Seu campo"
-            subtitle={match?.lineups.player.name ?? "Time escalado agora"}
-            slots={playerLineup}
-          />
-
-          <div className={styles.centerBridge} aria-hidden="true">
-            <div className={styles.bridgeCircle}>
-              <FlagFilled />
-              <strong>{currentScore}</strong>
-            </div>
-          </div>
-
-          <BattleField
-            title="Campo rival"
-            subtitle={match?.lineups.opponent.name ?? "Buscando adversario"}
-            slots={opponentLineup}
-            mirrored
+          <SharedBattleField
+            match={match}
+            visibleEventCount={visibleLogs.length}
           />
         </section>
 

@@ -154,6 +154,7 @@ export default function MarketPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isActionPending, setIsActionPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [refreshCost, setRefreshCost] = useState(1);
 
   const coins = gameSession.coins;
   const currentBattle = gameSession.currentBattle;
@@ -206,6 +207,7 @@ export default function MarketPage() {
         setBoardSlots(slots);
         setGameSession(syncedSession);
         setMarketItems(market.athletes.map(mapApiAthleteToMarketItem));
+        setRefreshCost(market.refresh_cost);
       } catch (error) {
         if (!cancelled) {
           setErrorMessage(getErrorMessage(error));
@@ -235,12 +237,21 @@ export default function MarketPage() {
 
   async function handleRotateMarket() {
     if (isActionPending) return;
+    if (coins < refreshCost) {
+      setErrorMessage("Saldo insuficiente para atualizar o mercado.");
+      return;
+    }
 
     setIsActionPending(true);
     setErrorMessage(null);
     try {
       const market = await gameService.refreshMarket();
       setMarketItems(market.athletes.map(mapApiAthleteToMarketItem));
+      setRefreshCost(market.refresh_cost);
+      commitGameSession((currentSession) => ({
+        ...currentSession,
+        coins: market.coins,
+      }));
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {
@@ -581,8 +592,9 @@ export default function MarketPage() {
               size="large"
               block
               icon={<ReloadOutlined />}
+              aria-label={`Atualizar Mercado por ${refreshCost} moeda`}
               onClick={() => void handleRotateMarket()}
-              disabled={isLoading || isActionPending}
+              disabled={isLoading || isActionPending || coins < refreshCost}
               style={{
                 height: 52,
                 fontSize: "1.1rem",
@@ -592,7 +604,7 @@ export default function MarketPage() {
                 textShadow: "0 2px 0 rgba(0,0,0,0.15)",
               }}
             >
-              Atualizar Mercado
+              Atualizar Mercado ({refreshCost} <DollarOutlined aria-hidden="true" />)
             </Button>
           </section>
 
