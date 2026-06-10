@@ -1,0 +1,44 @@
+{
+  "appName": "AutoSoccer",
+  "meta": {
+    "title": "AutoSoccer",
+    "description": "Build your team and compete in the AutoSoccer championship."
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "retry": "Try again",
+    "play": "Play"
+  },
+  "language": {
+    "label": "Language",
+    "portuguese": "Portuguese",
+    "english": "English"
+  },
+  "menu": {
+    "profile": "My Profile",
+    "market": "Market",
+    "logout": "Sign out",
+    "openProfileMenu": "Open profile menu",
+    "home": "Home"
+  },
+  "roles": {
+    "goalkeeper": "Goalkeeper",
+    "defender": "Defender",
+    "midfielder": "Midfielder",
+    "attacker": "Attacker"
+  },
+  "areas": {
+    "defense": "Defense",
+    "midfield": "Midfield",
+    "attack": "Attack"
+  },
+  "market": {
+    "emptySlot": "Available slot {index}",
+    "dragAthlete": "Drag {name} to the field",
+    "coinsAmount": "{count} coins"
+  },
+  "loading": "Loading..."
+}

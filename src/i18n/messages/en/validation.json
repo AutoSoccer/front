@@ -1,0 +1,19 @@
+{
+  "required": "Required field.",
+  "email": "Enter a valid email.",
+  "minLength": "Minimum length not met.",
+  "auth": {
+    "identifierRequired": "Email or nickname is required.",
+    "identifierInvalid": "Enter a valid email or nickname.",
+    "emailRequired": "Email is required.",
+    "emailInvalid": "Invalid email.",
+    "passwordMin": "Password must be at least 6 characters.",
+    "passwordInvalid": "Invalid password.",
+    "confirmRequired": "Password confirmation is required.",
+    "passwordsMismatch": "Passwords do not match.",
+    "nameMin": "Name is too short.",
+    "nameInvalid": "Name must contain only letters.",
+    "nickname": "Nickname must be 2-20 characters (letters, numbers and _).",
+    "phoneInvalid": "Invalid phone. Use the format (00) 00000-0000."
+  }
+}

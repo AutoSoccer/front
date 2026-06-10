@@ -1,0 +1,45 @@
+{
+  "title": "Mercado",
+  "campaign": {
+    "start": "Começar campanha",
+    "starting": "Iniciando..."
+  },
+  "market": {
+    "title": "Mercado",
+    "planningTitle": "Planejamento da Equipe",
+    "planningWithTeam": "Planejamento - {teamName}",
+    "available": "Itens disponíveis: {available} / {total}",
+    "matchSummary": "Resumo da partida",
+    "coins": "Moedas",
+    "round": "Rodada",
+    "victories": "Vitórias",
+    "lives": "Vidas",
+    "give": "Desistir",
+    "giveTitle": "Desistir da campanha",
+    "play": "Jogar",
+    "playDisabledTitle": "Escale ao menos 1 atleta para jogar",
+    "playEnabledTitle": "Iniciar partida",
+    "refresh": "Atualizar Mercado",
+    "refreshAria": "Atualizar Mercado por {cost} moeda",
+    "refresh_with_cost": "Atualizar Mercado ({cost})",
+    "areaLabel": "Vaga {slot} em {area}",
+    "boardItemLabel": "{name} em campo",
+    "boardItemTitle": "Arraste para mover ou vender",
+    "sellLabel": "Venda",
+    "sellAria": "Arraste um atleta para vender por 2 moedas",
+    "sellTitle": "Vender atleta por 2 moedas",
+    "sellReward": "+2",
+    "emptyMarket": "+",
+    "errors": {
+      "insufficientCoinsRefresh": "Saldo insuficiente para atualizar o mercado.",
+      "insufficientCoinsBuy": "Saldo insuficiente para comprar este atleta.",
+      "genericAction": "Não foi possível concluir a ação."
+    },
+    "abandon": {
+      "title": "Quer mesmo desistir?",
+      "description": "Seu time e todo o progresso desta campanha serão apagados. Seus troféus e histórico não serão alterados.",
+      "continue": "Continuar",
+      "confirm": "Sim, desistir"
+    }
+  }
+}

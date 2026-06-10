@@ -1,0 +1,27 @@
+{
+  "title": "AutoSoccer",
+  "description": "Build your team and compete in the AutoSoccer championship.",
+  "actions": {
+    "play": "Play",
+    "profile": "Profile",
+    "ranking": "Ranking"
+  },
+  "modal": {
+    "title": "Choose your team name",
+    "label": "Team name",
+    "placeholder": "E.g. Glass Shin FC",
+    "cancel": "Cancel",
+    "submit": "Start campaign",
+    "submitting": "Starting...",
+    "validation": "Enter a name for your team.",
+    "errorGeneric": "Could not start the campaign."
+  },
+  "guest": {
+    "notice": "You are in guest mode.",
+    "signIn": "Sign in",
+    "or": "or",
+    "createAccount": "create an account",
+    "saveProgress": "to save your progress."
+  },
+  "tip": "You look great today!"
+}

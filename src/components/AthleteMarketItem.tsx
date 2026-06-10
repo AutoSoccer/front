@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import type React from "react";
 
 import { type AthleteMarketItem } from "../app/game/athletes";
@@ -18,10 +21,12 @@ function renderAthleteIcon(icon: string) {
 }
 
 export default function AthleteMarketItemCard({ item, index, onDragStart }: AthleteMarketItemProps) {
+  const t = useTranslations("common.market");
+
   if (!item) {
     return (
       <div className={styles.marketSlotEmpty}>
-        <span>Vaga disponível {index + 1}</span>
+        <span>{t("emptySlot", { index: index + 1 })}</span>
       </div>
     );
   }
@@ -32,13 +37,13 @@ export default function AthleteMarketItemCard({ item, index, onDragStart }: Athl
       draggable
       onDragStart={(event) => onDragStart(event, item.id)}
       className={styles.marketSlot}
-      aria-label={`Arrastar ${item.name} para o campo`}
+      aria-label={t("dragAthlete", { name: item.name })}
     >
       <div className={styles.cardAvatar}>{renderAthleteIcon(item.icon)}</div>
       <div className={styles.cardBody}>
         <div className={styles.cardHeader}>
           <span className={styles.cardName}>{item.name}</span>
-          <span className={styles.cardTag}>{item.cost} moedas</span>
+          <span className={styles.cardTag}>{t("coinsAmount", { count: item.cost })}</span>
         </div>
 
         <div className={styles.cardStats}>

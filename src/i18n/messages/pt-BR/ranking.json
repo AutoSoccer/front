@@ -1,0 +1,44 @@
+{
+  "title": "Ranking",
+  "empty": "Nenhum jogador no ranking ainda.",
+  "loading": "Carregando ranking...",
+  "header": {
+    "season": "Temporada geral",
+    "subtitle": "Os maiores colecionadores de troféus do AutoSoccer.",
+    "backHomeAria": "Voltar ao menu"
+  },
+  "podium": {
+    "aria": "Pódio do ranking"
+  },
+  "list": {
+    "label": "Classificação geral",
+    "top": "Top 50",
+    "playersCount": "{count} jogadores",
+    "you": "Você"
+  },
+  "loadingPanel": "Atualizando classificação...",
+  "error": "Não foi possível carregar o ranking agora.",
+  "retry": "Tentar novamente",
+  "emptyPodium": {
+    "title": "O pódio ainda está vazio",
+    "description": "O primeiro jogador a concluir uma campanha inaugura o ranking."
+  },
+  "user": {
+    "guestTitle": "Entre para ver suas métricas",
+    "guestDescription": "Convidados podem acompanhar o ranking, mas apenas contas registradas guardam campanhas e troféus.",
+    "guestLogin": "Entrar",
+    "noCampaign": "Nenhuma campanha concluída",
+    "noCampaignDescription": "Finalize sua primeira campanha para liberar aproveitamento, posição e histórico competitivo.",
+    "startCampaign": "Começar campanha",
+    "yourPerformance": "Seu desempenho",
+    "noPosition": "Sem posição",
+    "winRateAria": "{winRate}% de vitórias e {lossRate}% de derrotas",
+    "winRateLabel": "vitórias",
+    "victoriesLegend": "Vitórias",
+    "defeatsLegend": "Derrotas",
+    "trophies": "Troféus",
+    "victories": "Vitórias",
+    "defeats": "Derrotas",
+    "completedCampaigns": "{count} campanhas concluídas"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "title": "Battle",
+  "result": {
+    "victory": "Victory",
+    "defeat": "Defeat",
+    "draw": "Draw"
+  },
+  "header": {
+    "score": "Score",
+    "turn": "Turn",
+    "summaryAria": "Battle summary"
+  },
+  "events": {
+    "goal": "Goal!",
+    "turnover": "Possession lost",
+    "shot": "Shot",
+    "passOk": "Pass completed",
+    "passFail": "Pass intercepted",
+    "advance": "Advance",
+    "won": "Duel won",
+    "tackle": "Tackle"
+  },
+  "outcome": {
+    "goal": "Goal",
+    "draw": "Draw"
+  },
+  "field": {
+    "aria": "Shared horizontal field 6 by 3",
+    "myTeam": "Your team",
+    "opponent": "Opponent",
+    "ballTitle": "Ball with {name}",
+    "tokenTitle": "{name} - ATK {attack} / SPD {velocity} / DEF {defense}"
+  },
+  "log": {
+    "title": "Round logs",
+    "preparing": "Preparing match...",
+    "waiting": "Waiting...",
+    "finished": "Round finished."
+  },
+  "summary": {
+    "ariaLabel": "Final battle result",
+    "finalScore": "Final score {player}x{opponent}",
+    "coins": "{prefix}{count} coins",
+    "trophies": "{prefix}{count} trophies",
+    "backToMarket": "Back to Market"
+  },
+  "modal": {
+    "campaignEnded": "Campaign finished",
+    "battleEnded": "Battle finished",
+    "result": "{result} - Final score: {player}x{opponent}",
+    "coins": "coins",
+    "trophies": "trophies",
+    "viewResults": "View results",
+    "menu": "Menu",
+    "backToMarket": "Back to Market"
+  },
+  "errors": {
+    "noAthletes": "Pick at least 1 athlete before playing.",
+    "battleStartFailed": "Could not start the battle."
+  }
+}

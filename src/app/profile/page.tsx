@@ -14,15 +14,16 @@ import {
 } from "@ant-design/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "antd";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import ProfileCorner from "@/components/ProfileCorner";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  profileSchema,
+  buildProfileSchema,
   type ProfileFormInputs,
 } from "@/lib/schemas/auth";
 
@@ -48,9 +49,17 @@ function formatPhone(value: string): string {
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const router = useRouter();
+  const t = useTranslations("profile");
+  const tCommon = useTranslations("common");
+  const tValidation = useTranslations("validation");
   const [feedback, setFeedback] = useState<
     { tone: "success" | "error"; message: string } | null
   >(null);
+
+  const profileSchema = useMemo(
+    () => buildProfileSchema(tValidation),
+    [tValidation],
+  );
 
   const {
     register,
@@ -81,12 +90,12 @@ export default function ProfilePage() {
       reset(data);
       setFeedback({
         tone: "success",
-        message: "Dados validados! Salvamento será integrado em breve.",
+        message: t("feedback.success"),
       });
     } catch {
       setFeedback({
         tone: "error",
-        message: "Não foi possível salvar as alterações.",
+        message: t("feedback.error"),
       });
     }
   };
@@ -94,10 +103,10 @@ export default function ProfilePage() {
   if (isLoading || !user) {
     return (
       <main className={styles.container}>
-        <span className={styles.brandFloating} aria-label="AutoSoccer">
-          <img src="/logo.png" alt="AutoSoccer" />
+        <span className={styles.brandFloating} aria-label={tCommon("appName")}>
+          <img src="/logo.png" alt={tCommon("appName")} />
         </span>
-        <p className={styles.loading}>Carregando perfil...</p>
+        <p className={styles.loading}>{t("loading")}</p>
       </main>
     );
   }
@@ -106,8 +115,8 @@ export default function ProfilePage() {
 
   return (
     <main className={styles.container}>
-      <span className={styles.brandFloating} aria-label="AutoSoccer">
-        <img src="/logo.png" alt="AutoSoccer" />
+      <span className={styles.brandFloating} aria-label={tCommon("appName")}>
+        <img src="/logo.png" alt={tCommon("appName")} />
       </span>
 
       <ProfileCorner />
@@ -119,8 +128,8 @@ export default function ProfilePage() {
             <h1 className={styles.userName}>{displayName}</h1>
             <p className={styles.userNick}>@{user.nickname}</p>
             <div className={styles.tagsRow}>
-              <span className={styles.tag}>Treinador</span>
-              <span className={styles.tag}>Liga Inicial</span>
+              <span className={styles.tag}>{t("tags.trainer")}</span>
+              <span className={styles.tag}>{t("tags.initialLeague")}</span>
             </div>
           </div>
         </header>
@@ -128,14 +137,14 @@ export default function ProfilePage() {
         <div className={styles.infoList}>
           <div className={styles.infoItem}>
             <label className={styles.infoLabel} htmlFor="profile-name">
-              Nome
+              {t("fields.name")}
             </label>
             <div className={styles.inputWrap}>
               <UserOutlined className={styles.inputIcon} />
               <input
                 id="profile-name"
                 className={styles.input}
-                placeholder="Seu nome"
+                placeholder={t("fields.namePlaceholder")}
                 {...register("name")}
               />
             </div>
@@ -146,14 +155,14 @@ export default function ProfilePage() {
 
           <div className={styles.infoItem}>
             <label className={styles.infoLabel} htmlFor="profile-nickname">
-              Apelido
+              {t("fields.nickname")}
             </label>
             <div className={styles.inputWrap}>
               <LockOutlined className={styles.inputIcon} />
               <input
                 id="profile-nickname"
                 className={styles.input}
-                placeholder="Seu apelido"
+                placeholder={t("fields.nicknamePlaceholder")}
                 {...register("nickname")}
               />
             </div>
@@ -164,7 +173,7 @@ export default function ProfilePage() {
 
           <div className={styles.infoItem}>
             <label className={styles.infoLabel} htmlFor="profile-email">
-              E-mail
+              {t("fields.email")}
             </label>
             <div className={styles.inputWrap}>
               <MailOutlined className={styles.inputIcon} />
@@ -172,7 +181,7 @@ export default function ProfilePage() {
                 id="profile-email"
                 type="email"
                 className={styles.input}
-                placeholder="seu@email.com"
+                placeholder={t("fields.emailPlaceholder")}
                 {...register("email")}
               />
             </div>
@@ -183,7 +192,7 @@ export default function ProfilePage() {
 
           <div className={styles.infoItem}>
             <label className={styles.infoLabel} htmlFor="profile-phone">
-              Telefone
+              {t("fields.phone")}
             </label>
             <div className={styles.inputWrap}>
               <PhoneOutlined className={styles.inputIcon} />
@@ -193,7 +202,7 @@ export default function ProfilePage() {
                 inputMode="numeric"
                 maxLength={15}
                 className={styles.input}
-                placeholder="(00) 00000-0000"
+                placeholder={t("fields.phonePlaceholder")}
                 {...register("phone_number", {
                   onChange: (event) => {
                     event.target.value = formatPhone(event.target.value);
@@ -211,19 +220,19 @@ export default function ProfilePage() {
           <div className={styles.statBox}>
             <TrophyFilled style={{ fontSize: 20, color: "var(--brand-active)" }} />
             <span className={styles.statValue}>0</span>
-            <span className={styles.statLabel}>Vitórias</span>
+            <span className={styles.statLabel}>{t("stats.victories")}</span>
           </div>
           <div className={styles.statBox}>
             <HeartFilled style={{ fontSize: 20, color: "var(--brand-active)" }} />
             <span className={styles.statValue}>0</span>
-            <span className={styles.statLabel}>Derrotas</span>
+            <span className={styles.statLabel}>{t("stats.defeats")}</span>
           </div>
           <div className={styles.statBox}>
             <SafetyCertificateFilled
               style={{ fontSize: 20, color: "var(--brand-active)" }}
             />
             <span className={styles.statValue}>0</span>
-            <span className={styles.statLabel}>Troféus</span>
+            <span className={styles.statLabel}>{t("stats.trophies")}</span>
           </div>
         </div>
 
@@ -247,7 +256,7 @@ export default function ProfilePage() {
                 boxShadow: "0 4px 0 rgba(0,0,0,0.2)",
               }}
             >
-              Voltar ao Menu
+              {t("actions.back")}
             </Button>
           </Link>
           <Button
@@ -265,7 +274,7 @@ export default function ProfilePage() {
               boxShadow: "0 4px 0 #b45309",
             }}
           >
-            Salvar
+            {t("actions.save")}
           </Button>
           <Button
             type="primary"
@@ -281,7 +290,7 @@ export default function ProfilePage() {
               boxShadow: "0 4px 0 #7f1d1d",
             }}
           >
-            Sair da conta
+            {t("actions.logout")}
           </Button>
         </div>
       </form>

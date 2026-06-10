@@ -205,29 +205,29 @@ export const gameService = {
   },
 
   getMarket: async (): Promise<MarketResponse> => {
-    const response = await api.get<MarketResponse>("/mercado");
+    const response = await api.get<MarketResponse>("/market");
     return response.data;
   },
 
   refreshMarket: async (): Promise<MarketResponse> => {
-    const response = await api.post<MarketResponse>("/mercado/refresh");
+    const response = await api.post<MarketResponse>("/market/refresh");
     return response.data;
   },
 
   getTeam: async (): Promise<TeamResponse> => {
-    const response = await api.get<TeamResponse>("/equipe");
+    const response = await api.get<TeamResponse>("/team");
     return response.data;
   },
 
   buyAthlete: async (athleteId: number): Promise<BuyAthleteResponse> => {
-    const response = await api.post<BuyAthleteResponse>("/equipe/comprar-atleta", {
+    const response = await api.post<BuyAthleteResponse>("/team/buy-athlete", {
       atleta_id: athleteId,
     });
     return response.data;
   },
 
   sellAthlete: async (athleteId: number): Promise<SellAthleteResponse> => {
-    const response = await api.post<SellAthleteResponse>("/equipe/vender-atleta", {
+    const response = await api.post<SellAthleteResponse>("/team/sell-athlete", {
       atleta_id: athleteId,
     });
     return response.data;
@@ -235,13 +235,13 @@ export const gameService = {
 
   abandonCampaign: async (): Promise<AbandonCampaignResponse> => {
     const response = await api.post<AbandonCampaignResponse>(
-      "/partida/desistir"
+      "/match/abandon"
     );
     return response.data;
   },
 
   startCampaign: async (name: string): Promise<StartCampaignResponse> => {
-    const response = await api.post<StartCampaignResponse>("/partida/iniciar", {
+    const response = await api.post<StartCampaignResponse>("/match/start", {
       name,
     });
     return response.data;
@@ -250,7 +250,7 @@ export const gameService = {
   playMatch: async (
     positions: MatchPositionPayload[]
   ): Promise<MatchResponse> => {
-    const response = await api.post<MatchResponse>("/partida/jogar", {
+    const response = await api.post<MatchResponse>("/match/play", {
       positions,
     });
     return response.data;
