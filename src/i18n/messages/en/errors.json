@@ -20,5 +20,6 @@
   "REFRESH_NOT_ALLOWED": "The market cannot be refreshed right now.",
   "GUEST_NOT_ALLOWED": "This action is not available for guests.",
   "FORBIDDEN": "You do not have permission for this action.",
-  "RATE_LIMITED": "Too many attempts. Wait a few seconds."
+  "RATE_LIMITED": "Too many attempts. Wait a few seconds.",
+  "INTERNAL_ERROR": "Internal server error. Please try again in a moment."
 }
