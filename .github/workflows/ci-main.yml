@@ -38,22 +38,63 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
+        id: install
+        continue-on-error: true
         run: npm ci
 
       - name: Lint
+        id: lint
+        continue-on-error: true
         run: npm run lint
 
       - name: Typecheck
+        id: typecheck
+        continue-on-error: true
         run: npx tsc --noEmit
 
       - name: i18n parity check
+        id: i18n
+        continue-on-error: true
         run: npm run i18n:check
 
       - name: Test with coverage
+        id: test
+        continue-on-error: true
         run: npm run test:coverage -- --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json-summary
 
       - name: Next.js build
+        id: build
+        continue-on-error: true
         run: npm run build
+
+      - name: Step outcomes (diagnostico)
+        if: always()
+        run: |
+          echo "=== Outcomes ==="
+          echo "install:   ${{ steps.install.outcome }}"
+          echo "lint:      ${{ steps.lint.outcome }}"
+          echo "typecheck: ${{ steps.typecheck.outcome }}"
+          echo "i18n:      ${{ steps.i18n.outcome }}"
+          echo "test:      ${{ steps.test.outcome }}"
+          echo "build:     ${{ steps.build.outcome }}"
+          {
+            echo "## CI step outcomes"
+            echo ""
+            echo "| Step | Outcome |"
+            echo "| --- | --- |"
+            echo "| install | ${{ steps.install.outcome }} |"
+            echo "| lint | ${{ steps.lint.outcome }} |"
+            echo "| typecheck | ${{ steps.typecheck.outcome }} |"
+            echo "| i18n | ${{ steps.i18n.outcome }} |"
+            echo "| test:coverage | ${{ steps.test.outcome }} |"
+            echo "| build | ${{ steps.build.outcome }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail job if any hard gate failed
+        if: always() && (steps.install.outcome == 'failure' || steps.lint.outcome == 'failure' || steps.typecheck.outcome == 'failure' || steps.i18n.outcome == 'failure' || steps.test.outcome == 'failure' || steps.build.outcome == 'failure')
+        run: |
+          echo "::error::Pelo menos um hard gate falhou (ver tabela de outcomes acima)"
+          exit 1
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
