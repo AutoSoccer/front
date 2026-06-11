@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
 
 import { AuthProvider } from "@/context/AuthContext";
+import { defaultTheme, isTheme, themeCookieName } from "@/lib/theme";
 import AntdProvider from "@/providers/AntdProvider";
 import "./globals.css";
 
@@ -21,9 +23,12 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const cookieStore = await cookies();
+  const themeCookie = cookieStore.get(themeCookieName)?.value;
+  const theme = isTheme(themeCookie) ? themeCookie : defaultTheme;
 
   return (
-    <html lang={locale}>
+    <html lang={locale} data-theme={theme}>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AntdProvider>

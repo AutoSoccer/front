@@ -17,6 +17,11 @@
     "portuguese": "Português",
     "english": "Inglês"
   },
+  "theme": {
+    "label": "Tema",
+    "light": "Claro",
+    "dark": "Escuro"
+  },
   "menu": {
     "profile": "Meu Perfil",
     "market": "Mercado",
