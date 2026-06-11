@@ -38,7 +38,7 @@ describe("getErrorMessage", () => {
       },
     };
     expect(getErrorMessage(error, t as never)).toBe(
-      "Voce precisa estar logado."
+      "Voce precisa estar logado.",
     );
   });
 
@@ -63,7 +63,7 @@ describe("getErrorMessage", () => {
       },
     };
     expect(getErrorMessage(error, t as never)).toBe(
-      "Mensagem custom do backend"
+      "Mensagem custom do backend",
     );
   });
 
@@ -119,7 +119,7 @@ describe("getErrorCode", () => {
     expect(getErrorCode({ response: {} })).toBeNull();
     expect(getErrorCode({ response: { data: {} } })).toBeNull();
     expect(
-      getErrorCode({ response: { data: { message: "sem code" } } })
+      getErrorCode({ response: { data: { message: "sem code" } } }),
     ).toBeNull();
   });
 

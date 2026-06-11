@@ -29,7 +29,7 @@ describe("useAuth", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     expect(() => renderHook(() => useAuth())).toThrow(
-      "useAuth deve ser usado dentro de um AuthProvider."
+      "useAuth deve ser usado dentro de um AuthProvider.",
     );
 
     consoleSpy.mockRestore();
@@ -37,7 +37,13 @@ describe("useAuth", () => {
 
   it("retorna o valor do contexto quando usado dentro do AuthProvider", () => {
     const fakeContext: AuthContextType = {
-      user: { id: 1, name: "Ada", nickname: "ada", email: "ada@test.com", phone_number: null },
+      user: {
+        id: 1,
+        name: "Ada",
+        nickname: "ada",
+        email: "ada@test.com",
+        phone_number: null,
+      },
       isAuthenticated: true,
       isLoading: false,
       login: vi.fn(),
@@ -48,7 +54,9 @@ describe("useAuth", () => {
 
     function wrapper({ children }: { children: ReactNode }) {
       return (
-        <AuthContext.Provider value={fakeContext}>{children}</AuthContext.Provider>
+        <AuthContext.Provider value={fakeContext}>
+          {children}
+        </AuthContext.Provider>
       );
     }
 

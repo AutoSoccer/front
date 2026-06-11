@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  LogoutOutlined,
-  ShopOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { LogoutOutlined, ShopOutlined, UserOutlined } from "@ant-design/icons";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -34,7 +30,10 @@ export default function ProfileCorner({ coins }: ProfileCornerProps) {
   useEffect(() => {
     if (!open) return;
     const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
         setOpen(false);
       }
     };

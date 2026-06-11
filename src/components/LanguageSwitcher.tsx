@@ -30,7 +30,8 @@ export default function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   const target = nextLocale(locale);
-  const label = target === "en" ? t("language.english") : t("language.portuguese");
+  const label =
+    target === "en" ? t("language.english") : t("language.portuguese");
   const flag = target === "en" ? "EN" : "PT";
 
   function handleClick() {

@@ -61,7 +61,7 @@ export default function RankingDashboard({
 
   const metricData = useMemo(
     () => toMetricChartData(entries, metric, topN),
-    [entries, metric, topN]
+    [entries, metric, topN],
   );
   const resultsData = useMemo(() => toResultsChartData(entries), [entries]);
 

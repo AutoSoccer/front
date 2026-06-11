@@ -3,11 +3,11 @@
 Esta pasta contém os pipelines CI/CD do front (Next.js 16 + React 19 +
 antd 6). Os workflows são estruturados por ambiente:
 
-| Workflow | Trigger | Ambiente | O que faz |
-| --- | --- | --- | --- |
-| `ci-pr.yml` | `pull_request` para `main` | dev | lint, typecheck, i18n parity, `test:coverage`, `next build`, sobe coverage como artifact e comenta o resumo no PR. |
-| `ci-main.yml` | `push` em `main` | staging | mesmas etapas do PR + envia cobertura para SonarCloud. |
-| _(sem `cd-production.yml`)_ | — | production | Não existe pipeline explícito de deploy. |
+| Workflow                    | Trigger                    | Ambiente   | O que faz                                                                                                          |
+| --------------------------- | -------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------ |
+| `ci-pr.yml`                 | `pull_request` para `main` | dev        | lint, typecheck, i18n parity, `test:coverage`, `next build`, sobe coverage como artifact e comenta o resumo no PR. |
+| `ci-main.yml`               | `push` em `main`           | staging    | mesmas etapas do PR + envia cobertura para SonarCloud.                                                             |
+| _(sem `cd-production.yml`)_ | —                          | production | Não existe pipeline explícito de deploy.                                                                           |
 
 ## Por que não há `cd-production.yml`?
 

@@ -8,16 +8,16 @@
 
 ## Stack
 
-| Tecnologia | Versão | Por que foi escolhida |
-|---|---|---|
-| Next.js | 16.2 | App Router com Server Components por padrão; Turbopack para dev rápido |
-| React | 19.2 | Concurrent features, hooks estáveis |
-| TypeScript | 5 | `strict` mode — pega erros de contrato com a API em tempo de compilação |
-| antd | 6 | Componentes acessíveis prontos (Form, Modal, Table) + theming por tokens (essencial pro dark mode) |
-| next-intl | 4 | i18n integrado ao App Router; resolve locale no servidor sem JS extra no cliente |
-| axios | — | Interceptors de request/response permitem injetar token e tratar 401 globalmente |
-| vitest + RTL | 4 / 16 | Vitest roda no mesmo bundler do projeto (Vite); RTL testa comportamento, não implementação |
-| CSS Modules | — | Escopo local por componente; sem colisão de classes |
+| Tecnologia   | Versão | Por que foi escolhida                                                                              |
+| ------------ | ------ | -------------------------------------------------------------------------------------------------- |
+| Next.js      | 16.2   | App Router com Server Components por padrão; Turbopack para dev rápido                             |
+| React        | 19.2   | Concurrent features, hooks estáveis                                                                |
+| TypeScript   | 5      | `strict` mode — pega erros de contrato com a API em tempo de compilação                            |
+| antd         | 6      | Componentes acessíveis prontos (Form, Modal, Table) + theming por tokens (essencial pro dark mode) |
+| next-intl    | 4      | i18n integrado ao App Router; resolve locale no servidor sem JS extra no cliente                   |
+| axios        | —      | Interceptors de request/response permitem injetar token e tratar 401 globalmente                   |
+| vitest + RTL | 4 / 16 | Vitest roda no mesmo bundler do projeto (Vite); RTL testa comportamento, não implementação         |
+| CSS Modules  | —      | Escopo local por componente; sem colisão de classes                                                |
 
 ---
 
@@ -211,10 +211,12 @@ idle → connecting → streaming → finished
 ### Como mockar o axios nas suites
 
 ```ts
-import "@/__tests__/mocks/api";          // já ativa o vi.mock automaticamente
+import "@/__tests__/mocks/api"; // já ativa o vi.mock automaticamente
 import { mockApiPost, resetApiMocks } from "@/__tests__/mocks/api";
 
-beforeEach(() => { resetApiMocks(); });
+beforeEach(() => {
+  resetApiMocks();
+});
 mockApiPost({ token: "jwt-abc", user: { id: 1 } });
 ```
 
@@ -224,9 +226,13 @@ mockApiPost({ token: "jwt-abc", user: { id: 1 } });
 class MockWebSocket {
   static OPEN = 1;
   // construtor captura a instância em `lastWs`
-  constructor(url) { lastWs = this; }
+  constructor(url) {
+    lastWs = this;
+  }
   close = vi.fn();
-  simulateMessage(data) { this.onmessage({ data: JSON.stringify(data) }); }
+  simulateMessage(data) {
+    this.onmessage({ data: JSON.stringify(data) });
+  }
 }
 vi.stubGlobal("WebSocket", MockWebSocket);
 ```
@@ -243,25 +249,33 @@ vi.stubGlobal("WebSocket", MockWebSocket);
 ## Perguntas prováveis da banca e respostas curtas
 
 ### "Por que Next.js App Router e não Pages Router?"
+
 App Router é o modelo recomendado desde o Next.js 13. Dá SSR por padrão com Server Components, o que reduz JS enviado ao cliente. Em Pages Router, tudo seria client-side por padrão. No AutoSoccer, só componentes com estado ou eventos do browser têm `"use client"`.
 
 ### "Como vocês garantem que o dark mode não pisca?"
+
 O `data-theme` é escrito pelo servidor no HTML antes do React montar. CSS variables já resolvem os valores corretos na primeira pintura. Se usássemos `useEffect`, o browser pintaria o tema errado por alguns milissegundos.
 
 ### "Por que antd e não Tailwind?"
+
 antd resolve três coisas de uma vez: componentes acessíveis (ARIA correto em Modal, Form, Table), theming por tokens (essencial para dark mode sem CSS duplicado), e i18n integrado em componentes de data e número. Tailwind exigiria integrar tudo isso manualmente.
 
 ### "Como o frontend autentica nas rotas da API?"
+
 Token JWT salvo em `localStorage`. O interceptor de request do axios injeta `Authorization: Bearer <token>` em todo request automaticamente. Se o servidor retornar 401, o interceptor de response remove o token do localStorage e redireciona para o login.
 
 ### "Como funciona o drag-and-drop?"
+
 API nativa do browser — atributo `draggable` no card do atleta, eventos `onDragStart`/`onDrop` nos slots do campo. Sem biblioteca externa. O `dataTransfer` carrega o ID do atleta entre os eventos.
 
 ### "O que é o useBattleStream?"
+
 Hook que gerencia a conexão WebSocket com o servidor durante a batalha. Implementa uma máquina de estados: `idle → connecting → streaming → finished`. Se a conexão falhar ou não existir `matchId` na resposta, cai automaticamente no fallback de animação local.
 
 ### "Por que o token WS vai no query param e não no header?"
+
 A API WebSocket do browser não permite headers customizados na conexão. A única forma de passar autenticação é via query param (`?token=`) ou via subprotocol. Query param é mais simples e suficiente para o caso.
 
 ### "Como vocês testam componentes com internacionalização?"
+
 O `renderWithProviders` já inclui `NextIntlClientProvider` com as mensagens de `pt-BR`. Não precisamos configurar i18n em cada teste — basta usar `renderWithProviders` em vez de `render`.

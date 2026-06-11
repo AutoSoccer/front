@@ -5,17 +5,26 @@ type MessageRecord = Record<string, unknown>;
 
 type LocaleMessages = Record<Namespace, MessageRecord>;
 
-const loaders: Record<Locale, Record<Namespace, () => Promise<MessageRecord>>> = {
+const loaders: Record<
+  Locale,
+  Record<Namespace, () => Promise<MessageRecord>>
+> = {
   "pt-BR": {
-    common: () => import("./pt-BR/common.json").then((module) => module.default),
+    common: () =>
+      import("./pt-BR/common.json").then((module) => module.default),
     home: () => import("./pt-BR/home.json").then((module) => module.default),
     auth: () => import("./pt-BR/auth.json").then((module) => module.default),
-    profile: () => import("./pt-BR/profile.json").then((module) => module.default),
+    profile: () =>
+      import("./pt-BR/profile.json").then((module) => module.default),
     game: () => import("./pt-BR/game.json").then((module) => module.default),
-    battle: () => import("./pt-BR/battle.json").then((module) => module.default),
-    ranking: () => import("./pt-BR/ranking.json").then((module) => module.default),
-    errors: () => import("./pt-BR/errors.json").then((module) => module.default),
-    validation: () => import("./pt-BR/validation.json").then((module) => module.default),
+    battle: () =>
+      import("./pt-BR/battle.json").then((module) => module.default),
+    ranking: () =>
+      import("./pt-BR/ranking.json").then((module) => module.default),
+    errors: () =>
+      import("./pt-BR/errors.json").then((module) => module.default),
+    validation: () =>
+      import("./pt-BR/validation.json").then((module) => module.default),
   },
   en: {
     common: () => import("./en/common.json").then((module) => module.default),
@@ -26,7 +35,8 @@ const loaders: Record<Locale, Record<Namespace, () => Promise<MessageRecord>>> =
     battle: () => import("./en/battle.json").then((module) => module.default),
     ranking: () => import("./en/ranking.json").then((module) => module.default),
     errors: () => import("./en/errors.json").then((module) => module.default),
-    validation: () => import("./en/validation.json").then((module) => module.default),
+    validation: () =>
+      import("./en/validation.json").then((module) => module.default),
   },
 };
 

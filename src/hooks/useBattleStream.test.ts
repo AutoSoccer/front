@@ -78,7 +78,7 @@ describe("useBattleStream", () => {
 
     expect(result.current.state.status).toBe("connecting");
     expect(lastWs.url).toBe(
-      "ws://localhost:3333/ws/battle/match-1?token=token-abc"
+      "ws://localhost:3333/ws/battle/match-1?token=token-abc",
     );
   });
 

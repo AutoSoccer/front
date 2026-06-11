@@ -7,7 +7,10 @@ import {
   installLocalStorageMock,
   resetLocalStorageMock,
 } from "@/__tests__/mocks/localStorage";
-import { testLocale, testMessages } from "@/__tests__/utils/renderWithProviders";
+import {
+  testLocale,
+  testMessages,
+} from "@/__tests__/utils/renderWithProviders";
 
 import ProfileCorner from "@/components/ProfileCorner";
 import type { AuthContextType } from "@/context/AuthContext";
@@ -18,7 +21,10 @@ vi.mock("@/hooks/useAuth", () => ({
   useAuth: () => useAuthMock(),
 }));
 
-function buildAuth(user: User | null, overrides: Partial<AuthContextType> = {}): AuthContextType {
+function buildAuth(
+  user: User | null,
+  overrides: Partial<AuthContextType> = {},
+): AuthContextType {
   return {
     user,
     isAuthenticated: !!user,
@@ -35,7 +41,7 @@ function renderProfileCorner(props: { coins?: number } = {}) {
   return render(
     <NextIntlClientProvider locale={testLocale} messages={testMessages}>
       <ProfileCorner {...props} />
-    </NextIntlClientProvider>
+    </NextIntlClientProvider>,
   );
 }
 
@@ -69,7 +75,9 @@ describe("ProfileCorner", () => {
 
     renderProfileCorner();
 
-    const avatar = screen.getByRole("button", { name: /Abrir menu do perfil/i });
+    const avatar = screen.getByRole("button", {
+      name: /Abrir menu do perfil/i,
+    });
     expect(avatar).toHaveTextContent("A");
   });
 
@@ -85,7 +93,9 @@ describe("ProfileCorner", () => {
 
     renderProfileCorner();
 
-    expect(screen.getByRole("button", { name: /Abrir menu do perfil/i })).toHaveTextContent("Z");
+    expect(
+      screen.getByRole("button", { name: /Abrir menu do perfil/i }),
+    ).toHaveTextContent("Z");
   });
 
   it("abre menu ao clicar no avatar e mostra opcoes", () => {
@@ -100,7 +110,9 @@ describe("ProfileCorner", () => {
 
     renderProfileCorner();
 
-    const avatar = screen.getByRole("button", { name: /Abrir menu do perfil/i });
+    const avatar = screen.getByRole("button", {
+      name: /Abrir menu do perfil/i,
+    });
     expect(avatar).toHaveAttribute("aria-expanded", "false");
 
     fireEvent.click(avatar);
@@ -124,7 +136,9 @@ describe("ProfileCorner", () => {
 
     renderProfileCorner();
 
-    const avatar = screen.getByRole("button", { name: /Abrir menu do perfil/i });
+    const avatar = screen.getByRole("button", {
+      name: /Abrir menu do perfil/i,
+    });
     fireEvent.click(avatar);
     expect(screen.queryByRole("menu")).toBeInTheDocument();
 
@@ -146,7 +160,9 @@ describe("ProfileCorner", () => {
 
     renderProfileCorner();
 
-    fireEvent.click(screen.getByRole("button", { name: /Abrir menu do perfil/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Abrir menu do perfil/i }),
+    );
     fireEvent.click(screen.getByRole("menuitem", { name: /Sair/i }));
 
     expect(logout).toHaveBeenCalledTimes(1);
@@ -165,7 +181,9 @@ describe("ProfileCorner", () => {
 
     renderProfileCorner();
 
-    fireEvent.click(screen.getByRole("button", { name: /Abrir menu do perfil/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Abrir menu do perfil/i }),
+    );
     fireEvent.click(screen.getByRole("menuitem", { name: /Meu Perfil/i }));
 
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
@@ -183,7 +201,9 @@ describe("ProfileCorner", () => {
 
     renderProfileCorner();
 
-    expect(screen.getByRole("button", { name: /Idioma:/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Idioma:/i }),
+    ).toBeInTheDocument();
   });
 
   it("aceita prop coins (atualmente comentado, mas componente segue renderizando)", () => {
@@ -198,6 +218,8 @@ describe("ProfileCorner", () => {
 
     renderProfileCorner({ coins: 250 });
 
-    expect(screen.getByRole("button", { name: /Abrir menu do perfil/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Abrir menu do perfil/i }),
+    ).toBeInTheDocument();
   });
 });

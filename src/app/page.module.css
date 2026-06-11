@@ -43,8 +43,11 @@
   gap: 0.6rem;
   width: 100%;
   padding: 1.2rem 1.4rem;
-  background:
-    linear-gradient(180deg, var(--wood-light) 0%, var(--wood-base) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--wood-light) 0%,
+    var(--wood-base) 100%
+  );
   border: 4px solid var(--border-arcade);
   border-radius: 14px;
   color: var(--wood-text);
@@ -54,7 +57,9 @@
   text-decoration: none;
   text-align: center;
   font-family: inherit;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease;
   box-shadow: 0 6px 0 var(--wood-shadow);
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.18);
   position: relative;
@@ -84,8 +89,7 @@
 .menuButtonHero {
   font-size: 2.4rem;
   padding: 1.6rem 1.4rem;
-  background:
-    linear-gradient(180deg, #ffe7b8 0%, #f3d39c 100%);
+  background: linear-gradient(180deg, #ffe7b8 0%, #f3d39c 100%);
 }
 
 .menuFooter {

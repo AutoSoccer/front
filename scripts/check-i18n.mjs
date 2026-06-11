@@ -54,9 +54,7 @@ async function main() {
 
   for (const namespace of baseNamespaces) {
     if (!compareSet.has(namespace)) {
-      namespaceErrors.push(
-        `[${compareLocale}] falta o namespace ${namespace}`,
-      );
+      namespaceErrors.push(`[${compareLocale}] falta o namespace ${namespace}`);
     }
   }
   for (const namespace of compareNamespaces) {

@@ -1,7 +1,9 @@
 <!-- BEGIN:nextjs-agent-rules -->
+
 # This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
 <!-- END:nextjs-agent-rules -->
 
 > Agentes (humanos ou Claude) que vao mexer neste repo: alem de checar o que
@@ -127,7 +129,10 @@ Pipeline CI esperado (Node 20): `npm ci`, `npm run lint`, `npx tsc --noEmit`,
 1. Importe `renderWithProviders` em vez de `render`:
 
    ```tsx
-   import { renderWithProviders, screen } from "@/__tests__/utils/renderWithProviders";
+   import {
+     renderWithProviders,
+     screen,
+   } from "@/__tests__/utils/renderWithProviders";
    ```
 
    Ele ja envolve o componente com `NextIntlClientProvider` (`pt-BR`),

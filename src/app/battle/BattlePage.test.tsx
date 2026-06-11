@@ -9,7 +9,15 @@ import {
   screen,
   waitFor,
 } from "@/__tests__/utils/renderWithProviders";
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import type { BattleStreamState } from "@/hooks/useBattleStream";
 import type { PlayMatchResponse } from "@/services/gameService";
@@ -47,7 +55,9 @@ import BattlePage from "./BattlePage";
 const SESSION_KEY = "autosoccer-game-session";
 const TOKEN_KEY = "token";
 
-function makeSession(athleteIds: Array<string | null> = [null, null, null, null, null, null]) {
+function makeSession(
+  athleteIds: Array<string | null> = [null, null, null, null, null, null],
+) {
   return JSON.stringify({
     coins: 1000,
     currentBattle: 1,
@@ -58,7 +68,9 @@ function makeSession(athleteIds: Array<string | null> = [null, null, null, null,
   });
 }
 
-function makeMatchResponse(overrides?: Partial<PlayMatchResponse>): PlayMatchResponse {
+function makeMatchResponse(
+  overrides?: Partial<PlayMatchResponse>,
+): PlayMatchResponse {
   return {
     winner: "player",
     score: { player: 1, opponent: 0 },
@@ -120,14 +132,15 @@ describe("BattlePage", () => {
     renderWithProviders(<BattlePage />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/Escale ao menos 1 atleta/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Escale ao menos 1 atleta/i)).toBeInTheDocument();
     });
   });
 
   it("chama wsConnect quando resposta tem matchId e token existe", async () => {
-    const response = makeMatchResponse({ matchId: "uuid-123", wsUrl: "/ws/battle/uuid-123" });
+    const response = makeMatchResponse({
+      matchId: "uuid-123",
+      wsUrl: "/ws/battle/uuid-123",
+    });
     mockPlayMatch.mockResolvedValue(response);
     seedLocalStorage({
       [SESSION_KEY]: makeSession(["1", "2", "3", null, null, null]),
@@ -137,7 +150,11 @@ describe("BattlePage", () => {
     renderWithProviders(<BattlePage />);
 
     await waitFor(() => {
-      expect(mockConnect).toHaveBeenCalledWith("uuid-123", "jwt-token", response);
+      expect(mockConnect).toHaveBeenCalledWith(
+        "uuid-123",
+        "jwt-token",
+        response,
+      );
     });
   });
 

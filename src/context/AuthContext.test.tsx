@@ -33,9 +33,10 @@ vi.mock("@/services/authService", () => ({
 
 const resetGameSessionMock = vi.fn();
 vi.mock("@/lib/gameSession", async () => {
-  const actual = await vi.importActual<typeof import("@/lib/gameSession")>(
-    "@/lib/gameSession"
-  );
+  const actual =
+    await vi.importActual<typeof import("@/lib/gameSession")>(
+      "@/lib/gameSession",
+    );
   return {
     ...actual,
     resetGameSession: (...args: unknown[]) => resetGameSessionMock(...args),
@@ -136,7 +137,10 @@ describe("AuthProvider", () => {
       await result.current.login({ identifier: "ada", password: "secret1" });
     });
 
-    expect(loginMock).toHaveBeenCalledWith({ identifier: "ada", password: "secret1" });
+    expect(loginMock).toHaveBeenCalledWith({
+      identifier: "ada",
+      password: "secret1",
+    });
     expect(setItemSpy).toHaveBeenCalledWith("token", "tok-1");
     expect(setItemSpy).toHaveBeenCalledWith("user", JSON.stringify(fullUser));
     expect(readLocalStorage()).toMatchObject({
@@ -148,7 +152,10 @@ describe("AuthProvider", () => {
   });
 
   it("loginAsGuest cria sessao guest, reseta game session e redireciona para /", async () => {
-    createGuestMock.mockResolvedValueOnce({ token: "guest-tok", user: guestUser });
+    createGuestMock.mockResolvedValueOnce({
+      token: "guest-tok",
+      user: guestUser,
+    });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 

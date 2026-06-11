@@ -23,7 +23,10 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isGuestLoading, setIsGuestLoading] = useState(false);
 
-  const loginSchema = useMemo(() => buildLoginSchema(tValidation), [tValidation]);
+  const loginSchema = useMemo(
+    () => buildLoginSchema(tValidation),
+    [tValidation],
+  );
 
   const {
     register,

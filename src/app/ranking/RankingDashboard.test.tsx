@@ -41,8 +41,22 @@ function buildEntry(overrides: Partial<RankingEntry> = {}): RankingEntry {
 
 const entries: RankingEntry[] = [
   buildEntry(),
-  buildEntry({ position: 2, userId: 2, nickname: "bruno", trophies: 200, victory: 8, defeat: 2 }),
-  buildEntry({ position: 3, userId: 3, nickname: "carla", trophies: 150, victory: 6, defeat: 6 }),
+  buildEntry({
+    position: 2,
+    userId: 2,
+    nickname: "bruno",
+    trophies: 200,
+    victory: 8,
+    defeat: 2,
+  }),
+  buildEntry({
+    position: 3,
+    userId: 3,
+    nickname: "carla",
+    trophies: 150,
+    victory: 6,
+    defeat: 6,
+  }),
 ];
 
 describe("RankingDashboard", () => {
@@ -51,16 +65,14 @@ describe("RankingDashboard", () => {
 
     expect(screen.getByText("Análise do ranking")).toBeInTheDocument();
     expect(screen.getByText("Top 10 por Troféus")).toBeInTheDocument();
-    expect(
-      screen.getByText("Vitórias x derrotas — top 5")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Vitórias x derrotas — top 5")).toBeInTheDocument();
     expect(screen.getByText("Métrica")).toBeInTheDocument();
     expect(screen.getByText("Jogadores")).toBeInTheDocument();
   });
 
   it("nao renderiza nada quando o ranking esta vazio", () => {
     const { container } = renderWithProviders(
-      <RankingDashboard entries={[]} />
+      <RankingDashboard entries={[]} />,
     );
 
     expect(container.querySelector("section")).toBeNull();
@@ -79,7 +91,7 @@ describe("RankingDashboard", () => {
     renderWithProviders(<RankingDashboard entries={entries} />);
 
     expect(
-      screen.getByRole("region", { name: "Painel gerencial do ranking" })
+      screen.getByRole("region", { name: "Painel gerencial do ranking" }),
     ).toBeInTheDocument();
   });
 });

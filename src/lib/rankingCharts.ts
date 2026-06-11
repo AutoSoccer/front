@@ -41,7 +41,7 @@ export function calculateWinRate(victory: number, defeat: number): number {
 
 export function metricValue(
   entry: RankingChartEntry,
-  metric: ChartMetric
+  metric: ChartMetric,
 ): number {
   switch (metric) {
     case "trophies":
@@ -64,7 +64,7 @@ export function isPercentageMetric(metric: ChartMetric): boolean {
  */
 export function sortByMetric<T extends RankingChartEntry>(
   entries: readonly T[],
-  metric: ChartMetric
+  metric: ChartMetric,
 ): T[] {
   return [...entries].sort((a, b) => {
     const byMetric = metricValue(b, metric) - metricValue(a, metric);
@@ -80,7 +80,7 @@ export function sortByMetric<T extends RankingChartEntry>(
 export function topEntries<T extends RankingChartEntry>(
   entries: readonly T[],
   metric: ChartMetric,
-  limit: number
+  limit: number,
 ): T[] {
   return sortByMetric(entries, metric).slice(0, Math.max(0, limit));
 }
@@ -89,7 +89,7 @@ export function topEntries<T extends RankingChartEntry>(
 export function toMetricChartData(
   entries: readonly RankingChartEntry[],
   metric: ChartMetric,
-  limit: number
+  limit: number,
 ): MetricChartDatum[] {
   return topEntries(entries, metric, limit).map((entry) => ({
     nickname: entry.nickname,
@@ -103,7 +103,7 @@ export function toMetricChartData(
  */
 export function toResultsChartData(
   entries: readonly RankingChartEntry[],
-  limit: number = RESULTS_CHART_LIMIT
+  limit: number = RESULTS_CHART_LIMIT,
 ): ResultsChartDatum[] {
   return topEntries(entries, "trophies", limit).map((entry) => ({
     nickname: entry.nickname,

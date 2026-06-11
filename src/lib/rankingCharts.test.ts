@@ -15,7 +15,7 @@ const entry = (
   nickname: string,
   trophies: number,
   victory: number,
-  defeat: number
+  defeat: number,
 ): RankingChartEntry => ({ nickname, trophies, victory, defeat });
 
 const players: RankingChartEntry[] = [

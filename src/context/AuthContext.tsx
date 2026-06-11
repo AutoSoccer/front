@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(response.user);
       router.push("/");
     },
-    [router]
+    [router],
   );
 
   const register = useCallback(
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authService.register(data);
       router.push("/auth/login");
     },
-    [router]
+    [router],
   );
 
   const loginAsGuest = useCallback(async () => {
@@ -99,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       register,
       logout,
     }),
-    [user, isLoading, login, loginAsGuest, register, logout]
+    [user, isLoading, login, loginAsGuest, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

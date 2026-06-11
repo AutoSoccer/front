@@ -47,7 +47,17 @@ describe("gameSession", () => {
         victories: 2,
         losses: 1,
         lives: 4,
-        selectedAthleteIds: ["10", "20", null, null, null, null, null, null, null],
+        selectedAthleteIds: [
+          "10",
+          "20",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+        ],
       };
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
 
@@ -113,7 +123,14 @@ describe("gameSession", () => {
     it("limpa storage e retorna default", () => {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ coins: 100, victories: 9, losses: 1, lives: 1, currentBattle: 5, selectedAthleteIds: [] }),
+        JSON.stringify({
+          coins: 100,
+          victories: 9,
+          losses: 1,
+          lives: 1,
+          currentBattle: 5,
+          selectedAthleteIds: [],
+        }),
       );
 
       const session = resetGameSession();
@@ -130,7 +147,9 @@ describe("gameSession", () => {
     it("converte ids numericos em string nos slots", () => {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ selectedAthleteIds: [42, 7, "abc", -1, 0, null, null, null, null] }),
+        JSON.stringify({
+          selectedAthleteIds: [42, 7, "abc", -1, 0, null, null, null, null],
+        }),
       );
 
       const session = readGameSession();

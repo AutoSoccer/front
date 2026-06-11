@@ -1,4 +1,8 @@
-import { render, type RenderOptions, type RenderResult } from "@testing-library/react";
+import {
+  render,
+  type RenderOptions,
+  type RenderResult,
+} from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import type { ReactElement, ReactNode } from "react";
 
@@ -45,7 +49,7 @@ export type RenderWithProvidersOptions = Omit<RenderOptions, "wrapper">;
 
 export function renderWithProviders(
   ui: ReactElement,
-  options?: RenderWithProvidersOptions
+  options?: RenderWithProvidersOptions,
 ): RenderResult {
   return render(ui, { wrapper: AllProviders, ...options });
 }

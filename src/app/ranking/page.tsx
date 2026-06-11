@@ -13,12 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  type CSSProperties,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { type CSSProperties, useCallback, useEffect, useState } from "react";
 
 import ProfileCorner from "@/components/ProfileCorner";
 import { useAuth } from "@/hooks/useAuth";
@@ -65,7 +60,9 @@ function PodiumPlayer({
         <Trophy aria-hidden="true" />
         {entry.trophies}
       </span>
-      <span className={styles.podiumPlace}>{positionLabel(entry.position)}</span>
+      <span className={styles.podiumPlace}>
+        {positionLabel(entry.position)}
+      </span>
     </article>
   );
 }

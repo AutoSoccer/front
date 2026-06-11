@@ -34,7 +34,10 @@ describe("loginSchema", () => {
   });
 
   it("rejeita identifier vazio", () => {
-    const result = loginSchema.safeParse({ identifier: "", password: "123456" });
+    const result = loginSchema.safeParse({
+      identifier: "",
+      password: "123456",
+    });
     expect(result.success).toBe(false);
   });
 
@@ -76,7 +79,10 @@ describe("registerSchema", () => {
   });
 
   it("rejeita nome com numeros", () => {
-    const result = registerSchema.safeParse({ ...validPayload, name: "Joao123" });
+    const result = registerSchema.safeParse({
+      ...validPayload,
+      name: "Joao123",
+    });
     expect(result.success).toBe(false);
   });
 
@@ -147,7 +153,10 @@ describe("profileSchema", () => {
   });
 
   it("aceita phone_number como string vazia", () => {
-    const result = profileSchema.safeParse({ ...validPayload, phone_number: "" });
+    const result = profileSchema.safeParse({
+      ...validPayload,
+      phone_number: "",
+    });
     expect(result.success).toBe(true);
   });
 

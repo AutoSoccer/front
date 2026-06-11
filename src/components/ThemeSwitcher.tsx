@@ -52,7 +52,7 @@ export default function ThemeSwitcher({ initialTheme }: ThemeSwitcherProps) {
   // `react-hooks/set-state-in-effect` que vinha quando sincronizavamos em
   // dois passos.
   const [theme, setTheme] = useState<Theme>(
-    () => readClientCookie() ?? initialTheme ?? defaultTheme
+    () => readClientCookie() ?? initialTheme ?? defaultTheme,
   );
 
   const target = nextTheme(theme);

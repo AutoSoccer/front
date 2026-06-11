@@ -77,7 +77,7 @@ export function useBattleStream() {
 
       ws.onclose = () => clearTimeout(timeout);
     },
-    []
+    [],
   );
 
   const disconnect = useCallback(() => {

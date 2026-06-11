@@ -27,7 +27,7 @@ import { vi } from "vitest";
 let store: Record<string, string> = {};
 
 export const getItemSpy = vi.fn((key: string) =>
-  Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null
+  Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null,
 );
 
 export const setItemSpy = vi.fn((key: string, value: string) => {
@@ -42,7 +42,9 @@ export const clearSpy = vi.fn(() => {
   store = {};
 });
 
-export const keySpy = vi.fn((index: number) => Object.keys(store)[index] ?? null);
+export const keySpy = vi.fn(
+  (index: number) => Object.keys(store)[index] ?? null,
+);
 
 export const localStorageMock = {
   get length() {

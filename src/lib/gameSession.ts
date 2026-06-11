@@ -34,7 +34,9 @@ function normalizeSelectedAthletes(value: unknown): Array<string | null> {
     const item = value[index];
     const raw = typeof item === "number" ? String(item) : item;
     const athleteId = typeof raw === "string" ? Number(raw) : NaN;
-    return Number.isInteger(athleteId) && athleteId > 0 ? String(athleteId) : null;
+    return Number.isInteger(athleteId) && athleteId > 0
+      ? String(athleteId)
+      : null;
   });
 }
 
@@ -48,14 +50,20 @@ function normalizeSession(value: unknown): GameSession {
   const data = value as Partial<GameSession>;
 
   return {
-    coins: typeof data.coins === "number" ? Math.max(0, data.coins) : fallback.coins,
+    coins:
+      typeof data.coins === "number" ? Math.max(0, data.coins) : fallback.coins,
     currentBattle:
       typeof data.currentBattle === "number"
         ? Math.max(1, data.currentBattle)
         : fallback.currentBattle,
     victories:
-      typeof data.victories === "number" ? Math.max(0, data.victories) : fallback.victories,
-    losses: typeof data.losses === "number" ? Math.max(0, data.losses) : fallback.losses,
+      typeof data.victories === "number"
+        ? Math.max(0, data.victories)
+        : fallback.victories,
+    losses:
+      typeof data.losses === "number"
+        ? Math.max(0, data.losses)
+        : fallback.losses,
     lives:
       typeof data.lives === "number"
         ? Math.min(INITIAL_LIVES, Math.max(0, data.lives))

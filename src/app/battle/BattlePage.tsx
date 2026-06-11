@@ -59,7 +59,9 @@ type FieldToken = {
 const displayRows = [0, 1, 2];
 const displayColumns = [0, 1, 2, 3, 4, 5];
 
-function buildPositionsFromSession(session: GameSession): MatchPositionPayload[] {
+function buildPositionsFromSession(
+  session: GameSession,
+): MatchPositionPayload[] {
   return session.selectedAthleteIds.flatMap((athleteId, index) => {
     const numericId = Number(athleteId);
     if (!Number.isInteger(numericId) || numericId <= 0) {
@@ -75,7 +77,9 @@ function buildPositionsFromSession(session: GameSession): MatchPositionPayload[]
 }
 
 function renderAthleteIcon(className: string) {
-  return <img src="/athlete.svg" alt="" className={className} aria-hidden="true" />;
+  return (
+    <img src="/athlete.svg" alt="" className={className} aria-hidden="true" />
+  );
 }
 
 function getSideClass(side: MatchSide) {
@@ -141,7 +145,7 @@ function buildTurnLogs(
 
 function nextSessionFromMatch(
   session: GameSession,
-  match: MatchResponse
+  match: MatchResponse,
 ): GameSession {
   return {
     ...session,
@@ -155,7 +159,7 @@ function nextSessionFromMatch(
 
 function buildFieldTokens(
   positions: SnapshotPositions,
-  team: "player" | "opponent"
+  team: "player" | "opponent",
 ): FieldToken[] {
   return positions.flatMap((row, rowIndex) =>
     row.flatMap((athlete, columnIndex) => {
@@ -166,7 +170,7 @@ function buildFieldTokens(
         x: columnIndex,
         y: team === "player" ? rowIndex : 5 - rowIndex,
       };
-    })
+    }),
   );
 }
 
@@ -194,7 +198,7 @@ function SharedBattleField({
         const token = tokens.find(
           (entry) =>
             entry.team === movement.team &&
-            entry.athlete.id === movement.athleteId
+            entry.athlete.id === movement.athleteId,
         );
         if (token) {
           token.x = movement.to.x;
@@ -227,7 +231,7 @@ function SharedBattleField({
         {displayRows.flatMap((x) =>
           displayColumns.map((y) => {
             const tokens = state.tokens.filter(
-              (entry) => entry.x === x && entry.y === y
+              (entry) => entry.x === x && entry.y === y,
             );
             const hasBall =
               state.ball?.position.x === x && state.ball.position.y === y;
@@ -270,7 +274,7 @@ function SharedBattleField({
                 )}
               </div>
             );
-          })
+          }),
         )}
       </div>
     </section>
@@ -285,7 +289,7 @@ export default function BattlePage() {
   const tErrors = useTranslations("errors");
   const roundRequestRef = useRef<Promise<PlayMatchResponse> | null>(null);
   const [gameSession, setGameSession] = useState<GameSession>(() =>
-    readGameSession()
+    readGameSession(),
   );
   const [match, setMatch] = useState<MatchResponse | null>(null);
   const [visibleLogs, setVisibleLogs] = useState<MatchTurnLog[]>([]);
@@ -293,7 +297,11 @@ export default function BattlePage() {
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [isBattleFinished, setIsBattleFinished] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { state: wsState, connect: wsConnect, disconnect: wsDisconnect } = useBattleStream();
+  const {
+    state: wsState,
+    connect: wsConnect,
+    disconnect: wsDisconnect,
+  } = useBattleStream();
 
   const resultLabel = (matchValue: MatchResponse): string => {
     if (matchValue.winner === "player") return t("result.victory");
@@ -323,13 +331,16 @@ export default function BattlePage() {
 
     const timers: Array<ReturnType<typeof setTimeout>> = [];
     logs.forEach((_, index) => {
-      const timer = setTimeout(() => {
-        setVisibleLogs(logs.slice(0, index + 1));
-        if (index === logs.length - 1) {
-          setIsBattleFinished(true);
-          setIsEndModalOpen(true);
-        }
-      }, (index + 1) * 850);
+      const timer = setTimeout(
+        () => {
+          setVisibleLogs(logs.slice(0, index + 1));
+          if (index === logs.length - 1) {
+            setIsBattleFinished(true);
+            setIsEndModalOpen(true);
+          }
+        },
+        (index + 1) * 850,
+      );
       timers.push(timer);
     });
     return timers;
@@ -438,9 +449,7 @@ export default function BattlePage() {
           <div className={styles.headerSection}>
             <h1 className={styles.title}>{t("title")}</h1>
             {wsState.status === "connecting" && (
-              <span className={styles.liveBadge}>
-                {t("live.connecting")}
-              </span>
+              <span className={styles.liveBadge}>{t("live.connecting")}</span>
             )}
             {wsState.status === "streaming" && (
               <span className={styles.liveBadge} aria-live="polite">

@@ -27,7 +27,6 @@
   object-fit: contain;
 }
 
-
 .card {
   width: min(540px, 92vw);
   background: #ffffff;
@@ -64,7 +63,9 @@
   font-weight: 600;
   color: var(--text-strong);
   outline: none;
-  transition: box-shadow 0.15s, background 0.15s;
+  transition:
+    box-shadow 0.15s,
+    background 0.15s;
 }
 
 .input::placeholder {

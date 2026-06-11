@@ -239,9 +239,7 @@ export const gameService = {
   },
 
   abandonCampaign: async (): Promise<AbandonCampaignResponse> => {
-    const response = await api.post<AbandonCampaignResponse>(
-      "/match/abandon"
-    );
+    const response = await api.post<AbandonCampaignResponse>("/match/abandon");
     return response.data;
   },
 
@@ -253,7 +251,7 @@ export const gameService = {
   },
 
   playMatch: async (
-    positions: MatchPositionPayload[]
+    positions: MatchPositionPayload[],
   ): Promise<PlayMatchResponse> => {
     const response = await api.post<PlayMatchResponse>("/match/play", {
       positions,

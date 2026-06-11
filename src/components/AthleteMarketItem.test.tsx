@@ -7,7 +7,9 @@ import AthleteMarketItemCard from "@/components/AthleteMarketItem";
 import type { AthleteMarketItem } from "@/app/game/athletes";
 import { renderWithProviders as render } from "@/__tests__/utils/renderWithProviders";
 
-function buildAthlete(overrides: Partial<AthleteMarketItem> = {}): AthleteMarketItem {
+function buildAthlete(
+  overrides: Partial<AthleteMarketItem> = {},
+): AthleteMarketItem {
   return {
     id: "10",
     athleteId: 10,
@@ -24,7 +26,9 @@ function buildAthlete(overrides: Partial<AthleteMarketItem> = {}): AthleteMarket
 describe("AthleteMarketItemCard", () => {
   it("renderiza slot vazio quando item eh null", () => {
     const onDragStart = vi.fn();
-    render(<AthleteMarketItemCard item={null} index={2} onDragStart={onDragStart} />);
+    render(
+      <AthleteMarketItemCard item={null} index={2} onDragStart={onDragStart} />,
+    );
 
     expect(screen.getByText(/Vaga dispon.+vel 3/i)).toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
@@ -33,7 +37,13 @@ describe("AthleteMarketItemCard", () => {
   it("renderiza atleta com nome, custo e atributos", () => {
     const onDragStart = vi.fn();
     const athlete = buildAthlete();
-    render(<AthleteMarketItemCard item={athlete} index={0} onDragStart={onDragStart} />);
+    render(
+      <AthleteMarketItemCard
+        item={athlete}
+        index={0}
+        onDragStart={onDragStart}
+      />,
+    );
 
     expect(screen.getByText("Ronaldinho")).toBeInTheDocument();
     expect(screen.getByText("7 moedas")).toBeInTheDocument();
@@ -47,7 +57,13 @@ describe("AthleteMarketItemCard", () => {
   it("dispara onDragStart com id do atleta ao iniciar drag", () => {
     const onDragStart = vi.fn();
     const athlete = buildAthlete({ id: "42" });
-    render(<AthleteMarketItemCard item={athlete} index={1} onDragStart={onDragStart} />);
+    render(
+      <AthleteMarketItemCard
+        item={athlete}
+        index={1}
+        onDragStart={onDragStart}
+      />,
+    );
 
     const button = screen.getByRole("button", {
       name: /Arrastar Ronaldinho para o campo/i,
@@ -62,7 +78,13 @@ describe("AthleteMarketItemCard", () => {
   it("expoe aria-label descritivo no botao", () => {
     const onDragStart = vi.fn();
     const athlete = buildAthlete({ name: "Pele" });
-    render(<AthleteMarketItemCard item={athlete} index={0} onDragStart={onDragStart} />);
+    render(
+      <AthleteMarketItemCard
+        item={athlete}
+        index={0}
+        onDragStart={onDragStart}
+      />,
+    );
 
     const button = screen.getByRole("button");
     expect(button).toHaveAttribute("aria-label", "Arrastar Pele para o campo");
@@ -72,7 +94,13 @@ describe("AthleteMarketItemCard", () => {
   it("formata custo com sufixo moedas", () => {
     const onDragStart = vi.fn();
     const athlete = buildAthlete({ cost: 12 });
-    render(<AthleteMarketItemCard item={athlete} index={0} onDragStart={onDragStart} />);
+    render(
+      <AthleteMarketItemCard
+        item={athlete}
+        index={0}
+        onDragStart={onDragStart}
+      />,
+    );
 
     expect(screen.getByText("12 moedas")).toBeInTheDocument();
   });
@@ -81,7 +109,11 @@ describe("AthleteMarketItemCard", () => {
     const onDragStart = vi.fn();
     const athlete = buildAthlete({ icon: "/athlete.svg" });
     const { container } = render(
-      <AthleteMarketItemCard item={athlete} index={0} onDragStart={onDragStart} />
+      <AthleteMarketItemCard
+        item={athlete}
+        index={0}
+        onDragStart={onDragStart}
+      />,
     );
 
     const img = container.querySelector("img");
@@ -92,7 +124,13 @@ describe("AthleteMarketItemCard", () => {
   it("renderiza icone como texto quando nao comeca com barra", () => {
     const onDragStart = vi.fn();
     const athlete = buildAthlete({ icon: "X" });
-    render(<AthleteMarketItemCard item={athlete} index={0} onDragStart={onDragStart} />);
+    render(
+      <AthleteMarketItemCard
+        item={athlete}
+        index={0}
+        onDragStart={onDragStart}
+      />,
+    );
 
     expect(screen.getByText("X")).toBeInTheDocument();
   });

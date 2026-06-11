@@ -6,7 +6,10 @@ import {
   installLocalStorageMock,
   resetLocalStorageMock,
 } from "@/__tests__/mocks/localStorage";
-import { renderWithProviders, screen } from "@/__tests__/utils/renderWithProviders";
+import {
+  renderWithProviders,
+  screen,
+} from "@/__tests__/utils/renderWithProviders";
 
 beforeAll(() => {
   installLocalStorageMock();

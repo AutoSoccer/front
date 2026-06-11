@@ -209,7 +209,11 @@ export default function RegisterPage() {
                   showConfirmPassword ? t("hidePassword") : t("showPassword")
                 }
               >
-                {showConfirmPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                {showConfirmPassword ? (
+                  <EyeInvisibleOutlined />
+                ) : (
+                  <EyeOutlined />
+                )}
               </button>
             </div>
             {errors.confirmPassword && (

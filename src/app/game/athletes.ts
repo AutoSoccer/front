@@ -26,7 +26,7 @@ const ROLE_LABELS: Record<ApiAthlete["type"], string> = {
 };
 
 export function mapApiAthleteToMarketItem(
-  athlete: ApiAthlete
+  athlete: ApiAthlete,
 ): AthleteMarketItem {
   return {
     id: String(athlete.id),

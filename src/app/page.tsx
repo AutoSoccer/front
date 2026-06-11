@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  HomeFilled,
-  TeamOutlined,
-  TrophyFilled,
-} from "@ant-design/icons";
+import { HomeFilled, TeamOutlined, TrophyFilled } from "@ant-design/icons";
 import { ChartNoAxesColumnIncreasing } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -88,7 +84,8 @@ export default function HomePage() {
             <TeamOutlined /> {t("actions.profile")}
           </Link>
           <Link href="/ranking" className={styles.menuButton}>
-            <ChartNoAxesColumnIncreasing aria-hidden="true" /> {t("actions.ranking")}
+            <ChartNoAxesColumnIncreasing aria-hidden="true" />{" "}
+            {t("actions.ranking")}
           </Link>
 
           {!isAuthenticated && (
@@ -162,9 +159,7 @@ export default function HomePage() {
                 className={styles.modalPrimaryButton}
                 disabled={isStartingCampaign || teamName.trim().length === 0}
               >
-                {isStartingCampaign
-                  ? t("modal.submitting")
-                  : t("modal.submit")}
+                {isStartingCampaign ? t("modal.submitting") : t("modal.submit")}
               </button>
             </div>
           </form>

@@ -124,8 +124,7 @@
   justify-content: center;
   gap: 0.8rem;
   padding: 1.3rem 1rem 0;
-  background:
-    linear-gradient(#dbeafe 0 64%, #bbf7d0 64% 100%);
+  background: linear-gradient(#dbeafe 0 64%, #bbf7d0 64% 100%);
   border-bottom: 3px solid var(--border-arcade);
 }
 

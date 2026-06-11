@@ -28,10 +28,7 @@ import {
 import { useAreaLabels } from "@/lib/labels";
 import { gameService } from "@/services/gameService";
 
-import {
-  mapApiAthleteToMarketItem,
-  type AthleteMarketItem,
-} from "./athletes";
+import { mapApiAthleteToMarketItem, type AthleteMarketItem } from "./athletes";
 import styles from "./MarketPage.module.css";
 
 type BoardSlot = {
@@ -60,7 +57,7 @@ function createEmptyBoardSlots(): BoardSlot[] {
 
 function findAthleteById(
   id: string | null | undefined,
-  athletes: AthleteMarketItem[]
+  athletes: AthleteMarketItem[],
 ): AthleteMarketItem | null {
   if (!id) return null;
   return athletes.find((item) => item.id === id) ?? null;
@@ -74,16 +71,16 @@ function preferredAreaForAthlete(athlete: AthleteMarketItem): number {
 
 function placeAthleteInFirstOpenSlot(
   slots: BoardSlot[],
-  athlete: AthleteMarketItem
+  athlete: AthleteMarketItem,
 ): void {
   const preferredArea = preferredAreaForAthlete(athlete);
   const areaOrder = [preferredArea, 1, 0, 2].filter(
-    (areaIndex, index, list) => list.indexOf(areaIndex) === index
+    (areaIndex, index, list) => list.indexOf(areaIndex) === index,
   );
 
   for (const areaIndex of areaOrder) {
     const slot = slots.find(
-      (entry) => entry.areaIndex === areaIndex && entry.item === null
+      (entry) => entry.areaIndex === areaIndex && entry.item === null,
     );
     if (slot) {
       slot.item = athlete;
@@ -94,7 +91,7 @@ function placeAthleteInFirstOpenSlot(
 
 function createBoardSlots(
   selectedAthleteIds: Array<string | null> = [],
-  ownedAthletes: AthleteMarketItem[] = []
+  ownedAthletes: AthleteMarketItem[] = [],
 ): BoardSlot[] {
   const slots = createEmptyBoardSlots();
   const placed = new Set<string>();
@@ -138,13 +135,13 @@ export default function MarketPage() {
   const tErrors = useTranslations("errors");
   const areaLabels = useAreaLabels();
   const [gameSession, setGameSession] = useState<GameSession>(() =>
-    readGameSession()
+    readGameSession(),
   );
-  const [marketItems, setMarketItems] = useState<Array<AthleteMarketItem | null>>(
-    []
-  );
+  const [marketItems, setMarketItems] = useState<
+    Array<AthleteMarketItem | null>
+  >([]);
   const [boardSlots, setBoardSlots] = useState<BoardSlot[]>(() =>
-    createEmptyBoardSlots()
+    createEmptyBoardSlots(),
   );
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [isSellZoneActive, setIsSellZoneActive] = useState(false);
@@ -162,7 +159,7 @@ export default function MarketPage() {
 
   const availableCount = useMemo(
     () => marketItems.filter((item) => item !== null).length,
-    [marketItems]
+    [marketItems],
   );
 
   const resolveActionError = (error: unknown): string =>
@@ -231,7 +228,7 @@ export default function MarketPage() {
   }, [user?.id]);
 
   function commitGameSession(
-    updater: (currentSession: GameSession) => GameSession
+    updater: (currentSession: GameSession) => GameSession,
   ) {
     setGameSession((currentSession) => {
       const nextSession = writeGameSession(updater(currentSession));
@@ -265,7 +262,7 @@ export default function MarketPage() {
 
   function handleDragStart(
     event: React.DragEvent<HTMLButtonElement>,
-    itemId: string
+    itemId: string,
   ) {
     event.dataTransfer.setData("text/plain", itemId);
     event.dataTransfer.effectAllowed = "move";
@@ -274,7 +271,7 @@ export default function MarketPage() {
   function handleDragStartFromSlot(
     event: React.DragEvent<HTMLDivElement>,
     itemId: string,
-    sourceSlotId: string
+    sourceSlotId: string,
   ) {
     event.dataTransfer.setData("itemId", itemId);
     event.dataTransfer.setData("sourceSlotId", sourceSlotId);
@@ -302,7 +299,7 @@ export default function MarketPage() {
     try {
       const sale = await gameService.sellAthlete(soldSlot.item.athleteId);
       const nextSlots = boardSlots.map((slot) =>
-        slot.id === slotId ? { ...slot, item: null } : slot
+        slot.id === slotId ? { ...slot, item: null } : slot,
       );
 
       setBoardSlots(nextSlots);
@@ -334,7 +331,7 @@ export default function MarketPage() {
 
   async function handleDrop(
     event: React.DragEvent<HTMLDivElement>,
-    slotId: string
+    slotId: string,
   ) {
     event.preventDefault();
     setDragOverId(null);
@@ -358,7 +355,7 @@ export default function MarketPage() {
       if (!sourceSlot || !sourceSlot.item) return;
 
       const athletesInTargetArea = boardSlots.filter(
-        (s) => s.areaIndex === targetSlot.areaIndex && s.item !== null
+        (s) => s.areaIndex === targetSlot.areaIndex && s.item !== null,
       ).length;
       if (athletesInTargetArea >= 3) return;
 
@@ -380,7 +377,7 @@ export default function MarketPage() {
     if (!draggedItem) return;
 
     const alreadyOnBoard = boardSlots.some(
-      (slot) => slot.item?.id === draggedId
+      (slot) => slot.item?.id === draggedId,
     );
     if (alreadyOnBoard) return;
 
@@ -388,7 +385,7 @@ export default function MarketPage() {
     if (athletesOnBoard >= BOARD_LIMIT) return;
 
     const athletesInArea = boardSlots.filter(
-      (s) => s.areaIndex === targetSlot.areaIndex && s.item !== null
+      (s) => s.areaIndex === targetSlot.areaIndex && s.item !== null,
     ).length;
     if (athletesInArea >= 3) return;
 
@@ -402,12 +399,12 @@ export default function MarketPage() {
     try {
       const purchase = await gameService.buyAthlete(draggedItem.athleteId);
       const nextSlots = boardSlots.map((slot) =>
-        slot.id === slotId ? { ...slot, item: draggedItem } : slot
+        slot.id === slotId ? { ...slot, item: draggedItem } : slot,
       );
 
       setBoardSlots(nextSlots);
       setMarketItems((current) =>
-        current.map((item) => (item?.id !== draggedId ? item : null))
+        current.map((item) => (item?.id !== draggedId ? item : null)),
       );
       commitGameSession((currentSession) => ({
         ...currentSession,
@@ -494,7 +491,9 @@ export default function MarketPage() {
                   type="button"
                   className={styles.playButton}
                   onClick={handlePlayMatch}
-                  disabled={athletesOnBoard === 0 || isLoading || isActionPending}
+                  disabled={
+                    athletesOnBoard === 0 || isLoading || isActionPending
+                  }
                   title={
                     athletesOnBoard === 0
                       ? t("playDisabledTitle")
@@ -553,12 +552,14 @@ export default function MarketPage() {
             <div className={styles.boardAreas}>
               {[0, 1, 2].map((areaIndex) => {
                 const slotsInArea = boardSlots.filter(
-                  (s) => s.areaIndex === areaIndex
+                  (s) => s.areaIndex === areaIndex,
                 );
 
                 return (
                   <div key={`area-${areaIndex}`} className={styles.fieldArea}>
-                    <h3 className={styles.areaLabel}>{areaLabels[areaIndex]}</h3>
+                    <h3 className={styles.areaLabel}>
+                      {areaLabels[areaIndex]}
+                    </h3>
                     <div className={styles.slotsGrid}>
                       {slotsInArea.map((slot) => (
                         <div
@@ -585,7 +586,7 @@ export default function MarketPage() {
                                 handleDragStartFromSlot(
                                   event,
                                   slot.item!.id,
-                                  slot.id
+                                  slot.id,
                                 )
                               }
                               onDragEnd={handleDragEndFromSlot}
@@ -594,7 +595,10 @@ export default function MarketPage() {
                               })}
                               title={t("boardItemTitle")}
                             >
-                              {renderAthleteIcon(slot.item.icon, styles.itemIcon)}
+                              {renderAthleteIcon(
+                                slot.item.icon,
+                                styles.itemIcon,
+                              )}
                               <span className={styles.itemName}>
                                 {slot.item.name}
                               </span>
@@ -615,7 +619,10 @@ export default function MarketPage() {
         </section>
 
         <aside className={styles.sidebar}>
-          <section className={styles.marketSection} aria-labelledby="market-title">
+          <section
+            className={styles.marketSection}
+            aria-labelledby="market-title"
+          >
             <div className={styles.marketHeader}>
               <h1 id="market-title" className={styles.title}>
                 {t("title")}
@@ -658,7 +665,8 @@ export default function MarketPage() {
                 textShadow: "0 2px 0 rgba(0,0,0,0.15)",
               }}
             >
-              {t("refresh")} ({refreshCost} <DollarOutlined aria-hidden="true" />)
+              {t("refresh")} ({refreshCost}{" "}
+              <DollarOutlined aria-hidden="true" />)
             </Button>
           </section>
 

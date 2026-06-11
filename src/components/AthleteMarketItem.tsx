@@ -9,18 +9,32 @@ import styles from "./AthleteMarketItem.module.css";
 export type AthleteMarketItemProps = {
   item: AthleteMarketItem | null;
   index: number;
-  onDragStart: (event: React.DragEvent<HTMLButtonElement>, itemId: string) => void;
+  onDragStart: (
+    event: React.DragEvent<HTMLButtonElement>,
+    itemId: string,
+  ) => void;
 };
 
 function renderAthleteIcon(icon: string) {
   if (icon.startsWith("/")) {
-    return <img src={icon} alt="" className={styles.cardAvatarImage} aria-hidden="true" />;
+    return (
+      <img
+        src={icon}
+        alt=""
+        className={styles.cardAvatarImage}
+        aria-hidden="true"
+      />
+    );
   }
 
   return <span className={styles.cardAvatarImage}>{icon}</span>;
 }
 
-export default function AthleteMarketItemCard({ item, index, onDragStart }: AthleteMarketItemProps) {
+export default function AthleteMarketItemCard({
+  item,
+  index,
+  onDragStart,
+}: AthleteMarketItemProps) {
   const t = useTranslations("common.market");
 
   if (!item) {
@@ -43,7 +57,9 @@ export default function AthleteMarketItemCard({ item, index, onDragStart }: Athl
       <div className={styles.cardBody}>
         <div className={styles.cardHeader}>
           <span className={styles.cardName}>{item.name}</span>
-          <span className={styles.cardTag}>{t("coinsAmount", { count: item.cost })}</span>
+          <span className={styles.cardTag}>
+            {t("coinsAmount", { count: item.cost })}
+          </span>
         </div>
 
         <div className={styles.cardStats}>

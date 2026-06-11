@@ -157,7 +157,10 @@
   border: 4px solid var(--border-arcade) !important;
   border-radius: 12px !important;
   white-space: normal;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    background 0.15s;
 }
 
 .resultSummary :global(.ant-btn-primary) {
@@ -230,14 +233,13 @@
   padding: 3.6rem 0.9rem 0.9rem;
   border: 4px solid var(--border-arcade);
   border-radius: 14px;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #2e7d32 0,
-      #2e7d32 76px,
-      #338538 76px,
-      #338538 152px
-    );
+  background: repeating-linear-gradient(
+    90deg,
+    #2e7d32 0,
+    #2e7d32 76px,
+    #338538 76px,
+    #338538 152px
+  );
   box-shadow:
     inset 0 4px 0 rgba(0, 0, 0, 0.18),
     0 8px 0 rgba(0, 0, 0, 0.25);
@@ -402,8 +404,7 @@
   border: 3px solid #111827;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 35% 35%, #111827 0 18%, transparent 19%),
-    #ffffff;
+    radial-gradient(circle at 35% 35%, #111827 0 18%, transparent 19%), #ffffff;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
 }
 
@@ -411,16 +412,17 @@
   position: relative;
   min-height: var(--arena-height);
   border: 4px solid var(--border-arcade);
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #2e7d32 0,
-      #2e7d32 34px,
-      #338538 34px,
-      #338538 68px
-    );
+  background: repeating-linear-gradient(
+    90deg,
+    #2e7d32 0,
+    #2e7d32 34px,
+    #338538 34px,
+    #338538 68px
+  );
   overflow: hidden;
-  box-shadow: inset 0 4px 0 rgba(0, 0, 0, 0.18), 0 8px 0 rgba(0, 0, 0, 0.25);
+  box-shadow:
+    inset 0 4px 0 rgba(0, 0, 0, 0.18),
+    0 8px 0 rgba(0, 0, 0, 0.25);
 }
 
 .fieldPanel:first-child {
@@ -432,14 +434,13 @@
 }
 
 .fieldPanelMirrored {
-  background:
-    repeating-linear-gradient(
-      270deg,
-      #2e7d32 0,
-      #2e7d32 34px,
-      #338538 34px,
-      #338538 68px
-    );
+  background: repeating-linear-gradient(
+    270deg,
+    #2e7d32 0,
+    #2e7d32 34px,
+    #338538 34px,
+    #338538 68px
+  );
 }
 
 .fieldHeader {
@@ -651,7 +652,11 @@
   border-top: 4px solid var(--border-arcade);
   border-bottom: 4px solid var(--border-arcade);
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.35) 0 4px, transparent 4px 100%),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.35) 0 4px,
+      transparent 4px 100%
+    ),
     repeating-linear-gradient(
       90deg,
       #2e7d32 0,
@@ -773,7 +778,10 @@
   letter-spacing: 0.04em;
   border: 3px solid var(--border-arcade) !important;
   border-radius: 10px !important;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    background 0.15s;
 }
 
 .loadingLog :global(.ant-btn-primary) {
@@ -947,7 +955,10 @@
   border: 4px solid var(--border-arcade) !important;
   border-radius: 12px !important;
   white-space: normal;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s,
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    background 0.15s,
     color 0.15s;
 }
 
@@ -1206,6 +1217,11 @@
 }
 
 @keyframes livePulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
 }
