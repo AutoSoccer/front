@@ -16,6 +16,32 @@
     "playersCount": "{count} jogadores",
     "you": "Você"
   },
+  "dashboard": {
+    "aria": "Painel gerencial do ranking",
+    "label": "Painel gerencial",
+    "title": "Análise do ranking",
+    "subtitle": "Compare os líderes por métrica e veja o saldo de campanhas dos primeiros colocados.",
+    "filters": {
+      "metric": "Métrica",
+      "topN": "Jogadores",
+      "topNOption": "Top {count}"
+    },
+    "metric": {
+      "trophies": "Troféus",
+      "victories": "Vitórias",
+      "winRate": "Aproveitamento"
+    },
+    "topChart": {
+      "title": "Top {count} por {metric}",
+      "description": "Barras horizontais com os líderes em {metric}."
+    },
+    "resultsChart": {
+      "title": "Vitórias x derrotas — top {count}",
+      "description": "Campanhas vencidas e perdidas pelos primeiros do ranking.",
+      "victories": "Vitórias",
+      "defeats": "Derrotas"
+    }
+  },
   "loadingPanel": "Atualizando classificação...",
   "error": "Não foi possível carregar o ranking agora.",
   "retry": "Tentar novamente",
