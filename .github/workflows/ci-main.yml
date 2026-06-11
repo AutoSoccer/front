@@ -60,7 +60,7 @@ jobs:
       - name: Test with coverage
         id: test
         continue-on-error: true
-        run: npm run test:coverage -- --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json-summary
+        run: npm run test:coverage -- --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json-summary --reporter=verbose
 
       - name: Next.js build
         id: build
