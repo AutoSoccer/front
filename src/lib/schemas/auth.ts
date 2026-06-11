@@ -4,7 +4,7 @@ import { z } from "zod";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const NICKNAME_REGEX = /^[a-zA-Z0-9_]{2,20}$/;
 const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ' ]{2,60}$/;
-const PHONE_REGEX = /^\(?\d{2}\)?[\s.-]?9?\d{4}[\s.-]?\d{4}$/;
+const PHONE_REGEX = /^\(\d{2}\)\s?9?\d{4}-\d{4}$|^\d{10,11}$/;
 const PASSWORD_REGEX = /^.{6,}$/;
 
 type ValidationTranslator = ReturnType<typeof useTranslations<"validation">>;
@@ -59,7 +59,9 @@ export function buildRegisterSchema(t: ValidationTranslator) {
     });
 }
 
-export type RegisterFormInputs = z.infer<ReturnType<typeof buildRegisterSchema>>;
+export type RegisterFormInputs = z.infer<
+  ReturnType<typeof buildRegisterSchema>
+>;
 
 /**
  * Constroi o schema do perfil com mensagens de erro traduzidas.

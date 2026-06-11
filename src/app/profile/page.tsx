@@ -22,10 +22,7 @@ import { useForm } from "react-hook-form";
 
 import ProfileCorner from "@/components/ProfileCorner";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  buildProfileSchema,
-  type ProfileFormInputs,
-} from "@/lib/schemas/auth";
+import { buildProfileSchema, type ProfileFormInputs } from "@/lib/schemas/auth";
 
 import styles from "./profile.module.css";
 
@@ -52,9 +49,10 @@ export default function ProfilePage() {
   const t = useTranslations("profile");
   const tCommon = useTranslations("common");
   const tValidation = useTranslations("validation");
-  const [feedback, setFeedback] = useState<
-    { tone: "success" | "error"; message: string } | null
-  >(null);
+  const [feedback, setFeedback] = useState<{
+    tone: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const profileSchema = useMemo(
     () => buildProfileSchema(tValidation),
@@ -72,7 +70,7 @@ export default function ProfilePage() {
       name: user?.name ?? "",
       nickname: user?.nickname ?? "",
       email: user?.email ?? "",
-      phone_number: user?.phone_number ?? "",
+      phone_number: formatPhone(user?.phone_number ?? ""),
     },
   });
 
@@ -218,26 +216,34 @@ export default function ProfilePage() {
 
         <div className={styles.statsRow}>
           <div className={styles.statBox}>
-            <TrophyFilled style={{ fontSize: 20, color: "var(--brand-active)" }} />
-            <span className={styles.statValue}>0</span>
+            <TrophyFilled
+              style={{ fontSize: 20, color: "var(--brand-active)" }}
+            />
+            <span className={styles.statValue}>{user.victory ?? 0}</span>
             <span className={styles.statLabel}>{t("stats.victories")}</span>
           </div>
           <div className={styles.statBox}>
-            <HeartFilled style={{ fontSize: 20, color: "var(--brand-active)" }} />
-            <span className={styles.statValue}>0</span>
+            <HeartFilled
+              style={{ fontSize: 20, color: "var(--brand-active)" }}
+            />
+            <span className={styles.statValue}>{user.defeat ?? 0}</span>
             <span className={styles.statLabel}>{t("stats.defeats")}</span>
           </div>
           <div className={styles.statBox}>
             <SafetyCertificateFilled
               style={{ fontSize: 20, color: "var(--brand-active)" }}
             />
-            <span className={styles.statValue}>0</span>
+            <span className={styles.statValue}>{user.trophies ?? 0}</span>
             <span className={styles.statLabel}>{t("stats.trophies")}</span>
           </div>
         </div>
 
         {feedback && (
-          <p className={styles.feedback} data-tone={feedback.tone} role="status">
+          <p
+            className={styles.feedback}
+            data-tone={feedback.tone}
+            role="status"
+          >
             {feedback.message}
           </p>
         )}
