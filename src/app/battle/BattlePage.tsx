@@ -12,7 +12,7 @@ import {
 import { Button } from "antd";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 
 import ProfileCorner from "@/components/ProfileCorner";
 import { getErrorMessage } from "@/lib/errors";
@@ -400,19 +400,21 @@ export default function BattlePage() {
   useEffect(() => {
     if (wsState.status === "streaming") {
       const logs = buildTurnLogs(wsState.events, tEvents);
-      setVisibleLogs(logs);
+      startTransition(() => setVisibleLogs(logs));
     }
 
     if (wsState.status === "finished") {
       const logs = buildTurnLogs(wsState.result.events, tEvents);
-      setVisibleLogs(logs);
-      setMatch(wsState.result);
-      setIsBattleFinished(true);
-      setIsEndModalOpen(true);
+      startTransition(() => {
+        setVisibleLogs(logs);
+        setMatch(wsState.result);
+        setIsBattleFinished(true);
+        setIsEndModalOpen(true);
+      });
     }
 
     if (wsState.status === "error" && wsState.fallbackResult) {
-      startEventAnimation(wsState.fallbackResult);
+      startTransition(() => startEventAnimation(wsState.fallbackResult!));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wsState]);

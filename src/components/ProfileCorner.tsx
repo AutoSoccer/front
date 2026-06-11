@@ -21,7 +21,7 @@ export type ProfileCornerProps = {
   coins?: number;
 };
 
-export default function ProfileCorner({ coins }: ProfileCornerProps) {
+export default function ProfileCorner(_props: ProfileCornerProps) {
   const { user, logout } = useAuth();
   const t = useTranslations("common.menu");
   const [open, setOpen] = useState(false);
