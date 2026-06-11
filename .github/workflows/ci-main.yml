@@ -56,8 +56,12 @@ jobs:
           path: coverage/
           retention-days: 30
 
+      # SonarCloud e opcional: nao queremos quebrar o pipeline (testes +
+      # lint + typecheck + build) se o Sonar estiver com config divergente
+      # do projectKey. Os erros viram aviso no summary do run.
       - name: SonarCloud Scan
         if: success()
+        continue-on-error: true
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
