@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 import LanguageSwitcher from "./LanguageSwitcher";
 import styles from "./ProfileCorner.module.css";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 function getInitial(value?: string | null): string {
   if (!value) return "U";
@@ -47,6 +48,7 @@ export default function ProfileCorner({ coins }: ProfileCornerProps) {
 
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
+      <ThemeSwitcher />
       <LanguageSwitcher />
       {/* {typeof coins === "number" && (
         <span className={styles.coinPill} aria-label={`Saldo: ${coins} moedas`}>
