@@ -9,8 +9,9 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+# Lockfile oficial e o package-lock.json (npm). yarn.lock e legado e
+# permanece ignorado para evitar drift entre os dois gerenciadores.
 yarn.lock
-package-lock.json
 
 # testing
 /coverage
