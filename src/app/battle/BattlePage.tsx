@@ -23,11 +23,13 @@ import {
   writeGameSession,
   type GameSession,
 } from "@/lib/gameSession";
+import { useBattleStream } from "@/hooks/useBattleStream";
 import {
   gameService,
   type MatchEvent,
   type MatchPositionPayload,
   type MatchResponse,
+  type PlayMatchResponse,
   type SnapshotAthlete,
   type SnapshotPositions,
 } from "@/services/gameService";
@@ -281,7 +283,7 @@ export default function BattlePage() {
   const tEvents = useTranslations("battle.events");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
-  const roundRequestRef = useRef<Promise<MatchResponse> | null>(null);
+  const roundRequestRef = useRef<Promise<PlayMatchResponse> | null>(null);
   const [gameSession, setGameSession] = useState<GameSession>(() =>
     readGameSession()
   );
@@ -291,6 +293,7 @@ export default function BattlePage() {
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [isBattleFinished, setIsBattleFinished] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { state: wsState, connect: wsConnect, disconnect: wsDisconnect } = useBattleStream();
 
   const resultLabel = (matchValue: MatchResponse): string => {
     if (matchValue.winner === "player") return t("result.victory");
@@ -309,9 +312,32 @@ export default function BattlePage() {
   const rewardPrefix = (match?.resolution.coinsEarned ?? 0) > 0 ? "+" : "";
   const trophyPrefix = (match?.resolution.trophiesDelta ?? 0) > 0 ? "+" : "";
 
+  function startEventAnimation(result: MatchResponse) {
+    const logs = buildTurnLogs(result.events, tEvents);
+    if (logs.length === 0) {
+      setVisibleLogs([]);
+      setIsBattleFinished(true);
+      setIsEndModalOpen(true);
+      return [];
+    }
+
+    const timers: Array<ReturnType<typeof setTimeout>> = [];
+    logs.forEach((_, index) => {
+      const timer = setTimeout(() => {
+        setVisibleLogs(logs.slice(0, index + 1));
+        if (index === logs.length - 1) {
+          setIsBattleFinished(true);
+          setIsEndModalOpen(true);
+        }
+      }, (index + 1) * 850);
+      timers.push(timer);
+    });
+    return timers;
+  }
+
   useEffect(() => {
     let cancelled = false;
-    const timers: Array<ReturnType<typeof setTimeout>> = [];
+    let timers: Array<ReturnType<typeof setTimeout>> = [];
 
     async function playRound() {
       const session = readGameSession();
@@ -329,32 +355,18 @@ export default function BattlePage() {
           roundRequestRef.current = gameService.playMatch(positions);
         }
 
-        const result = await roundRequestRef.current;
+        const response = await roundRequestRef.current;
         if (cancelled) return;
 
-        setMatch(result);
+        setMatch(response);
         setIsWaitingForRound(false);
 
-        const logs = buildTurnLogs(result.events, tEvents);
-        if (logs.length === 0) {
-          setVisibleLogs([]);
-          setIsBattleFinished(true);
-          setIsEndModalOpen(true);
-          return;
+        const token = localStorage.getItem("token");
+        if (response.matchId && token) {
+          wsConnect(response.matchId, token, response);
+        } else {
+          timers = startEventAnimation(response);
         }
-
-        logs.forEach((_, index) => {
-          const turnTimer = setTimeout(() => {
-            setVisibleLogs(logs.slice(0, index + 1));
-
-            if (index === logs.length - 1) {
-              setIsBattleFinished(true);
-              setIsEndModalOpen(true);
-            }
-          }, (index + 1) * 850);
-
-          timers.push(turnTimer);
-        });
       } catch (error) {
         if (!cancelled) {
           setErrorMessage(
@@ -373,6 +385,28 @@ export default function BattlePage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (wsState.status === "streaming") {
+      const logs = buildTurnLogs(wsState.events, tEvents);
+      setVisibleLogs(logs);
+    }
+
+    if (wsState.status === "finished") {
+      const logs = buildTurnLogs(wsState.result.events, tEvents);
+      setVisibleLogs(logs);
+      setMatch(wsState.result);
+      setIsBattleFinished(true);
+      setIsEndModalOpen(true);
+    }
+
+    if (wsState.status === "error" && wsState.fallbackResult) {
+      startEventAnimation(wsState.fallbackResult);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wsState]);
+
+  useEffect(() => () => wsDisconnect(), [wsDisconnect]);
 
   function handleReturnToMarket() {
     if (!match) return;
@@ -403,6 +437,19 @@ export default function BattlePage() {
         >
           <div className={styles.headerSection}>
             <h1 className={styles.title}>{t("title")}</h1>
+            {wsState.status === "connecting" && (
+              <span className={styles.liveBadge}>
+                {t("live.connecting")}
+              </span>
+            )}
+            {wsState.status === "streaming" && (
+              <span className={styles.liveBadge} aria-live="polite">
+                {t("live.streaming", {
+                  turn: wsState.currentTurn,
+                  total: match?.totalTurns ?? 12,
+                })}
+              </span>
+            )}
           </div>
           <div className={styles.headerDivider} aria-hidden="true" />
           <div className={styles.headerSection}>

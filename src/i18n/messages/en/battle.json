@@ -54,6 +54,11 @@
     "menu": "Menu",
     "backToMarket": "Back to Market"
   },
+  "live": {
+    "connecting": "Connecting to server...",
+    "streaming": "LIVE — Turn {turn}/{total}",
+    "connectionLost": "Connection lost. Replaying result..."
+  },
   "errors": {
     "noAthletes": "Pick at least 1 athlete before playing.",
     "battleStartFailed": "Could not start the battle."

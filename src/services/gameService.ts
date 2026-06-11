@@ -149,6 +149,11 @@ export type MatchEvent = {
   description: string;
 };
 
+export type PlayMatchResponse = MatchResponse & {
+  matchId?: string;
+  wsUrl?: string;
+};
+
 export type MatchResponse = {
   lineups: {
     player: {
@@ -249,8 +254,8 @@ export const gameService = {
 
   playMatch: async (
     positions: MatchPositionPayload[]
-  ): Promise<MatchResponse> => {
-    const response = await api.post<MatchResponse>("/match/play", {
+  ): Promise<PlayMatchResponse> => {
+    const response = await api.post<PlayMatchResponse>("/match/play", {
       positions,
     });
     return response.data;
