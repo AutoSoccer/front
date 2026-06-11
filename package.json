@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "i18n:check": "node ./scripts/check-i18n.mjs"
+    "i18n:check": "node ./scripts/check-i18n.mjs",
+    "lock:linux": "bash scripts/lock-linux.sh"
   },
   "dependencies": {
     "@ant-design/icons": "^6.2.5",
