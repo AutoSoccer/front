@@ -2,7 +2,7 @@
 
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   defaultTheme,
@@ -16,8 +16,11 @@ import styles from "./ThemeSwitcher.module.css";
 
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
-function readThemeCookie(): Theme {
-  if (typeof document === "undefined") return defaultTheme;
+// Le o cookie no momento de inicializacao do estado. Como o componente e
+// `"use client"`, esta funcao so e chamada no browser; no SSR/RSC o React
+// ja usa o `initialTheme` passado pelo layout (lido server-side via cookies).
+function readClientCookie(): Theme | null {
+  if (typeof document === "undefined") return null;
   const cookies = document.cookie.split(";");
   for (const raw of cookies) {
     const [key, value] = raw.trim().split("=");
@@ -25,7 +28,7 @@ function readThemeCookie(): Theme {
       return value;
     }
   }
-  return defaultTheme;
+  return null;
 }
 
 function persistTheme(theme: Theme): void {
@@ -44,13 +47,13 @@ export type ThemeSwitcherProps = {
 
 export default function ThemeSwitcher({ initialTheme }: ThemeSwitcherProps) {
   const t = useTranslations("common.theme");
-  const [theme, setTheme] = useState<Theme>(initialTheme ?? defaultTheme);
-
-  useEffect(() => {
-    const stored = readThemeCookie();
-    setTheme(stored);
-    applyTheme(stored);
-  }, []);
+  // Lazy initializer: prioriza cookie do browser, cai no `initialTheme` SSR,
+  // e por ultimo no default. Evita setState dentro de useEffect e o aviso
+  // `react-hooks/set-state-in-effect` que vinha quando sincronizavamos em
+  // dois passos.
+  const [theme, setTheme] = useState<Theme>(
+    () => readClientCookie() ?? initialTheme ?? defaultTheme
+  );
 
   const target = nextTheme(theme);
   const label = target === "dark" ? t("dark") : t("light");
