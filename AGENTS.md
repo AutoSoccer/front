@@ -24,6 +24,25 @@ This version has breaking changes — APIs, conventions, and file structure may 
 Lockfile oficial e o `package-lock.json` (npm). Existe um `yarn.lock`
 legado — nao use yarn para instalar.
 
+> **Lockfile e o bug npm/cli#4828:** o vitest 4 usa `rolldown`, que tem
+> bindings nativos por plataforma como `optionalDependencies`. Quando
+> voce roda `npm install` no Mac, o npm REMOVE do lockfile as entries de
+> outras plataformas (linux-x64-gnu, win32-x64, etc), o que quebra o CI
+> e o deploy Vercel/Railway com `Cannot find @rolldown/binding-linux-x64-gnu`.
+>
+> Mesma classe de bug afeta `lightningcss`, `@tailwindcss/oxide` e
+> `@rollup/rollup`. Issue: https://github.com/npm/cli/issues/4828
+>
+> **Disciplina do time:** sempre que mexer em deps (`npm install <pkg>`,
+> `npm uninstall`, `npm update`), rode em seguida:
+>
+> ```bash
+> npm run lock:linux    # regenera o lockfile dentro de container Linux
+> npm install           # reinstala node_modules local com bindings darwin
+> ```
+>
+> Requer Docker Desktop instalado. O script vive em `scripts/lock-linux.sh`.
+
 ## Layout do repo
 
 ```
