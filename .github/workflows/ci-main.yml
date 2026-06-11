@@ -1,0 +1,74 @@
+name: CI - main (staging)
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: lint, typecheck, test:coverage, build, sonar
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Sonar precisa do histórico completo para blame
+          fetch-depth: 0
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: i18n parity check
+        run: npm run i18n:check
+
+      - name: Test with coverage
+        run: npm run test:coverage -- --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json-summary
+
+      - name: Next.js build
+        run: npm run build
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: front-coverage-main-${{ github.sha }}
+          path: coverage/
+          retention-days: 30
+
+      - name: SonarCloud Scan
+        if: success()
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Note about deploy
+        if: always()
+        run: |
+          {
+            echo "## Deploy info"
+            echo ""
+            echo "O deploy de produção é feito automaticamente pela **Vercel** ao detectar push em \`main\`."
+            echo "Não há step explícito de deploy aqui — ver \`.github/workflows/README.md\`."
+          } >> "$GITHUB_STEP_SUMMARY"
