@@ -16,6 +16,13 @@ jobs:
     permissions:
       contents: read
 
+    # NEXT_PUBLIC_API_URL e usado por src/providers/api.ts. Em build sem a
+    # var, ainda funciona via fallback ("http://localhost:3333"), mas
+    # definir explicitamente evita warnings durante o `next build` e
+    # mantem o build do CI alinhado com producao (Vercel).
+    env:
+      NEXT_PUBLIC_API_URL: https://autosoccer-api-production.up.railway.app
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
