@@ -17,6 +17,11 @@ jobs:
       contents: read
       pull-requests: write
 
+    # Mesma logica do ci-main: definir explicitamente para silenciar
+    # warnings de `next build` quando NEXT_PUBLIC_API_URL nao existe.
+    env:
+      NEXT_PUBLIC_API_URL: https://autosoccer-api-production.up.railway.app
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
