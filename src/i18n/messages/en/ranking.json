@@ -16,6 +16,32 @@
     "playersCount": "{count} players",
     "you": "You"
   },
+  "dashboard": {
+    "aria": "Ranking management dashboard",
+    "label": "Management dashboard",
+    "title": "Ranking insights",
+    "subtitle": "Compare the leaders by metric and check the campaign balance of the top players.",
+    "filters": {
+      "metric": "Metric",
+      "topN": "Players",
+      "topNOption": "Top {count}"
+    },
+    "metric": {
+      "trophies": "Trophies",
+      "victories": "Wins",
+      "winRate": "Win rate"
+    },
+    "topChart": {
+      "title": "Top {count} by {metric}",
+      "description": "Horizontal bars with the leaders in {metric}."
+    },
+    "resultsChart": {
+      "title": "Wins vs losses — top {count}",
+      "description": "Campaigns won and lost by the top-ranked players.",
+      "victories": "Wins",
+      "defeats": "Losses"
+    }
+  },
   "loadingPanel": "Updating standings...",
   "error": "Could not load the ranking right now.",
   "retry": "Try again",

@@ -29,6 +29,7 @@ import {
   rankingService,
 } from "@/services/rankingService";
 
+import RankingDashboard from "./RankingDashboard";
 import styles from "./ranking.module.css";
 
 const podiumOrder = [1, 0, 2];
@@ -384,6 +385,8 @@ export default function RankingPage() {
                 <CurrentUserMetrics currentUser={data.currentUser} />
               </aside>
             </div>
+
+            <RankingDashboard entries={data.ranking} />
           </>
         ) : null}
       </section>
