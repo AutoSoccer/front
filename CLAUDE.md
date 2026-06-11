@@ -1,1 +1,2 @@
 @AGENTS.md
+@docs/ARQUITETURA_FRONT.md
