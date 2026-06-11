@@ -54,6 +54,11 @@
     "menu": "Menu",
     "backToMarket": "Voltar ao Mercado"
   },
+  "live": {
+    "connecting": "Conectando ao servidor...",
+    "streaming": "AO VIVO — Turno {turn}/{total}",
+    "connectionLost": "Conexão perdida. Reproduzindo resultado..."
+  },
   "errors": {
     "noAthletes": "Escale ao menos 1 atleta antes de jogar.",
     "battleStartFailed": "Não foi possível iniciar a batalha."

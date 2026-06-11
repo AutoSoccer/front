@@ -1194,3 +1194,18 @@
     right: 0.55rem;
   }
 }
+
+.liveBadge {
+  display: inline-block;
+  color: var(--brand-primary);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
