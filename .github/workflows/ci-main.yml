@@ -60,7 +60,28 @@ jobs:
       - name: Test with coverage
         id: test
         continue-on-error: true
-        run: npm run test:coverage -- --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json-summary --reporter=verbose
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:coverage -- --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json-summary --reporter=verbose 2>&1 | tee vitest-output.log
+
+      - name: Show vitest output on Summary (diagnostico)
+        if: always()
+        shell: bash
+        run: |
+          if [ -f vitest-output.log ]; then
+            echo "=== VITEST OUTPUT (last 300 lines) ==="
+            tail -300 vitest-output.log
+            {
+              echo "## Vitest verbose output (last 300 lines)"
+              echo ""
+              echo '```'
+              tail -300 vitest-output.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "vitest-output.log nao foi gerado — vitest nem comecou."
+          fi
 
       - name: Next.js build
         id: build
