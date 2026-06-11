@@ -10,7 +10,11 @@ export default defineConfig({
     globals: true,
     coverage: {
       provider: "v8",
-      reporter: ["text", "html", "lcov"],
+      // O lcov.info precisa de paths RELATIVOS ao repo root para o SonarCloud
+      // conseguir casar contra `sonar.sources=src`. Sem `projectRoot: './'` o
+      // provider v8 grava caminhos absolutos do runner CI (/home/runner/...)
+      // e a cobertura no Sonar cai em 0%.
+      reporter: ["text", "html", "json-summary", ["lcov", { projectRoot: "./" }]],
       // src/app/** excluido temporariamente — pages Next.js sem cobertura
       // ainda; sera incluido quando testes E2E forem adicionados (follow-up).
       include: [
