@@ -414,7 +414,7 @@ export default function BattlePage() {
     }
 
     if (wsState.status === "error" && wsState.fallbackResult) {
-      startTransition(() => startEventAnimation(wsState.fallbackResult!));
+      startTransition(() => { startEventAnimation(wsState.fallbackResult!); });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wsState]);
