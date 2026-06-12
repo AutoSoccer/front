@@ -1,6 +1,5 @@
 "use client";
 
-import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -11,8 +10,6 @@ import {
   themeCookieName,
   type Theme,
 } from "@/lib/theme";
-
-import styles from "./ThemeSwitcher.module.css";
 
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
@@ -66,16 +63,17 @@ export default function ThemeSwitcher({ initialTheme }: ThemeSwitcherProps) {
   }
 
   return (
-    <button
-      type="button"
-      className={styles.button}
-      onClick={handleClick}
-      aria-label={`${t("label")}: ${label}`}
-    >
-      <span className={styles.icon} aria-hidden="true">
-        {target === "dark" ? <MoonOutlined /> : <SunOutlined />}
-      </span>
-      {label}
-    </button>
+    // <button
+    //   type="button"
+    //   className={styles.button}
+    //   onClick={handleClick}
+    //   aria-label={`${t("label")}: ${label}`}
+    // >
+    //   <span className={styles.icon} aria-hidden="true">
+    //     {target === "dark" ? <MoonOutlined /> : <SunOutlined />}
+    //   </span>
+    //   {label}
+    // </button>
+    <></>
   );
 }
