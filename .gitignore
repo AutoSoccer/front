@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Claude Code (settings.local.json e' personal, settings.json e' do time)
 .claude/settings.local.json
+
+# node_modules em qualquer subpasta (ex: apresentacao/build/)
+**/node_modules
