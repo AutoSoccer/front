@@ -13,6 +13,9 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "coverage/**",
+    // gerar.js do .pptx usa CommonJS (require/__dirname) e roda fora do
+    // bundle do Next — sem motivo pra lintar
+    "apresentacao/**",
   ]),
   {
     files: ["**/*.test.{ts,tsx}", "src/__tests__/**/*.{ts,tsx}"],
