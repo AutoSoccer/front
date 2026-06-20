@@ -42,3 +42,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code (settings.local.json e' personal, settings.json e' do time)
+.claude/settings.local.json

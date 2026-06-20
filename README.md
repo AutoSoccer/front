@@ -3,6 +3,24 @@
 Frontend do AutoSoccer em Next.js 16 + React 19, integrado a API de mercado,
 equipe e batalha assincrona.
 
+## Documentacao formal
+
+- [Arquitetura do front](docs/ARQUITETURA_FRONT.md) — fonte da verdade
+  tecnica para a defesa (stack, padroes, decisoes de auth/i18n/dark mode).
+- [Defesa front (Lucas Stopinski)](docs/DEFESA_FRONT.md) — 10 perguntas
+  previsiveis da banca com respostas curtas, alinhadas com o codigo real.
+- [Roteiro de demo](docs/ROTEIRO_DEMO.md) — 4 fluxos cronometrados +
+  plano B.
+- [Slides da apresentacao](docs/SLIDES_CONTENT.md) — script completo dos
+  28 slides (`AutoSoccer_Apresentacao.pptx`).
+- [Plano de apresentacao final](docs/PLANO_APRESENTACAO.md) — cronograma
+  da entrega de 23/06 + mapeamento da rubrica.
+- [Plano dark mode completo](docs/PLANO_DARK_MODE.md) — 5 fases para
+  executar com Sonnet: reativar toggle, antd com darkAlgorithm, varrer
+  cores hardcoded, validar WCAG.
+- [Guia do agente (Claude / contribuidor)](AGENTS.md) — convencoes,
+  comandos, layout do repo.
+
 ## Requisitos
 
 - Node.js 20+
