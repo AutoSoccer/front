@@ -5,7 +5,7 @@
 }
 
 .marketSlot {
-  background: #ffffff;
+  background: var(--bg-card);
   border: 4px solid var(--border-arcade);
   padding: 0.6rem;
   display: grid;
@@ -115,7 +115,7 @@
   justify-content: space-between;
   gap: 0.25rem;
   font-size: 0.72rem;
-  background: #f3f4f6;
+  background: var(--bg-muted);
   border: 2px solid var(--border-arcade);
   border-radius: 6px;
   padding: 0.15rem 0.4rem;

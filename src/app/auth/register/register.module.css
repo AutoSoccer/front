@@ -28,7 +28,7 @@
 
 .card {
   width: min(560px, 92vw);
-  background: #ffffff;
+  background: var(--bg-card);
   border: 4px solid var(--border-arcade);
   border-radius: 14px;
   padding: 1.8rem 1.8rem 1.4rem;
@@ -82,7 +82,7 @@
 .input {
   width: 100%;
   padding: 0.75rem 1rem 0.75rem 2.5rem;
-  background: #d9d9d9;
+  background: var(--bg-input);
   border: 0;
   border-radius: 12px;
   font-size: 0.95rem;
@@ -100,7 +100,7 @@
 }
 
 .input:focus {
-  background: #ebebeb;
+  background: var(--bg-input-focus);
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.45);
 }
 

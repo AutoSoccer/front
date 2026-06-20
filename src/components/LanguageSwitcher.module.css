@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: #ffffff;
+  background: var(--bg-card);
   border: 3px solid var(--border-arcade);
   border-radius: 999px;
   padding: 0.25rem 0.7rem;
