@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  EnvironmentOutlined,
   EyeInvisibleOutlined,
   EyeOutlined,
   LockOutlined,
@@ -137,6 +138,25 @@ export default function RegisterPage() {
               <p className={styles.errorText}>{errors.phone_number.message}</p>
             )}
           </div>
+        </div>
+
+        <div className={styles.fieldGroup}>
+          <label className={styles.label} htmlFor="city">
+            {t("city")}
+          </label>
+          <div className={styles.inputWrap}>
+            <EnvironmentOutlined className={styles.inputIcon} />
+            <input
+              id="city"
+              type="text"
+              placeholder={t("cityPlaceholder")}
+              className={styles.input}
+              {...register("city")}
+            />
+          </div>
+          {errors.city && (
+            <p className={styles.errorText}>{errors.city.message}</p>
+          )}
         </div>
 
         <div className={styles.fieldGroup}>

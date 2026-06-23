@@ -14,6 +14,7 @@
     "nameMin": "Name is too short.",
     "nameInvalid": "Name must contain only letters.",
     "nickname": "Nickname must be 2-20 characters (letters, numbers and _).",
-    "phoneInvalid": "Invalid phone. Use the format (00) 00000-0000."
+    "phoneInvalid": "Invalid phone. Use the format (00) 00000-0000.",
+    "cityInvalid": "Invalid city. Use only letters (minimum 2 characters)."
   }
 }

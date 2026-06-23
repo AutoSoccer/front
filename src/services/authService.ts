@@ -32,6 +32,7 @@ export const authService = {
       email: data.email,
       password: data.password,
       phone_number: data.phone_number,
+      city: data.city || undefined,
     };
     const response = await api.post("/auth/register", payload);
     return response.data;

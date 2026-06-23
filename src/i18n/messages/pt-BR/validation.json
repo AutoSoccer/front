@@ -14,6 +14,7 @@
     "nameMin": "O nome é muito curto.",
     "nameInvalid": "O nome deve conter apenas letras.",
     "nickname": "O apelido deve ter de 2 a 20 caracteres (letras, números e _).",
-    "phoneInvalid": "Telefone inválido. Use o formato (00) 00000-0000."
+    "phoneInvalid": "Telefone inválido. Use o formato (00) 00000-0000.",
+    "cityInvalid": "Cidade inválida. Use apenas letras (mínimo 2 caracteres)."
   }
 }

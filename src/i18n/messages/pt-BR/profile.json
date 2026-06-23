@@ -13,7 +13,9 @@
     "email": "E-mail",
     "emailPlaceholder": "seu@email.com",
     "phone": "Telefone",
-    "phonePlaceholder": "(00) 00000-0000"
+    "phonePlaceholder": "(00) 00000-0000",
+    "city": "Cidade",
+    "cityPlaceholder": "Sua cidade"
   },
   "stats": {
     "victories": "Vitórias",

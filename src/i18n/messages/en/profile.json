@@ -13,7 +13,9 @@
     "email": "Email",
     "emailPlaceholder": "you@email.com",
     "phone": "Phone",
-    "phonePlaceholder": "(00) 00000-0000"
+    "phonePlaceholder": "(00) 00000-0000",
+    "city": "City",
+    "cityPlaceholder": "Your city"
   },
   "stats": {
     "victories": "Wins",

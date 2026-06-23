@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  EnvironmentOutlined,
   HeartFilled,
   HomeFilled,
   LockOutlined,
@@ -71,6 +72,7 @@ export default function ProfilePage() {
       nickname: user?.nickname ?? "",
       email: user?.email ?? "",
       phone_number: formatPhone(user?.phone_number ?? ""),
+      city: user?.city ?? "",
     },
   });
 
@@ -210,6 +212,24 @@ export default function ProfilePage() {
             </div>
             {errors.phone_number && (
               <p className={styles.errorText}>{errors.phone_number.message}</p>
+            )}
+          </div>
+
+          <div className={styles.infoItem}>
+            <label className={styles.infoLabel} htmlFor="profile-city">
+              {t("fields.city")}
+            </label>
+            <div className={styles.inputWrap}>
+              <EnvironmentOutlined className={styles.inputIcon} />
+              <input
+                id="profile-city"
+                className={styles.input}
+                placeholder={t("fields.cityPlaceholder")}
+                {...register("city")}
+              />
+            </div>
+            {errors.city && (
+              <p className={styles.errorText}>{errors.city.message}</p>
             )}
           </div>
         </div>
